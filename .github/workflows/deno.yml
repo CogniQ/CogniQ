@@ -21,10 +21,15 @@ jobs:
           deno-version: v1.x
 
       - name: Verify formatting
-        run: deno fmt --check
+        run: deno fmt
 
       - name: Run linter
         run: deno lint
+
+      - name: commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: "chore: deno fmt :robot: [skip ci]"
 
       - name: Run tests
         run: deno task test
