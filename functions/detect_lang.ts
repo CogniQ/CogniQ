@@ -118,6 +118,7 @@ export const reactionToLang: Record<string, string> = {
   ke: "en",
   ki: "en",
   kn: "en",
+  kr: "ko",
   ky: "en",
   lc: "en",
   li: "de",
