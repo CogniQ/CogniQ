@@ -5,7 +5,6 @@ on:
 
 jobs:
   update-dependencies:
-    if: github.repository == 'slack-samples/deno-reverse-string'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,7 +22,7 @@ jobs:
           title: Update dependencies
           body: >
             Dependencies updated by [udd](https://github.com/hayd/deno-udd).
-          branch: pre-release
+          branch: deno-dependency-updates
           author: GitHub <noreply@github.com>
           delete-branch: true
       - name: Retrieve commit sha
