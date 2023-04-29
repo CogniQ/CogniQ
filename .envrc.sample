@@ -1,0 +1,5 @@
+# App ID: ABC!@#
+# https://api.slack.com/apps/ABC123
+export SLACK_SIGNING_SECRET=abc123
+export SLACK_BOT_TOKEN=xoxb-abc123
+export SLACK_APP_TOKEN=xapp-abc123
