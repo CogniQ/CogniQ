@@ -1,4 +1,4 @@
-def register_app_home_opened(app):
+def register_app_home_opened(*, app, logger):
     @app.event("app_home_opened")
     def update_home_tab(client, event, logger):
         try:
