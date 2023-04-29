@@ -1,0 +1,27 @@
+name: Auto Lint
+
+on:
+  push:
+    branches-ignore: 
+      - main # We don't want to (auto)lint on main
+  pull_request:
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: psf/black@stable
+        with:
+          options: "--verbose"
+          src: "."
+          jupyter: false
+          version: "~=23.3"
+
+      - name: commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: "refactor: black :robot: [skip ci]"
