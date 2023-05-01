@@ -15,6 +15,9 @@ def user_message(content):
 def system_message(content):
     return message("system", content)
 
+def assistant_message(content):
+    return message("assistant", content)
+
 
 async def ask(*, q, message_history=None, context=[]):
     if message_history is None:

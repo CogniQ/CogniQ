@@ -18,15 +18,15 @@ def register_message(*, app):
         if channel_type == "im":
             logger.debug(f"<@{user}> IM: {event['text']}")
             await ask_openai(event=event, say=say, app=app)
-        elif channel_type == "mpim":
-            await say(f"MPIM received from <@{user}>!", thread_ts=original_ts)
-        elif channel_type == "channel":
-            await say(
-                f"Channel message received from <@{user}>!", thread_ts=original_ts
-            )
-        elif channel_type == "group":
-            await say(f"Group message received from <@{user}>!", thread_ts=original_ts)
-        else:
-            logger.error(
-                f"<@{user}> Unknown channel type: {channel_type}: {event['text']}"
-            )
+        # elif channel_type == "mpim":
+        #     await say(f"MPIM received from <@{user}>!", thread_ts=original_ts)
+        # elif channel_type == "channel":
+        #     await say(
+        #         f"Channel message received from <@{user}>!", thread_ts=original_ts
+        #     )
+        # elif channel_type == "group":
+        #     await say(f"Group message received from <@{user}>!", thread_ts=original_ts)
+        # else:
+        #     logger.error(
+        #         f"<@{user}> Unknown channel type: {channel_type}: {event['text']}"
+        #     )

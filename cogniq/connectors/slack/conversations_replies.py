@@ -8,9 +8,11 @@ logger = setup_logger(__name__)
 async def fetch_conversations_replies(client, channel_id, thread_ts):
     try:
         replies_response = await client.conversations_replies(
-            channel=channel_id, ts=thread_ts
+            channel=channel_id,
+            limit=50, # TODO: temporary limit. We need to implement vector search.
+            ts=thread_ts
         )
         return replies_response
     except SlackApiError as e:
         logger.error(f"Error fetching conversation replies: {e}")
-        return None
+        raise e
