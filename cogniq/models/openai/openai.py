@@ -1,4 +1,5 @@
 from cogniq.logging import setup_logger
+
 logger = setup_logger(__name__)
 
 from .async_chat_completion_create import async_chat_completion_create
@@ -14,6 +15,7 @@ def user_message(content):
 
 def system_message(content):
     return message("system", content)
+
 
 def assistant_message(content):
     return message("assistant", content)

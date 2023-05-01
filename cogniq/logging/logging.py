@@ -1,10 +1,13 @@
 import logging
 import os
 
+
 def setup_logger(name):
     logger = logging.getLogger(name)
     if not logger.hasHandlers():
-        app_env = os.getenv("APP_ENV", "production")  # Default to 'production' if APP_ENV is not set
+        app_env = os.getenv(
+            "APP_ENV", "production"
+        )  # Default to 'production' if APP_ENV is not set
         log_level = logging.DEBUG if app_env == "development" else logging.INFO
 
         logger.setLevel(log_level)
