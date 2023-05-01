@@ -1,6 +1,11 @@
-def register_app_home_opened(*, app, logger):
+from cogniq.logging import setup_logger
+
+logger = setup_logger(__name__)
+
+
+def register_app_home_opened(*, app):
     @app.event("app_home_opened")
-    async def update_home_tab(client, event, logger):
+    async def update_home_tab(client, event):
         try:
             # views.publish is the method that your app uses to push a view to the Home tab
             await client.views_publish(

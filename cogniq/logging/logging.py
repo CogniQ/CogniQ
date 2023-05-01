@@ -1,15 +1,18 @@
 import logging
-
+import os
 
 def setup_logger(name):
     logger = logging.getLogger(name)
     if not logger.hasHandlers():
-        logger.setLevel(logging.INFO)
-        logger.propagate = False  # prevent the logger from propagating messages to the parent logger, which has a console handler by default.
+        app_env = os.getenv("APP_ENV", "production")  # Default to 'production' if APP_ENV is not set
+        log_level = logging.DEBUG if app_env == "development" else logging.INFO
+
+        logger.setLevel(log_level)
+        logger.propagate = False
 
         # Create a console handler
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(log_level)
 
         # Create a formatter
         formatter = logging.Formatter(

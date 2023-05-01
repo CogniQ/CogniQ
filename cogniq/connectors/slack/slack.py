@@ -1,22 +1,20 @@
 from cogniq.logging import setup_logger
 
+logger = setup_logger(__name__)
+
 from slack_bolt.async_app import AsyncApp
 from .config import Config
 from .app_home_opened import register_app_home_opened
 from .app_mention import register_app_mention
 from .message import register_message
 
-logger = setup_logger(__name__)
 
 app = AsyncApp(
     token=Config["SLACK_BOT_TOKEN"],
     signing_secret=Config["SLACK_SIGNING_SECRET"],
 )
 
-registration_config = {
-    "app": app,
-    "logger": logger,
-}
+registration_config = {"app": app}
 
 register_app_home_opened(**registration_config)
 register_app_mention(**registration_config)

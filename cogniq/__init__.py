@@ -1,1 +1,1 @@
-from . import slack
+from .connectors import slack
