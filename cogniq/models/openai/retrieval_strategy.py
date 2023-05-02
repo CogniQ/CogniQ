@@ -33,6 +33,12 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     Q: How do you make a cake?
     A: search: web: How to make a cake
 
+    Q: Give me a summary of this chat.
+    A: none
+    
+    Q: summarize this thread.
+    A: none
+
     Q: {q}
     A:"""
 

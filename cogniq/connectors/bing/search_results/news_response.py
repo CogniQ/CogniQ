@@ -10,6 +10,6 @@ def parse_news(news_article):
 
 def parse_news_answer(*, search_results):
     """https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/response-objects#newsanswer"""
-    news_answer = search_results # Translate from the calling dynamic function.
+    news_answer = search_results  # Translate from the calling dynamic function.
     parsed_items = [parse_news(item) for item in news_answer["value"]]
     return parsed_items

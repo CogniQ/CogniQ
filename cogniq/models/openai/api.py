@@ -9,11 +9,13 @@ async def async_chat_completion_create(*, messages, **kwargs):
 
     return await async_openai(url=url, payload=payload, **kwargs)
 
+
 async def async_completion_create(*, prompt, **kwargs):
     url = f"https://api.openai.com/v1/completions"
     payload = {"prompt": prompt, **kwargs}
 
     return await async_openai(url=url, payload=payload, **kwargs)
+
 
 async def async_openai(*, url, payload, **kwargs):
     headers = {

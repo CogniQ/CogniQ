@@ -2,7 +2,11 @@ def parse_news(*, search_results, item):
     """https://learn.microsoft.com/en-us/bing/search-apis/bing-news-search/reference/response-objects#newsanswer"""
     target_id = item["value"]["id"]
     result = next(
-        iter(filter(lambda el: el.get("id") == target_id, search_results["news"]["value"])),
+        iter(
+            filter(
+                lambda el: el.get("id") == target_id, search_results["news"]["value"]
+            )
+        ),
         None,
     )
 
@@ -23,7 +27,8 @@ def parse_webpages(*, search_results, item):
     result = next(
         iter(
             filter(
-                lambda el: el.get("id") == target_id, search_results["webPages"]["value"]
+                lambda el: el.get("id") == target_id,
+                search_results["webPages"]["value"],
             )
         ),
         None,
