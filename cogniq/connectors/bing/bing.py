@@ -44,7 +44,7 @@ async def async_bing_search(*, q, search_type="web", **kwargs):
 
 def search_prompt(*, search_results, q):
     return f"""
-    Please include relevant links formatted for slack in your response.
+    Please include relevant links formatted for slack in your response. Example: <https://www.google.com|Google>
 
     Context: {search_results}
 
