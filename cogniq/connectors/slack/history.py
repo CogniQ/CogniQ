@@ -35,9 +35,7 @@ async def get_bot_user_id(client):
 
 def convert_to_openai_sequence(messages, bot_user_id):
     openai_sequence = []
-    for message in reversed(
-        messages
-    ):  # Slack returns in reverse chronological order (latest to earliest). We want chronological order.
+    for message in (messages):
         if message.get("user") == bot_user_id:
             openai_sequence.append(assistant_message(message.get("text")))
         else:
@@ -54,16 +52,18 @@ def convert_to_openai_sequence(messages, bot_user_id):
 async def fetch_conversations_history_and_convert_to_openai_sequence(
     client, channel_id
 ):
+    """The most recent messages in the time range are returned first."""
     bot_user_id = await get_bot_user_id(client)
     messages = await fetch_conversations_history(client, channel_id)
     if messages is None:
         return None
-    return convert_to_openai_sequence(messages, bot_user_id)
+    return convert_to_openai_sequence(reversed(messages), bot_user_id)
 
 
 async def fetch_conversations_replies_and_convert_to_openai_sequence(
     client, channel_id, thread_ts
 ):
+    """The earliest messages in the time range are returned first."""
     bot_user_id = await get_bot_user_id(client)
     messages = await fetch_conversations_replies(client, channel_id, thread_ts)
     if messages is None:

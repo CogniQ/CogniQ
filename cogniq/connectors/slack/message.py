@@ -10,10 +10,7 @@ from .ask_openai import ask_openai
 def register_message(*, app):
     @app.event("message")
     async def handle_message_events(event, say):
-        original_ts = event["ts"]
         channel_type = event["channel_type"]
-        channel = event["channel"]
-        team = event["team"]
         user = event["user"]
         if channel_type == "im":
             logger.debug(f"<@{user}> IM: {event['text']}")
