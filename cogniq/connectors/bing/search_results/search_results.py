@@ -1,26 +1,31 @@
-from .webpage import parse_webpages
-from .news import parse_news
+from cogniq.logging import setup_logger
+
+logger = setup_logger(__name__)
+
+from .search_response import parse_search_response
+from .news_response import parse_news_answer
 
 
-def parse_search_results(results):
-    answerType_to_parse_function = {
-        "WebPages": parse_webpages,
-        "News": parse_news,
+def raise_error(*, search_results):
+    e = search_results["errors"][0]
+    raise Exception(f"Error performing search: {e.get('code')}: {e.get('message')}")
+
+
+def parse_search_results(*, search_results):
+    _type_to_parse_function = {
+        "ErrorResponse": raise_error,
+        "SearchResponse": parse_search_response,
+        "News": parse_news_answer,
     }
 
-    if results.get("_type") == "ErrorResponse":
-        e = results["errors"][0]
-        raise Exception(f"Error performing search: {e.get('code')}: {e.get('message')}")
+    # logger.debug(f"search_results: {search_results}")
 
-    parsed_items = [
-        to_text(
-            answerType_to_parse_function[item["answerType"]](results=results, item=item)
-        )
-        for item in results["rankingResponse"]["mainline"]["items"]
-        if item["answerType"] in answerType_to_parse_function
-    ]
-
-    return parsed_items
+    type = search_results.get("_type")
+    if type in _type_to_parse_function:
+        parsed_items = _type_to_parse_function[type](search_results=search_results)
+        return [to_text(item) for item in parsed_items]
+    else:
+        raise Exception(f"Unknown search result type: {type}")
 
 
 def to_text(parsed_item):
