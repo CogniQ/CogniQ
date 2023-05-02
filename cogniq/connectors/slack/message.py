@@ -3,7 +3,7 @@ from cogniq.logging import setup_logger
 logger = setup_logger(__name__)
 
 from slack_sdk.errors import SlackApiError
-from .conversations_history import fetch_conversations_history
+from .history import fetch_history
 from .ask_openai import ask_openai
 
 
@@ -17,7 +17,8 @@ def register_message(*, app):
         user = event["user"]
         if channel_type == "im":
             logger.debug(f"<@{user}> IM: {event['text']}")
-            await ask_openai(event=event, say=say, app=app)
+            history = await fetch_history(client=app.client, event=event)
+            await ask_openai(event=event, say=say, app=app, history=history)
         # elif channel_type == "mpim":
         #     await say(f"MPIM received from <@{user}>!", thread_ts=original_ts)
         # elif channel_type == "channel":
