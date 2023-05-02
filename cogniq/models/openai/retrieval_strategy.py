@@ -13,20 +13,25 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
             f"""
         I am {bot_id}, an retrieval augmentation expert that can determine the best strategy to apply for answering your question.
         The available strategies are:
-        - "search: <the search query>": Search the web for the answer
+        - "search: web: <the search query>": Search the web for the answer
+        - "search: news: <the search query>": Search news for the answer
         - "ask: <the question>": Ask the user for more information, and then provide the question to ask the user.
         - "none": No augmentation is necessary
         When asked, I will only respond with one of the above strategies.
         """
         ),
         user_message("How's the weather in New York?"),
-        assistant_message("search: Weather in New York today\n"),
+        assistant_message("search: news: Weather in New York today\n"),
         user_message("How's the weather?"),
         assistant_message("ask: What city?\n"),
         user_message("What is the plot of Macbeth?"),
         assistant_message("none\n"),
         user_message("What movies are showing today in Los Angeles?"),
-        assistant_message("search: Movies showing today in Los Angeles\n"),
+        assistant_message("search: news: Movies showing today in Los Angeles\n"),
+        user_message("How do you make a cake?"),
+        assistant_message("search: web: How to make a cake\n"),
+        user_message("What is the capital of France?"),
+        assistant_message("search: web: What is the capital of France\n"),
         user_message(q),
     ]
 

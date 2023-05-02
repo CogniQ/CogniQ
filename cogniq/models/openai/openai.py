@@ -10,6 +10,8 @@ from .retrieval_strategy import get_retrieval_strategy
 
 from cogniq.connectors.bing import search
 
+import re
+
 
 # TODO: Token limit management
 async def ask(*, q, message_history=None, bot_id="CogniQ"):
@@ -28,7 +30,11 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         return f"{retrieval_strategy[5:]} Please rephrase the question with the answer."  # TODO: Make this a bit more elegant in a future iteration. The bot should just enter a refinement loop.
     # if retrieval_strategy is "search", then search the web for the answer
     if retrieval_strategy.startswith("search: "):
-        q = await search(q=retrieval_strategy[8:], original_q=q)
+        pattern = r"search:\s(\w+):\s*(.*)"
+        match = re.match(pattern, retrieval_strategy)
+        search_type = match.group(1)
+        search_query = match.group(2)
+        q = await search(q=search_query, original_q=q, search_type=search_type)
 
     message_history.append(user_message(q))
     response = await async_chat_completion_create(
