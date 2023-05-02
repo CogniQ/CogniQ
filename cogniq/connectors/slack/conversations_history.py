@@ -14,7 +14,7 @@ async def fetch_conversations_history(client, channel_id):
         while True:
             response = await client.conversations_history(
                 channel=channel_id,
-                limit=20,  # TODO: temporary limit. We need to implement vector search.
+                limit=10,  # TODO: temporary limit. We need to implement vector search.
                 cursor=cursor,
             )
 

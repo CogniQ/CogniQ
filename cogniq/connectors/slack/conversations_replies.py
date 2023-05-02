@@ -24,7 +24,7 @@ async def fetch_conversations_replies(client, channel_id, thread_ts):
         while True:
             response = await client.conversations_replies(
                 channel=channel_id,
-                limit=50,  # TODO: temporary limit. We need to implement vector search.
+                limit=10,  # TODO: temporary limit. We need to implement vector search.
                 ts=thread_ts,
             )
 
