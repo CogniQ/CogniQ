@@ -836,6 +836,20 @@ ssh = ["paramiko"]
 tqdm = ["tqdm"]
 
 [[package]]
+name = "google-search-results"
+version = "2.4.2"
+description = "Scrape and search localized results from Google, Bing, Baidu, Yahoo, Yandex, Ebay, Homedepot, youtube at scale using SerpApi.com"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "google_search_results-2.4.2.tar.gz", hash = "sha256:603a30ecae2af8e600b22635757a6df275dad4b934f975e67878ccd640b78245"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "grpcio"
 version = "1.54.0"
 description = "HTTP/2-based RPC framework"
@@ -2202,4 +2216,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "726fa908b54a4de2506a8e55d7c0fe08f67c1e48637584e2e5abae83bd7774e2"
+content-hash = "8b425d6d91c410ac59794b813e145d28d954a1519336a07ed109be0ec8eb720e"

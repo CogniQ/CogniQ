@@ -20,7 +20,7 @@ async def fetch_history(client, event):
         response = await fetch_conversations_replies_and_convert_to_openai_sequence(
             client, channel_id, thread_ts
         )
-    logger.debug(f"History: {response}")
+    # logger.debug(f"History: {response}")
     return response
 
 
@@ -35,7 +35,7 @@ async def get_bot_user_id(client):
 
 def convert_to_openai_sequence(messages, bot_user_id):
     openai_sequence = []
-    for message in (messages):
+    for message in messages:
         if message.get("user") == bot_user_id:
             openai_sequence.append(assistant_message(message.get("text")))
         else:

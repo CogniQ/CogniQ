@@ -13,7 +13,7 @@ def register_message(*, app):
         channel_type = event["channel_type"]
         user = event["user"]
         if channel_type == "im":
-            logger.debug(f"<@{user}> IM: {event['text']}")
+            # logger.debug(f"<@{user}> IM: {event['text']}")
             history = await fetch_history(client=app.client, event=event)
             await ask_openai(event=event, say=say, app=app, history=history)
         # elif channel_type == "mpim":
