@@ -1,4 +1,5 @@
 import os
+
 Config = {
     "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
     "OPENAI_API_TYPE": os.environ.get("OPENAI_API_TYPE"),  # Azure

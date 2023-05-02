@@ -17,7 +17,8 @@ async def get_best_search_result(
         Respond with the best search result for the question.
         """
         ),
-        user_message("""
+        user_message(
+            """
             [
                 {
                     "snippet": "Stock Market &amp; <b>Finance</b> <b>News</b> - Wall Street Journal MOVERS: Apr 27 &#39;23 4:00 PM ET Heard on the Street Heard on the Street: GDP Report’s Bright Side The recession so many investors are expecting...",
@@ -42,7 +43,8 @@ async def get_best_search_result(
             ]
 
             What's happening with First Republic?
-        """),
+        """
+        ),
         assistant_message("search: Weather in New York today\n"),
         user_message("How's the weather?"),
         assistant_message("ask: What city?\n"),
@@ -52,7 +54,6 @@ async def get_best_search_result(
         assistant_message("search: Movies showing today in Los Angeles\n"),
         user_message(q),
     ]
-
 
     if message_history is None:
         my_message_history = retrieval_message_history

@@ -24,6 +24,7 @@ async def fetch_history(app, event):
     # logger.debug(f"History: {response}")
     return response
 
+
 def convert_to_openai_sequence(messages, bot_user_id):
     openai_sequence = []
     for message in messages:

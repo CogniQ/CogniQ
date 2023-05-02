@@ -25,7 +25,7 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
 
     # if retrieval_strategy starts with "ask: ", then ask the user the remainder of the string
     if retrieval_strategy.startswith("ask: "):
-        return f"{retrieval_strategy[5:]} Please rephrase the question with the answer." # TODO: Make this a bit more elegant in a future iteration. The bot should just enter a refinement loop.
+        return f"{retrieval_strategy[5:]} Please rephrase the question with the answer."  # TODO: Make this a bit more elegant in a future iteration. The bot should just enter a refinement loop.
     # if retrieval_strategy is "search", then search the web for the answer
     if retrieval_strategy.startswith("search: "):
         q = await search(q=retrieval_strategy[8:], original_q=q)
@@ -41,6 +41,4 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         stop=["\n\n"],
     )
     # logger.debug(f"response: {response}")
-    return (
-        response["choices"][0]["message"]["content"]
-    )
+    return response["choices"][0]["message"]["content"]

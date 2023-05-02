@@ -9,7 +9,7 @@ async def ask_openai(*, event, say, app, history):
     original_ts = event["ts"]
     channel = event["channel"]
     message = event["text"]
-    bot_id=event.get("bot_id")
+    bot_id = event.get("bot_id")
     reply = await say(
         f"Hey <@{event['user']}>, let me figure that out...", thread_ts=original_ts
     )
