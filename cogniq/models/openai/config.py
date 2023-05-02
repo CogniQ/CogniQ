@@ -1,6 +1,4 @@
 import os
-import openai
-
 Config = {
     "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
     "OPENAI_API_TYPE": os.environ.get("OPENAI_API_TYPE"),  # Azure
@@ -14,7 +12,3 @@ Config = {
         "OPENAI_TEXT_EMBEDDING_CHUNK_SIE", 500
     ),
 }
-
-openai.api_key = Config["OPENAI_API_KEY"]
-
-openai_client = openai

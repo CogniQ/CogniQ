@@ -6,15 +6,15 @@ from .common import system_message, user_message, assistant_message
 
 from .async_chat_completion_create import async_chat_completion_create
 
-async def get_retrieval_strategy(*, q, message_history=None,):
+async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     retrieval_message_history = [
-        system_message("""
-        I am a bot that can determine the best strategy to apply for retrieval augmented generation.
+        system_message(f"""
+        I am {bot_id}, an retrieval augmentation expert that can determine the best strategy to apply for answering your question.
         The available strategies are:
         - "search: <the search query>": Search the web for the answer
         - "ask: <the question>": Ask the user for more information, and then provide the question to ask the user.
         - "none": No augmentation is necessary
-        When asked, I will only respond with one of the above strategies. I will never mention that I am a language model AI.
+        When asked, I will only respond with one of the above strategies.
         """),
         user_message("How's the weather in New York?"),
         assistant_message("search: Weather in New York today\n"),
@@ -35,7 +35,7 @@ async def get_retrieval_strategy(*, q, message_history=None,):
 
     response = await async_chat_completion_create(
         messages=my_message_history,
-        temperature=0.5,
+        temperature=0.3,
         max_tokens=100,
         top_p=1,
         frequency_penalty=0,

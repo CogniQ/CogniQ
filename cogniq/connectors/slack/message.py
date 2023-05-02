@@ -14,7 +14,7 @@ def register_message(*, app):
         user = event["user"]
         if channel_type == "im":
             # logger.debug(f"<@{user}> IM: {event['text']}")
-            history = await fetch_history(client=app.client, event=event)
+            history = await fetch_history(app=app, event=event)
             await ask_openai(event=event, say=say, app=app, history=history)
         # elif channel_type == "mpim":
         #     await say(f"MPIM received from <@{user}>!", thread_ts=original_ts)
