@@ -2,17 +2,27 @@
 
 This project is under active development. I wouldn't recommend using it yet, unless you're interested in contributing.
 
-# Usage
+# Usage in Slack
 
-In Slack, have a conversation with CogniQ and ask it to do something. CogniQ will augment its responses using Bing.
+In Slack, have a conversation with CogniQ and ask it to do something by mentioning it in a thread or channel. For example:
+
+```
+@CogniQ What is the capital of France?
+```
+
+CogniQ will respond with the answer to your question.
+
+You can also message CogniQ directly. You do not have to mention it when you message it directly.
+
+CogniQ will augment its responses using Bing.
 
 ## Thread vs Channel
 If you mention it in a thread, CogniQ will have historical context from the thread.
 If you mention it in a channel, CogniQ will have historical context from the channel, including from threads preceding it.
 
-# Development
+# Development in 4 steps.
 
-## Get Bing Search API Keys
+## 1. Get Bing Search API Keys
 
 To set up Bing Search API keys, follow these steps:
 
@@ -44,7 +54,7 @@ To set up Bing Search API keys, follow these steps:
    ```
 
 
-## Get OpenAI API Keys
+## 2. Get OpenAI API Keys
 
 To set up OpenAI API keys, follow these steps:
 
@@ -66,7 +76,7 @@ To set up OpenAI API keys, follow these steps:
    ```
 
 
-## Deploy the app
+## 3. Deploy the app
 
 1. Clone the repository: `git clone https://github.com/your-repo/CogniQ.git`
 2. Navigate to the project directory: `cd CogniQ`
@@ -79,7 +89,7 @@ To set up OpenAI API keys, follow these steps:
 9. Run the app: `python main.py`
 10. Restart the app whenever you make changes to the code.
 
-## Deploy to Slack
+## 4. Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
 2. Choose "From an app manifest" and select your workspace.
