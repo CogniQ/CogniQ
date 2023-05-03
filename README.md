@@ -85,7 +85,7 @@ To set up OpenAI API keys, follow these steps:
 
 ## 3. Deploy the app
 
-1. Clone the repository: `git clone https://github.com/your-repo/CogniQ.git`
+1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
 2. Navigate to the project directory: `cd CogniQ`
 3. Initialize the virtualenv: `python3 -m venv .venv`
 4. Install poetry: `pip install poetry`
