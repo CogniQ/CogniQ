@@ -1,20 +1,27 @@
 # CogniQ
 
-This project is under active development. I wouldn't recommend using it yet, unless you're interested in contributing.
+This project is under active development. I wouldn't recommend using it until release has been cut.
+
+If you're interested in contributing, please do open an issue or a pull request!
 
 # Usage in Slack
 
+## In a thread, mention @CogniQ
 In Slack, have a conversation with CogniQ and ask it to do something by mentioning it in a thread or channel. For example:
 
-```
-@CogniQ What is the capital of France?
-```
+![image](https://user-images.githubusercontent.com/176915/235838387-9befa803-1179-42a4-8127-8ee1ad518c73.png)
 
 CogniQ will respond with the answer to your question.
 
+## In a direct message, just ask your question.
+
 You can also message CogniQ directly. You do not have to mention it when you message it directly.
 
-CogniQ will augment its responses using Bing.
+![image](https://user-images.githubusercontent.com/176915/235838098-a281d2ef-5f38-4317-a9c3-d03a15c6b426.png)
+
+## CogniQ will augment its responses using Bing. 
+
+If you have a preferred search api, I'd be happy for a contribution!
 
 ## Thread vs Channel
 If you mention it in a thread, CogniQ will have historical context from the thread.
@@ -96,3 +103,16 @@ To set up OpenAI API keys, follow these steps:
 3. Modify the app manifest from `deployments/example/slack_manifest.json` to include your ngrok URL for the above app.
 4. Paste the app manifest into the text box and click "Next."
 5. Click "Create" to finish creating the app.
+
+
+# Notes
+
+## Why not langchain?
+
+[langchain](https://docs.langchain.com/docs/) is pretty cool for quickly building a sequence of calls in a chain. For scripting, its an absolute win.
+
+In general, I find that when one uses frameworks for stitching together various APIs, one ostensibly substitues learning the intricacies of the API for learning the intricaces of the framework.
+These intricacies tend to become more convoluted the more various similar but different services are mashed together in common interfaces. The result is a strange cousin to the original. 
+Even worse, as soon as the framework is insufficient for the demands at hand, then one invariably must fight the framework, which for need to maintain the common interface, requires disentangling a mess of [complected ideas](https://www.youtube.com/watch?v=SxdOUGdseq4).
+
+In either case, by foregoing the framework, I do the upfront work of learning the various APIs, but retain the freedom to deviate from the rails. 
