@@ -30,6 +30,8 @@ def parse_search_results(*, search_results):
 
 def to_text(parsed_item):
     if parsed_item:
-        return f"{parsed_item['snippet']} [{parsed_item['name']}]({parsed_item['url']})\n\n"
+        return (
+            f"{parsed_item['snippet']} <{parsed_item['url']}|{parsed_item['name']}>\n\n"
+        )
     else:
         return None

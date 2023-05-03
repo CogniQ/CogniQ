@@ -1,11 +1,5 @@
-from cogniq.logging import setup_logger
-
-logger = setup_logger(__name__)
-
-from .config import Config
-
 import aiohttp
-from cogniq.connectors.bing.search_results import parse_search_results
+from .config import Config
 
 
 def map_search_type_to_path(search_type):
@@ -40,24 +34,3 @@ async def async_bing_search(*, q, search_type="web", **kwargs):
                 raise Exception(
                     f"Error reaching {url} [{response.status}]: {await response.text()}"
                 )
-
-
-def search_prompt(*, search_results, q):
-    return f"""
-    Please include relevant links formatted for slack in your response. Example: <https://www.google.com|Google>
-
-    Context: {search_results}
-
-    Query: {q}
-    """
-
-
-async def search(*, q, original_q, search_type):
-    search_results = await async_bing_search(
-        q=q, search_type=search_type, num_results=4
-    )
-
-    parsed_search_results = parse_search_results(search_results=search_results)
-    finalized_prompt = search_prompt(search_results=parsed_search_results, q=original_q)
-    # logger.debug(f"finalized_prompt with search_results: {finalized_prompt}")
-    return finalized_prompt

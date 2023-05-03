@@ -39,11 +39,14 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     Q: summarize this thread.
     A: none
 
+    Q: the winner of the NBA Finals
+    A: search: news: the winner of the NBA Finals
+
     Q: {q}
     A:"""
 
     response = await async_completion_create(
-        model="curie",
+        model="davinci",
         prompt=prompt,
         temperature=0.3,
         max_tokens=100,

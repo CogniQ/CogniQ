@@ -1,1 +1,1 @@
-from .bing import search, search_prompt
+from .search import search
