@@ -115,4 +115,4 @@ In general, I find that when one uses frameworks for stitching together various 
 These intricacies tend to become more convoluted the more various similar but different services are mashed together in common interfaces. The result is a strange cousin to the original. 
 Even worse, as soon as the framework is insufficient for the demands at hand, then one invariably must fight the framework, which for need to maintain the common interface, requires disentangling a mess of [complected ideas](https://www.youtube.com/watch?v=SxdOUGdseq4).
 
-In either case, by foregoing the framework, I do the upfront work of learning the various APIs, but retain the freedom to deviate from the rails. 
+In either case, by foregoing the framework, I do the upfront work of learning the various APIs, but retain the freedom to deviate from the rails. I do want to [enable modularity](https://github.com/CogniQ/CogniQ/issues/7), but perhaps not to the extent that langchain does.
