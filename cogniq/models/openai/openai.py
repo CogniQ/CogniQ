@@ -21,13 +21,15 @@ def retrieval_augmented_prompt(*, search_results, q):
     return f"""
     Context: {search_results}
 
-    Please answer the Query based on the above Context. Use Slack formatting (Markdown) to make your answer easier to read.
+    Please answer the Query based on the above Context. 
+    
+    Use Slack formatting (Markdown) to make your answer easier to read.
 
     Links have a different format, however. Example: <https://www.google.com|Google>.
-    Only copy links directly from the Context. NEVER generate new links or use links not mentioned in the Context.
-    
-    Do not start your response with "According to the context provided...".
-    Do not start your response with "As an AI language model,".
+    Cite your sources.
+
+    Do not start your response with "According to the context provided..." or similar mentions of the context provided. Simply quote the context directly.
+    Do not start your response with "As an AI language model,". In fact, don't mention the AI language model at all.
 
     Query: {q}
     """
@@ -48,7 +50,6 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         bot_id=bot_id,
     )
     retrieval = None
-
 
     # if retrieval_strategy is "search", then search the web for the answer
     if retrieval_strategy.startswith("search: "):

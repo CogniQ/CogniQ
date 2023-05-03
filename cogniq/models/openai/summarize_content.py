@@ -37,11 +37,12 @@ async def ceil_retrieval(retrieval):
     max_tokens = Config["OPENAI_MAX_TOKENS_RETRIEVAL"]
 
     while total_tokens > max_tokens:
-        retrieval = retrieval[:-1] #removed last message
+        retrieval = retrieval[:-1]  # removed last message
         simple_coerced_string = str(retrieval)
         total_tokens = count_tokens(simple_coerced_string)
 
     return retrieval
+
 
 async def ceil_prompt(prompt):
     simple_coerced_string = str(prompt)
