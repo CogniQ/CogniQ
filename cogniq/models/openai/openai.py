@@ -26,6 +26,7 @@ def retrieval_augmented_prompt(*, search_results, q):
     
     Only include links if they are directly provided in the Context. Do not generate new links or use links not mentioned in the Context.
     Do not start your response with "According to the context provided...".
+    Do not start your response with "As an AI language model,".
 
     Query: {q}
     """
@@ -45,11 +46,8 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         q=q,
         bot_id=bot_id,
     )
+    retrieval = None
 
-    logger.info(f"retrieval_strategy: {retrieval_strategy}")
-    # if retrieval_strategy starts with "ask: ", then ask the user the remainder of the string
-    if retrieval_strategy.startswith("ask: "):
-        return f"{retrieval_strategy[5:]} Please rephrase the question with the answer."  # TODO: Make this a bit more elegant in a future iteration. The bot should just enter a refinement loop.
 
     # if retrieval_strategy is "search", then search the web for the answer
     if retrieval_strategy.startswith("search: "):
@@ -72,7 +70,7 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
     logger.info(f"asking question: {q}")
     response = await async_chat_completion_create(
         messages=message_history,
-        temperature=0.5,
+        temperature=0.9,
         max_tokens=Config["OPENAI_MAX_TOKENS_RESPONSE"],
         top_p=1,
         frequency_penalty=0,

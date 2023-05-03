@@ -11,15 +11,11 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     The available strategies are:
     - "search: web: <the search query>": google for the answer
     - "search: news: <the search query>": Search news for the answer
-    - "ask: <the question>": Ask the user for more information, and then provide the question to ask the user. Use only when strictly necessary.
     - "none": No augmentation is necessary
     When asked, I will only respond with one of the above strategies.
 
     Q: How's the weather in New York?
     A: search: news: Weather in New York today
-
-    Q: How's the weather?
-    A: ask: What city?
 
     Q: What is the plot of Macbeth?
     A: search: web: What is the plot of Macbeth?
@@ -48,7 +44,7 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     response = await async_completion_create(
         model="davinci",
         prompt=prompt,
-        temperature=0.3,
+        temperature=0.7,
         max_tokens=100,
         top_p=1,
         frequency_penalty=0,
