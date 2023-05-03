@@ -33,13 +33,15 @@ async def ceil_history(message_history):
 
 async def ceil_retrieval(retrieval):
     simple_coerced_string = str(retrieval)
-    if count_tokens(simple_coerced_string) > Config["OPENAI_MAX_TOKENS_RETRIEVAL"]:
-        return await summarize_content(
-            simple_coerced_string, Config["OPENAI_MAX_TOKENS_RETRIEVAL"]
-        )
-    else:
-        return retrieval
+    total_tokens = count_tokens(simple_coerced_string)
+    max_tokens = Config["OPENAI_MAX_TOKENS_RETRIEVAL"]
 
+    while total_tokens > max_tokens:
+        retrieval = retrieval[:-1] #removed last message
+        simple_coerced_string = str(retrieval)
+        total_tokens = count_tokens(simple_coerced_string)
+
+    return retrieval
 
 async def ceil_prompt(prompt):
     simple_coerced_string = str(prompt)

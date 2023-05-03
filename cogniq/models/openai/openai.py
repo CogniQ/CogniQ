@@ -21,10 +21,11 @@ def retrieval_augmented_prompt(*, search_results, q):
     return f"""
     Context: {search_results}
 
-    Please answer the Query based on the above Context. 
-    If provided in the Context, include relevant links in your response, nicely formatted for Slack. Example: <https://www.google.com|Google>.
+    Please answer the Query based on the above Context. Use Slack formatting (Markdown) to make your answer easier to read.
+
+    Links have a different format, however. Example: <https://www.google.com|Google>.
+    Only copy links directly from the Context. NEVER generate new links or use links not mentioned in the Context.
     
-    Only include links if they are directly provided in the Context. Do not generate new links or use links not mentioned in the Context.
     Do not start your response with "According to the context provided...".
     Do not start your response with "As an AI language model,".
 
