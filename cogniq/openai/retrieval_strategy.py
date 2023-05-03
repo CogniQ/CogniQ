@@ -15,7 +15,7 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     When asked, I will only respond with one of the above strategies.
 
     Q: How's the weather in New York?
-    A: search: news: Weather in New York today
+    A: search: news: How's the weather in New York?
 
     Q: What is the plot of Macbeth?
     A: search: web: What is the plot of Macbeth?
@@ -27,7 +27,7 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     A: search: web: What is the capital of France
 
     Q: How do you make a cake?
-    A: search: web: How to make a cake
+    A: search: web: How do you make a cake?
 
     Q: Give me a summary of this chat.
     A: none

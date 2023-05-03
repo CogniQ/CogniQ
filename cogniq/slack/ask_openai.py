@@ -2,7 +2,7 @@ from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-from cogniq.models.openai import ask
+from cogniq.openai import ask
 
 
 async def ask_openai(*, event, say, app, history):

@@ -3,7 +3,7 @@ from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-from cogniq.models.openai import user_message, system_message, assistant_message
+from cogniq.openai import user_message, system_message, assistant_message
 from .conversations_history import fetch_conversations_history
 from .conversations_replies import fetch_conversations_replies
 

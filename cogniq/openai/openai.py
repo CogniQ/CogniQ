@@ -8,7 +8,7 @@ from .common import system_message, user_message
 
 from .retrieval_strategy import get_retrieval_strategy
 
-from cogniq.connectors.bing import search
+from cogniq.bing import search
 
 import re
 
