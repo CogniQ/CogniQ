@@ -9,7 +9,7 @@ If you're interested in contributing, please do open an issue or a pull request!
 ## In a thread, mention @CogniQ
 In Slack, have a conversation with CogniQ and ask it to do something by mentioning it in a thread or channel. For example:
 
-![image](https://user-images.githubusercontent.com/176915/235838387-9befa803-1179-42a4-8127-8ee1ad518c73.png)
+<img src="https://user-images.githubusercontent.com/176915/235838387-9befa803-1179-42a4-8127-8ee1ad518c73.png" alt="@CogniQ What is the Picard Maneuver?" width="300">
 
 CogniQ will respond with the answer to your question.
 
@@ -17,7 +17,7 @@ CogniQ will respond with the answer to your question.
 
 You can also message CogniQ directly. You do not have to mention it when you message it directly.
 
-![image](https://user-images.githubusercontent.com/176915/235838098-a281d2ef-5f38-4317-a9c3-d03a15c6b426.png)
+<img src="https://user-images.githubusercontent.com/176915/235838098-a281d2ef-5f38-4317-a9c3-d03a15c6b426.png" alt="What's the capital of France?" width="300">
 
 ## CogniQ will augment its responses using Bing. 
 
