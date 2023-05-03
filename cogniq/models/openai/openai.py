@@ -19,9 +19,13 @@ from .config import Config
 
 def retrieval_augmented_prompt(*, search_results, q):
     return f"""
-    Please include relevant links formatted for slack in your response. Example: <https://www.google.com|Google>
-
     Context: {search_results}
+
+    Please answer the Query based on the above Context. 
+    If provided in the Context, include relevant links in your response, nicely formatted for Slack. Example: <https://www.google.com|Google>.
+    
+    Only include links if they are directly provided in the Context. Do not generate new links or use links not mentioned in the Context.
+    Do not start your response with "According to the context provided...".
 
     Query: {q}
     """
@@ -68,7 +72,7 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
     logger.info(f"asking question: {q}")
     response = await async_chat_completion_create(
         messages=message_history,
-        temperature=0.9,
+        temperature=0.5,
         max_tokens=Config["OPENAI_MAX_TOKENS_RESPONSE"],
         top_p=1,
         frequency_penalty=0,

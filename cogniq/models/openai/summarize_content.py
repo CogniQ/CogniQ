@@ -20,12 +20,15 @@ def count_tokens(text):
 
 async def ceil_history(message_history):
     simple_coerced_string = str(message_history)
-    if count_tokens(simple_coerced_string) > Config["OPENAI_MAX_TOKENS_HISTORY"]:
-        return await summarize_content(
-            simple_coerced_string, Config["OPENAI_MAX_TOKENS_HISTORY"]
-        )
-    else:
-        return message_history
+    total_tokens = count_tokens(simple_coerced_string)
+    max_tokens = Config["OPENAI_MAX_TOKENS_HISTORY"]
+
+    while total_tokens > max_tokens:
+        message_history.pop(0)
+        simple_coerced_string = str(message_history)
+        total_tokens = count_tokens(simple_coerced_string)
+
+    return message_history
 
 
 async def ceil_retrieval(retrieval):
