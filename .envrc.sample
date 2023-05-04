@@ -2,7 +2,6 @@
 # https://api.slack.com/apps/ABC123
 export SLACK_SIGNING_SECRET=ABC123
 export SLACK_BOT_TOKEN=xoxb-ABC123-ABC123-ABC123
-export SLACK_APP_TOKEN=xapp-1-ABC123-ABC123-ABC123
 export OPENAI_API_KEY=sk-ABC123
 export BING_SUBSCRIPTION_KEY=ABC123
 export BING_SEARCH_ENDPOINT=https://api.bing.microsoft.com
