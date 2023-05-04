@@ -8,7 +8,7 @@ from .common import system_message, user_message
 
 from .retrieval_strategy import get_retrieval_strategy
 
-from cogniq.bing import search
+from cogniq.bing import search_enhanced_prompt
 
 import re
 
@@ -58,7 +58,7 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         search_type = match.group(1)
         search_query = match.group(2)
         # logger.debug(f"search_type: {search_type}, search_query: {search_query}")
-        retrieval = await search(q=search_query, search_type=search_type)
+        retrieval = await search_enhanced_prompt(q=search_query, search_type=search_type)
 
     # if retrieval is too long, summarize it.
     retrieval = await ceil_retrieval(retrieval)

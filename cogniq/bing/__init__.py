@@ -1,1 +1,1 @@
-from .search import search
+from .search import search_results, search_enhanced_prompt
