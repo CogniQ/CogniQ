@@ -8,8 +8,6 @@ from .chat import system_message, user_message
 
 from .retrieval_augmentation import get_retrieval_augmented_prompt
 
-import re
-
 from .summarize_content import ceil_history, ceil_prompt
 
 from .config import Config
@@ -23,12 +21,12 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
         ]
 
     # if the history is too long, summarize it
-    message_history = await ceil_history(message_history)
+    message_history = ceil_history(message_history)
 
     # if prompt is too long, summarize it
     q = await ceil_prompt(q)
 
-    retrieval_augmented_prompt = get_retrieval_augmented_prompt(
+    retrieval_augmented_prompt = await get_retrieval_augmented_prompt(
         q=q,
         message_history=message_history,
         bot_id=bot_id,

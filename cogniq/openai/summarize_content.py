@@ -20,7 +20,7 @@ def count_tokens(text):
     return len(encode(simple_coerced_string))
 
 
-async def ceil_history(message_history):
+def ceil_history(message_history):
     simple_coerced_string = str(message_history)
     total_tokens = count_tokens(simple_coerced_string)
     max_tokens = Config["OPENAI_MAX_TOKENS_HISTORY"]
@@ -33,7 +33,7 @@ async def ceil_history(message_history):
     return message_history
 
 
-async def ceil_retrieval(retrieval):
+def ceil_retrieval(retrieval):
     simple_coerced_string = str(retrieval)
     total_tokens = count_tokens(simple_coerced_string)
     max_tokens = Config["OPENAI_MAX_TOKENS_RETRIEVAL"]

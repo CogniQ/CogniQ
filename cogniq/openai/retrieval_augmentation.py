@@ -5,7 +5,10 @@ logger = setup_logger(__name__)
 from .api import async_completion_create
 from .config import Config
 from .summarize_content import ceil_retrieval
-from cogniq.bing import search_enhanced_prompt
+from cogniq.bing import get_search_results_as_text
+
+import re
+
 
 
 def retrieval_augmented_prompt(*, search_results, q):
@@ -91,11 +94,11 @@ async def get_retrieval_augmented_prompt(*, q, message_history, bot_id):
         search_type = match.group(1)
         search_query = match.group(2)
         # logger.debug(f"search_type: {search_type}, search_query: {search_query}")
-        retrieval = await search_enhanced_prompt(
+        retrieval = await get_search_results_as_text(
             q=search_query, search_type=search_type
         )
 
     # if retrieval is too long, summarize it.
-    retrieval = await ceil_retrieval(retrieval)
+    retrieval = ceil_retrieval(retrieval)
 
     return retrieval_augmented_prompt(q=q, search_results=retrieval)
