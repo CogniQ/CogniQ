@@ -3,6 +3,8 @@ from cogniq.logging import setup_logger
 logger = setup_logger(__name__)
 
 from .config import Config
+from .chat import system_message, user_message
+from .api import async_chat_completion_create
 
 import tiktoken
 
@@ -52,10 +54,6 @@ async def ceil_prompt(prompt):
         )
     else:
         return prompt
-
-
-from .api import async_chat_completion_create
-from .common import system_message, user_message
 
 
 async def summarize_content(content, max_tokens):

@@ -2,13 +2,11 @@ import aiohttp
 
 from .config import Config
 
-
 async def async_chat_completion_create(*, messages, **kwargs):
     url = f"https://api.openai.com/v1/chat/completions"
     payload = {"model": Config["OPENAI_CHAT_MODEL"], "messages": messages, **kwargs}
 
     return await async_openai(url=url, payload=payload, **kwargs)
-
 
 async def async_completion_create(*, prompt, **kwargs):
     url = f"https://api.openai.com/v1/completions"

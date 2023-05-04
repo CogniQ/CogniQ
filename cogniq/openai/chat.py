@@ -1,3 +1,4 @@
+
 def message(role, content):
     return {"role": f"{role}", "content": f"{content}"}
 
@@ -12,3 +13,5 @@ def system_message(content):
 
 def assistant_message(content):
     return message("assistant", content)
+
+
