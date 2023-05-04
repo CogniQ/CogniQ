@@ -7,6 +7,7 @@ from cogniq.openai import user_message, system_message, assistant_message
 from .conversations_history import fetch_conversations_history
 from .conversations_replies import fetch_conversations_replies
 
+
 async def get_bot_user_id(app):
     auth_test = await app.client.auth_test()
     return auth_test["user_id"]
@@ -52,7 +53,9 @@ async def fetch_conversations_history_and_convert_to_openai_sequence(
     if messages is None:
         return None
     bot_user_id = await get_bot_user_id(app)
-    return convert_to_openai_sequence(messages=reversed(messages), bot_user_id=bot_user_id)
+    return convert_to_openai_sequence(
+        messages=reversed(messages), bot_user_id=bot_user_id
+    )
 
 
 async def fetch_conversations_replies_and_convert_to_openai_sequence(

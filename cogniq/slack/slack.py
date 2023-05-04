@@ -24,6 +24,7 @@ register_message(**registration_config)
 async def handle_all_events(body):
     logger.debug(body)
 
+
 def start():
     logger.info("Starting Slack app!!")
     app.start(port=int(Config["PORT"]))

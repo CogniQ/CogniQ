@@ -32,35 +32,6 @@ def retrieval_augmented_prompt(*, search_web, search_news, q):
     Query: {q}"""
 
 
-async def filter_search_results(*, q, message_history, search_results):
-    messages = [
-        system_message(f"I am filtering the Context to eliminate irrelevant content."),
-        user_message(f"""
-    Please remove any irrelevant content from the Context so that I can best answer the Query.
-    In particular, remove advertisements unrelated to the Query.
-    Never modify any links.
-    
-    Context: {search_results}
-
-    Query: {q}
-    
-    Filtered Context:""")
-    ]
-
-    # logger.debug(f"filter_search_results_prompt: {prompt}")
-    response = await async_chat_completion_create(
-        messages=messages,
-        temperature=0.1,
-        max_tokens=Config["OPENAI_MAX_TOKENS_RETRIEVAL"],
-        top_p=1,
-        frequency_penalty=0,  # scales down the log probabilities of words that the model has seen frequently during training
-        presence_penalty=0,  # modifies the probability distribution to make less likely words that were present in the input prompt or seed text
-    )
-    answer = response["choices"][0]["message"]["content"].strip()
-    # logger.debug(f"filtered_search_results: {answer}")
-    return answer
-
-
 async def get_retrieval_augmented_prompt(*, q, message_history, bot_id):
     # start the two search requests concurrently
     search_news_task = get_search_results_as_text(q=q, search_type="news")
@@ -69,19 +40,6 @@ async def get_retrieval_augmented_prompt(*, q, message_history, bot_id):
     # wait for both search requests to complete
     search_news, search_web = await asyncio.gather(search_news_task, search_web_task)
 
-    # start the two filtering requests concurrently
-    filter_search_news_task = filter_search_results(
-        q=q, message_history=message_history, search_results=search_news
-    )
-    filter_search_web_task = filter_search_results(
-        q=q, message_history=message_history, search_results=search_web
-    )
-
-    # wait for both filtering requests to complete
-    filtered_search_news, filtered_search_web = await asyncio.gather(
-        filter_search_news_task, filter_search_web_task
-    )
-
     return retrieval_augmented_prompt(
-        q=q, search_news=filtered_search_news, search_web=filtered_search_web
+        q=q, search_news=search_news, search_web=search_web
     )
