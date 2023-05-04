@@ -109,10 +109,20 @@ To set up OpenAI API keys, follow these steps:
 
 ## Why not langchain?
 
-[langchain](https://docs.langchain.com/docs/) is pretty cool for quickly building a sequence of calls in a chain. For scripting, its an absolute win.
+### TL;DR
 
-In general, I find that when one uses frameworks for stitching together various APIs, one ostensibly substitues learning the intricacies of the API for learning the intricaces of the framework.
-These intricacies tend to become more convoluted the more various similar but different services are mashed together in common interfaces. The result is a strange cousin to the original. 
-Even worse, as soon as the framework is insufficient for the demands at hand, then one invariably must fight the framework, which for need to maintain the common interface, requires disentangling a mess of [complected ideas](https://www.youtube.com/watch?v=SxdOUGdseq4).
+By foregoing the framework, I do the upfront work of learning the various APIs, but retain the freedom to deviate from the rails. I do want to [enable modularity](https://github.com/CogniQ/CogniQ/issues/7), but I wish to balance the extent to which the project requires learning the language of the project.
 
-In either case, by foregoing the framework, I do the upfront work of learning the various APIs, but retain the freedom to deviate from the rails. I do want to [enable modularity](https://github.com/CogniQ/CogniQ/issues/7), but perhaps not to the extent that langchain does.
+### Rant
+I started writing this using [langchain](https://docs.langchain.com/docs/). The project is awesome for quickly trying out a concept. For scripting, its an absolute win. I'm just not smart enough to understand how to use it, and in particular, extend it to suit my needs. Instead, what I offer is less of a framework, and more of an attempt at a starter template.
+
+In general, I find that when one uses frameworks (or client libraries for that matter) for stitching together various APIs, one ostensibly substitues learning the intricacies of the API for learning the intricaces of the framework.
+These intricacies tend to become more convoluted the more various similar but different services are mashed together.
+The convolution happens as a byproduct of [entangling disparate systems](https://www.youtube.com/watch?v=SxdOUGdseq4) not only vertically in the integration, but horizontally across categories of similarity.
+The result of this is that the first steps in using the framework are blissfully easy, the stuff of demos.
+But as soon as one steps outsides the limits of the framework, the developer finds they must study both the framework and the API.
+Protocols like REST and GraphQL already provide a common and robust interface enough, I think.
+
+/rant
+
+

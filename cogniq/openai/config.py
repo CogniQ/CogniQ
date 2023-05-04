@@ -6,12 +6,6 @@ Config = {
     "OPENAI_API_BASE": os.environ.get("OPENAI_API_BASE"),  # Azure
     "OPENAI_API_VERSION": os.environ.get("OPENAI_API_VERSION"),  # Azure
     "OPENAI_CHAT_MODEL": os.environ.get("OPENAI_CHAT_MODEL", "gpt-3.5-turbo"),
-    "OPENAI_EMBEDDING_MODEL": os.environ.get(
-        "OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002"
-    ),
-    "OPENAI_TEXT_EMBEDDING_CHUNK_SIE": os.environ.get(
-        "OPENAI_TEXT_EMBEDDING_CHUNK_SIE", 500
-    ),
     "OPENAI_MAX_TOKENS_HISTORY": os.environ.get("OPENAI_MAX_TOKENS_HISTORY", 1000),
     "OPENAI_MAX_TOKENS_RETRIEVAL": os.environ.get("OPENAI_MAX_TOKENS_RETRIEVAL", 1000),
     "OPENAI_MAX_TOKENS_PROMPT": os.environ.get("OPENAI_MAX_TOKENS_PROMPT", 1000),

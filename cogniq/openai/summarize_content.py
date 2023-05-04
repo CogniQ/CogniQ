@@ -3,6 +3,8 @@ from cogniq.logging import setup_logger
 logger = setup_logger(__name__)
 
 from .config import Config
+from .chat import system_message, user_message
+from .api import async_chat_completion_create
 
 import tiktoken
 
@@ -18,7 +20,7 @@ def count_tokens(text):
     return len(encode(simple_coerced_string))
 
 
-async def ceil_history(message_history):
+def ceil_history(message_history):
     simple_coerced_string = str(message_history)
     total_tokens = count_tokens(simple_coerced_string)
     max_tokens = Config["OPENAI_MAX_TOKENS_HISTORY"]
@@ -31,7 +33,7 @@ async def ceil_history(message_history):
     return message_history
 
 
-async def ceil_retrieval(retrieval):
+def ceil_retrieval(retrieval):
     simple_coerced_string = str(retrieval)
     total_tokens = count_tokens(simple_coerced_string)
     max_tokens = Config["OPENAI_MAX_TOKENS_RETRIEVAL"]
@@ -52,10 +54,6 @@ async def ceil_prompt(prompt):
         )
     else:
         return prompt
-
-
-from .api import async_chat_completion_create
-from .common import system_message, user_message
 
 
 async def summarize_content(content, max_tokens):

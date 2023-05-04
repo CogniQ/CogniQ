@@ -22,7 +22,7 @@ register_message(**registration_config)
 # Handle all non-registered events
 @app.event("*")
 async def handle_all_events(body):
-    logger.info(body)
+    logger.debug(body)
 
 
 def start():
