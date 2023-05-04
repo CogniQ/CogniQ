@@ -15,7 +15,6 @@ from .summarize_content import ceil_history, ceil_prompt
 from .config import Config
 
 
-
 async def ask(*, q, message_history=None, bot_id="CogniQ"):
     logger.info(f"Answering: {q}")
     if message_history is None:

@@ -7,6 +7,7 @@ from .config import Config
 from .summarize_content import ceil_retrieval
 from cogniq.bing import search_enhanced_prompt
 
+
 def retrieval_augmented_prompt(*, search_results, q):
     return f"""
     Context: {search_results}
@@ -74,6 +75,7 @@ async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
     strategy = response["choices"][0]["text"].strip()
     logger.info(f"retrieval strategy: {strategy}")
     return strategy
+
 
 async def get_retrieval_augmented_prompt(*, q, message_history, bot_id):
     retrieval_strategy = await get_retrieval_strategy(
