@@ -10,7 +10,6 @@ from cogniq.bing import get_search_results_as_text
 import re
 
 
-
 def retrieval_augmented_prompt(*, search_results, q):
     return f"""
     Context: {search_results}
