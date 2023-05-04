@@ -6,6 +6,9 @@ on:
       - main # We don't want to (auto)lint on main
   pull_request:
 
+permissions:
+  contents: write # This is needed to commit changes
+
 jobs:
   black:
     runs-on: ubuntu-latest
