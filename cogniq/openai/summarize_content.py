@@ -57,7 +57,7 @@ async def ceil_prompt(prompt):
 
 
 async def summarize_content(content, max_tokens):
-    summary = await async_chat_completion_create(
+    response = await async_chat_completion_create(
         messages=[
             system_message(
                 "Please summarize the following content within the token limit."
@@ -70,4 +70,5 @@ async def summarize_content(content, max_tokens):
         frequency_penalty=0.5,
         presence_penalty=0.5,
     )
-    return summary["choices"][0]["message"]["content"]
+    answer = response["choices"][0]["message"]["content"].strip()
+    return answer

@@ -2,20 +2,18 @@ from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-from .api import async_completion_create
+from .api import async_chat_completion_create
+from .chat import system_message, user_message, assistant_message
 from .config import Config
-from .summarize_content import ceil_retrieval
 from cogniq.bing import get_search_results_as_text
 
 import re
+import asyncio
 
 
-def retrieval_augmented_prompt(*, search_results, q):
-    return f"""
-    Context: {search_results}
+def retrieval_augmented_prompt(*, search_web, search_news, q):
+    return f"""Please answer the Query based on the below Contexts.
 
-    Please answer the Query based on the above Context. 
-    
     Use Slack formatting (Markdown) to make your answer easier to read.
 
     Links have a different format, however. Example: <https://www.google.com|Google>.
@@ -24,80 +22,63 @@ def retrieval_augmented_prompt(*, search_results, q):
     Do not start your response with "According to the context provided..." or similar mentions of the context provided. Simply quote the context directly.
     Do not start your response with "As an AI language model,". In fact, don't mention the AI language model at all.
 
-    Query: {q}
-    """
+    Web Search Context: {search_web}
+
+    News Search Context: {search_news}
+
+    Query: {q}"""
 
 
-async def get_retrieval_strategy(*, q, message_history=None, bot_id="CogniQ"):
-    prompt = f"""
-    I am {bot_id}, an retrieval augmentation expert that can determine the best strategy to apply for answering your question.
-    The available strategies are:
-    - "search: web: <the search query>": google for the answer
-    - "search: news: <the search query>": Search news for the answer
-    - "none": No augmentation is necessary
-    When asked, I will only respond with one of the above strategies.
-
-    Q: How's the weather in New York?
-    A: search: news: How's the weather in New York?
-
-    Q: What is the plot of Macbeth?
-    A: search: web: What is the plot of Macbeth?
-
-    Q: What movies are showing today in Los Angeles?
-    A: search: news: Movies showing today in Los Angeles
-
-    Q: What is the capital of France?
-    A: search: web: What is the capital of France
-
-    Q: How do you make a cake?
-    A: search: web: How do you make a cake?
-
-    Q: Give me a summary of this chat.
-    A: none
+async def filter_search_results(*, q, message_history, search_results):
+    messages = [
+        system_message(f"I am filtering the Context to eliminate irrelevant content."),
+        user_message(f"""
+    Please remove any irrelevant content from the Context so that I can best answer the Query.
+    In particular, remove advertisements unrelated to the Query.
+    Never modify any links.
     
-    Q: summarize this thread.
-    A: none
+    Context: {search_results}
 
-    Q: the winner of the NBA Finals
-    A: search: news: the winner of the NBA Finals
+    Query: {q}
+    
+    Filtered Context:""")
+    ]
 
-    Q: {q}
-    A:"""
-
-    response = await async_completion_create(
-        model="davinci",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=100,
+    # logger.debug(f"filter_search_results_prompt: {prompt}")
+    response = await async_chat_completion_create(
+        messages=messages,
+        temperature=0.1,
+        max_tokens=Config["OPENAI_MAX_TOKENS_RETRIEVAL"],
         top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0.6,
-        stop=["\n"],
+        frequency_penalty=0,  # scales down the log probabilities of words that the model has seen frequently during training
+        presence_penalty=0,  # modifies the probability distribution to make less likely words that were present in the input prompt or seed text
     )
-    strategy = response["choices"][0]["text"].strip()
-    logger.info(f"retrieval strategy: {strategy}")
-    return strategy
+    answer = response["choices"][0]["message"]["content"].strip()
+    # logger.debug(f"filtered_search_results: {answer}")
+    return answer
 
 
 async def get_retrieval_augmented_prompt(*, q, message_history, bot_id):
-    retrieval_strategy = await get_retrieval_strategy(
-        q=q,
-        bot_id=bot_id,
+    # start the two search requests concurrently
+    search_news_task = get_search_results_as_text(q=q, search_type="news")
+    search_web_task = get_search_results_as_text(q=q, search_type="web")
+
+    # wait for both search requests to complete
+    search_news, search_web = await asyncio.gather(search_news_task, search_web_task)
+
+    # start the two filtering requests concurrently
+    filter_search_news_task = filter_search_results(
+        q=q, message_history=message_history, search_results=search_news
     )
-    retrieval = None
+    filter_search_web_task = filter_search_results(
+        q=q, message_history=message_history, search_results=search_web
+    )
 
-    # if retrieval_strategy is "search", then search the web for the answer
-    if retrieval_strategy.startswith("search: "):
-        pattern = r"search:\s(\w+):\s(.*)$"
-        match = re.match(pattern, retrieval_strategy)
-        search_type = match.group(1)
-        search_query = match.group(2)
-        # logger.debug(f"search_type: {search_type}, search_query: {search_query}")
-        retrieval = await get_search_results_as_text(
-            q=search_query, search_type=search_type
-        )
+    # wait for both filtering requests to complete
+    filtered_search_news, filtered_search_web = await asyncio.gather(
+        filter_search_news_task, filter_search_web_task
+    )
 
-    # if retrieval is too long, summarize it.
-    retrieval = ceil_retrieval(retrieval)
-
-    return retrieval_augmented_prompt(q=q, search_results=retrieval)
+    return retrieval_augmented_prompt(
+        q=q, search_news=filtered_search_news, search_web=filtered_search_web
+    )

@@ -14,6 +14,7 @@ async def get_search_results(*, q, search_type):
 
 
 async def get_search_results_as_text(*, q, search_type):
+    """Really, its a list of strings."""
     search_results = await get_search_results(q=q, search_type=search_type)
     parsed_search_results = parse_search_results(search_results=search_results)
     return parsed_search_results
