@@ -12,7 +12,10 @@ import asyncio
 
 
 def retrieval_augmented_prompt(*, search_web, search_news, q):
-    return f"""Please answer the Query based on the below Contexts.
+    return f"""I have just now performed a search for "{q}" on Bing Web Search and Bing News Search. 
+    
+    Help me answer the Query by selecting the most relevant content from the Context. 
+    You may add additional germane content to the Context.
 
     Use Slack formatting (Markdown) to make your answer easier to read.
 

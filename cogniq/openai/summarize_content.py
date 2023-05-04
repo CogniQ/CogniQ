@@ -64,11 +64,11 @@ async def summarize_content(content, max_tokens):
             ),
             user_message(content),
         ],
-        temperature=0.5,
+        temperature=0.7,
         max_tokens=max_tokens,
         top_p=1,
         frequency_penalty=0.5,
-        presence_penalty=0.5,
+        presence_penalty=0,
     )
     answer = response["choices"][0]["message"]["content"].strip()
     return answer
