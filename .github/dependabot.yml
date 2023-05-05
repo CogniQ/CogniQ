@@ -1,0 +1,16 @@
+version: 2
+updates:
+  # Maintain dependencies for Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 20
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "jim80net"
+    labels:
+      - "dependencies"
+      - "python"

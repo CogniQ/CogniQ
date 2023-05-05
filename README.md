@@ -104,7 +104,6 @@ To set up OpenAI API keys, follow these steps:
 4. Paste the app manifest into the text box and click "Next."
 5. Click "Create" to finish creating the app.
 
-
 # Notes
 
 ## Why not langchain?
