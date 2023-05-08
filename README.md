@@ -1,6 +1,22 @@
 # CogniQ
 
-This project is under active development. I wouldn't recommend using it until release has been cut.
+**⚠️ This project is under active development. I wouldn't recommend using it until release has been cut.⚠️**
+
+## The goal of this project is to create a better search interface to bridge a multitude of sources.
+
+I want to be able to find the relevant context across nearly arbitrary connections, like
+
+- Slack
+- Confluence
+- GitHub
+- the Internet via search engines
+- Google Drive
+- Dropbox 
+- what have you
+
+Moreover, I'd like this agent, and its necessary data stores, to be able to be hosted on premise, or even air gapped.
+
+In its current manifestation, it uses OpenAI, which does not afford this, but the ultimate goal is to build sufficient modularity that swapping out LLMs is trivial via configuration.
 
 If you're interested in contributing, please do open an issue or a pull request!
 
