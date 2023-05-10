@@ -1,6 +1,6 @@
-from cogniq.logging import setup_logger
+from cogniq.logging import setup_muted_logger
 
-logger = setup_logger(__name__)
+logger = setup_muted_logger(__name__)
 
 from slack_bolt.async_app import AsyncApp
 from .config import Config
