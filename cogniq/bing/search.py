@@ -2,19 +2,15 @@ from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-from .api import async_bing_search
-from .parse import parse_search_results
+from .config import Config
+from haystack.nodes.retriever.web import WebRetriever
+from haystack.nodes.preprocessor import PreProcessor
 
 
-async def get_search_results(*, q, search_type):
-    search_results = await async_bing_search(
-        q=q, search_type=search_type, num_results=4
-    )
-    return search_results
-
-
-async def get_search_results_as_text(*, q, search_type):
-    """Really, its a list of strings."""
-    search_results = await get_search_results(q=q, search_type=search_type)
-    parsed_search_results = parse_search_results(search_results=search_results)
-    return parsed_search_results
+web_retriever = WebRetriever(
+    api_key=Config["BING_SUBSCRIPTION_KEY"],
+    search_engine_provider="BingAPI",
+    top_k=3,
+    mode="preprocessed_documents",
+    preprocessor=PreProcessor(progress_bar=False),
+)

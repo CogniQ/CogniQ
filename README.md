@@ -1,22 +1,6 @@
 # CogniQ
 
-**⚠️ This project is under active development. I wouldn't recommend using it until release has been cut.⚠️**
-
-## The goal of this project is to create a better search interface to bridge a multitude of sources.
-
-I want to be able to find the relevant context across nearly arbitrary connections, like
-
-- Slack
-- Confluence
-- GitHub
-- the Internet via search engines
-- Google Drive
-- Dropbox 
-- what have you
-
-Moreover, I'd like this agent, and its necessary data stores, to be able to be hosted on premise, or even air gapped.
-
-In its current manifestation, it uses OpenAI, which does not afford this, but the ultimate goal is to build sufficient modularity that swapping out LLMs is trivial via configuration.
+This project is under active development. I wouldn't recommend using it until release has been cut.
 
 If you're interested in contributing, please do open an issue or a pull request!
 
@@ -140,4 +124,16 @@ Protocols like REST and GraphQL already provide a common and robust interface en
 
 /rant
 
+## Why Haystack?
 
+### TL;DR
+
+Yes it is a framework, but it fits the paradigm of what I want to accomplish so well, I am willing to overlook the same problems I outlined above against langchain.
+
+### Not really a rant
+
+I know I seem like a hypocrit to write what I wrote about langchain, then turn around and use haystack. Indeed, the same problems of using frameworks continue to exist. I have to study both the framework and the API. And stepping outside the limit of the framework has me maintaining a fork.
+
+I also recognize that haystack seems to be helping me understand the problem domain. 
+
+I still think a production deployment will likely demand a rewrite, but for now we'll use haystack to rapidly develop what we want to see.
