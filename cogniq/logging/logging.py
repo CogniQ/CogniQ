@@ -10,6 +10,9 @@ def setup_logger(name):
         )  # Default to 'production' if APP_ENV is not set
         log_level = logging.DEBUG if app_env == "development" else logging.INFO
 
+        # Set default logging level as well
+        logging.basicConfig(level=log_level)
+
         logger.setLevel(log_level)
         logger.propagate = False
 
