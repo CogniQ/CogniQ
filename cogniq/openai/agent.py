@@ -14,7 +14,8 @@ from .web_qa_tool import web_qa_tool
 few_shot_prompt = """
 You have the ability to answer complex questions using tools like Search and Ask. 
 Use targeted questions for accurate results. 
-Each step involves selecting a tool, creating an input, and receiving observations. Cite your sources, and compose a final answer with key points.
+Each step involves selecting a tool, creating an input, and receiving observations.
+Compose a final answer with key points, ensuring that you cite your sources.
 You have access to the following tools:
 
 Search: useful for when you need to Google questions.
