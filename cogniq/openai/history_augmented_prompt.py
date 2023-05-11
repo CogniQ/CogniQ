@@ -13,7 +13,7 @@ from .agent import agent
 
 
 def history_augmented_prompt(*, q):
-    return f"""Given the conversation thus far, please rephrase the Query in a way that an information retrieval system can provide an answer to.
+    return f"""Please rephrase the Query in a way that an information retrieval system can provide an answer.
 
     Examples:
     ##
