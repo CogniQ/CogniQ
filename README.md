@@ -104,16 +104,6 @@ To set up OpenAI API keys, follow these steps:
    ```
 
 
-## 4. Deploy the app
-
-1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
-2. Navigate to the project directory: `cd CogniQ`
-3. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
-4. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
-5. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
-6. Run the app: `python main.py`
-7. Restart the app whenever you make changes to the code.
-
 ## 3. Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
@@ -124,6 +114,18 @@ To set up OpenAI API keys, follow these steps:
 6. After your app has been created, navigate to the "Basic Information" page from the side menu.
 7. Under the "App Credentials" section, find the "App Token" field. This is your `SLACK_APP_TOKEN`. Copy it.
 8. Add the `SLACK_APP_TOKEN` to the `.envrc` file
+
+
+## 4. Deploy the app
+
+1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
+2. Navigate to the project directory: `cd CogniQ`
+3. Download NCCL nccl_2.18.1-1+cuda11.0_x86_64. This is required for the PyTorch Docker image. You can download it from https://developer.nvidia.com/nccl/nccl-download. Place the downloaded file in the `vendor` directory.
+4. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+5. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
+6. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
+7. Run the app: `python main.py`
+8. Restart the app whenever you make changes to the code.
 
 # Notes
 
