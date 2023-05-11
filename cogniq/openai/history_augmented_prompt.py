@@ -43,4 +43,3 @@ async def get_history_augmented_prompt(*, q, message_history, bot_id):
     answer = response["choices"][0]["message"]["content"].strip()
     logger.debug(f"modifying query for history: {answer}")
     return answer
-
