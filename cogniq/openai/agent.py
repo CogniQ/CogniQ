@@ -37,14 +37,6 @@ Observation: <https://www.highsnobiety.com/p/10-most-inspirational-joe-rogan-exp
 Thought: We've learned that <https://www.highsnobiety.com/p/10-most-inspirational-joe-rogan-experience-episodes/|Highsnobiety|Joe Rogan is an inspirational figure due to his success in various ventures and his preaching of the gospel of hard work and perseverance.>
 Final Answer: <https://en.wikipedia.org/wiki/Joe_Rogan|Joe Rogan is an American broadcaster, podcaster, comedian, actor, and former television presenter>. <https://www.wired.co.uk/article/joe-rogan-spotify-controversy|Joe Rogan has been embroiled in controversy for spreading misinformation about the Covid-19 pandemic on his podcast>. <https://www.highsnobiety.com/p/10-most-inspirational-joe-rogan-experience-episodes/|Highsnobiety|Joe Rogan is an inspirational figure due to his success in various ventures and his preaching of the gospel of hard work and perseverance.>
 ##
-Question: Who is asdfqwer?
-Thought: This question appears to be incomplete and requires more context or information to provide an accurate answer. Please provide additional details or rephrase the question.
-Tool: Ask
-Tool Input: This question appears to be incomplete and requires more context or information to provide an accurate answer. Please provide additional details or rephrase the question.
-Observation: This question appears to be unclear and requires more context or information to provide an accurate answer. Please provide additional details or rephrase the question.
-Thought: I don't have enough information to answer this question. I'll respond that more context or rephrasing is needed.
-Final Answer: More context or rephrasing is needed to answer this question.
-##
 Question: What is the fastest US fighter jet, and what are its specs?
 Thought: Let's think step by step. To answer this question, we need to find out what the fastest US fighter jet is.
 Tool: Search
