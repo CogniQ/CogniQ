@@ -3144,14 +3144,14 @@ test = ["flake8 (>=2.4.0)", "isort (>=4.2.2)", "pytest (>=2.2.3)"]
 
 [[package]]
 name = "weaviate-client"
-version = "3.17.0"
+version = "3.18.0"
 description = "A python native weaviate client"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "weaviate-client-3.17.0.tar.gz", hash = "sha256:a95e51c3afda897c354e2106bd51351dc1d3a0ff22939ee1bddc3699d9521c6c"},
-    {file = "weaviate_client-3.17.0-py3-none-any.whl", hash = "sha256:71fdfd0b954dd569eca1a3b929a8cd77ca35ecbad4e6fb532669609b294295e0"},
+    {file = "weaviate-client-3.18.0.tar.gz", hash = "sha256:423a526518a32505c5293328e5f252e6cbbf20e4b3124733f70d10fc0d6823c9"},
+    {file = "weaviate_client-3.18.0-py3-none-any.whl", hash = "sha256:42b324286a4b4436317e5d2c6ba48c07da6cf01518efdd47ee097e7a8cc7584c"},
 ]
 
 [package.dependencies]
@@ -3421,4 +3421,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b332d5ea96796f378cc9a6bbbb40795c111a5025920edab1e51f174bac42925d"
+content-hash = "ecac27ad922848a7c244de26ba53ea27a87fa6a941f1e145975740ae93e953d3"
