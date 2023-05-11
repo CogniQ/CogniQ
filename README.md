@@ -149,6 +149,47 @@ To set up OpenAI API keys, follow these steps:
 
 # Notes
 
+## Setup for WSL-Ubuntu
+
+To set up the development environment on WSL-Ubuntu, follow these steps:
+
+1. Install the CUDA Toolkit 11. You can find the [installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on the NVIDIA website.
+   1. The files should be installed to /usr/local/cuda-11.8/
+   2. `export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:/usr/local/cuda-11.8/extras/CUPTI/lib64`
+2. Download the [cuDNN for CUDA 11 repo](https://developer.nvidia.com/rdp/cudnn-download)
+   ```
+   sudo dpkg -i /mnt/c/Users/myusername/Downloads/cudnn-local-repo-ubuntu2004-8.9.1.23_1.0-1_amd64.deb
+   [sudo] password for myusername:
+   Selecting previously unselected package cudnn-local-repo-ubuntu2004-8.9.1.23.
+   (Reading database ... 172306 files and directories currently installed.)
+   Preparing to unpack .../cudnn-local-repo-ubuntu2004-8.9.1.23_1.0-1_amd64.deb ...
+   Unpacking cudnn-local-repo-ubuntu2004-8.9.1.23 (1.0-1) ...
+   Setting up cudnn-local-repo-ubuntu2004-8.9.1.23 (1.0-1) ...
+
+   The public cudnn-local-repo-ubuntu2004-8.9.1.23 GPG key does not appear to be installed.
+   To install the key, run this command:
+   sudo cp /var/cudnn-local-repo-ubuntu2004-8.9.1.23/cudnn-local-D953484A-keyring.gpg /usr/share/keyrings/
+   ```
+   1. After the repo is installed, then install the package
+   2. `apt install libcudnn8`
+
+3. Install Torch
+   (see https://pytorch.org/get-started/locally/)
+   ```
+   poetry config repositories.pytorch https://download.pytorch.org/whl/cu118/
+   poetry add torch torchvision torchaudio
+
+   ```
+
+## Setup for Mac OSX M1 Silicon
+
+Currently, there are some issues with running the huggingface-hub library on Mac OSX M1 Silicon. There is ongoing work to address these issues and build a more lightweight distribution of haystack. You can track the progress of this work on the [GitHub issue #4417](https://github.com/deepset-ai/haystack/issues/4417).
+
+Until the lightweight distribution is available, I apologize for the inconvenience, but I recommend developing on a Linux machine instead.
+
+
+
+
 ## Why not langchain?
 
 ### TL;DR
