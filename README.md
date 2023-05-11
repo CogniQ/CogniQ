@@ -1,15 +1,25 @@
 # CogniQ
 
-This project is under active development. I wouldn't recommend using it until release has been cut.
+This project is under active development. Your experience will be buggy until a release has been cut.
+Naturally at this stage, there are no guarantees about stability.
 
-If you're interested in contributing, please do open an issue or a pull request!
+In short, the current feature set is that you can have conversations about web search results in the slack bot.
+In the coming future, I will be incorporating additional data sources to enquire about.
 
-# Usage in Slack
+# Usage
 
-## In a thread, mention @CogniQ
+The primary interface by which to use CogniQ is as a slack bot. You may direct message @CogniQ directly, or you may invoke it in a thread.
+
+@CogniQ wil always start a new thread if not in a thread already. This is so that the memory of the conversation is segmented correctly.
+
+## In a channel or thread, mention @CogniQ
 In Slack, have a conversation with CogniQ and ask it to do something by mentioning it in a thread or channel. For example:
 
 <img src="https://user-images.githubusercontent.com/176915/235838387-9befa803-1179-42a4-8127-8ee1ad518c73.png" alt="@CogniQ What is the Picard Maneuver?" width="300">
+
+When starting a new conversation outside of a thread, @CogniQ will be initialized with the last 10 or so messages from the channel. This history may include messages in recent threads.
+
+When starting a new conversation inside of a thread, @CogniQ will be initialized with the last 10 or so messages from the thread.
 
 CogniQ will respond with the answer to your question.
 
@@ -21,11 +31,7 @@ You can also message CogniQ directly. You do not have to mention it when you mes
 
 ## CogniQ will augment its responses using Bing. 
 
-If you have a preferred search api, I'd be happy for a contribution!
-
-## Thread vs Channel
-If you mention it in a thread, CogniQ will have historical context from the thread.
-If you mention it in a channel, CogniQ will have historical context from the channel, including from threads preceding it.
+CogniQ will incorporate the top three search results into its answer and will provide links to its sources.
 
 # Development in 5 steps.
 
