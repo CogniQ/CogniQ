@@ -27,7 +27,38 @@ If you have a preferred search api, I'd be happy for a contribution!
 If you mention it in a thread, CogniQ will have historical context from the thread.
 If you mention it in a channel, CogniQ will have historical context from the channel, including from threads preceding it.
 
-# Development in 4 steps.
+# Development in 5 steps.
+
+## 0. Prerequisites
+
+Before you begin, make sure to have the following prerequisites in place:
+
+### Docker Desktop
+
+1. **Install Docker Desktop**: Docker is used for creating isolated environments called containers. To install Docker Desktop, follow the instructions given in the official Docker documentation.
+
+   - For Windows: [Install Docker Desktop on Windows](https://docs.docker.com/docker-for-windows/install/)
+   - For Mac: [Install Docker Desktop on Mac](https://docs.docker.com/docker-for-mac/install/)
+   - For Linux: Docker Desktop is not available, use Docker engine instead. [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+
+2. **Verify Docker Desktop Installation**: After installing Docker Desktop, you can verify that it's installed correctly by opening a new terminal window and typing `docker --version`. You should see a message with your installed Docker version.
+
+### VS Code Dev Containers
+
+1. **Install Visual Studio Code**: VS Code is a code editor with support for development containers. To install VS Code, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/setup/setup-overview).
+
+2. **Install Remote - Containers Extension**: This extension lets you use a Docker container as a full-featured development environment. To install the extension, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/remote/containers#_installation).
+
+### Clone the Repository
+
+1. **Clone the Repository**: You'll need to have the project repository on your local machine. If you haven't done so already, clone the repository with: `git clone git@github.com:CogniQ/CogniQ.git`
+
+### Open the Repository in a Dev Container
+
+1. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+
+Now, your development environment is set up and ready to go!
+
 
 ## 1. Get Bing Search API Keys
 
@@ -92,16 +123,15 @@ To set up OpenAI API keys, follow these steps:
 5. Install the dependencies: `poetry install`
 6. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
 7. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
-8. In a separate terminal window, start [ngrok](https://ngrok.com/): `ngrok http 3000`. Take note of the URL from the ngrok output.
-9. Run the app: `python main.py`
-10. Restart the app whenever you make changes to the code.
+8. Run the app: `python main.py`
+9. Restart the app whenever you make changes to the code.
 
 ## 4. Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
 2. Choose "From an app manifest" and select your workspace.
-3. Modify the app manifest from `deployments/example/slack_manifest.json` to include your ngrok URL for the above app.
-4. Paste the app manifest into the text box and click "Next."
+3. Copy the app manifest from `deployments/example/slack_manifest.json`. Later, you will modify it with your public URL. But for dev, the example is fine.
+4. Modify to taste, and paste the app manifest into the text box and click "Next."
 5. Click "Create" to finish creating the app.
 
 # Notes
