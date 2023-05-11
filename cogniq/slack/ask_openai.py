@@ -1,4 +1,5 @@
-import concurrent.futures
+import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 import asyncio
 from cogniq.logging import setup_logger
 
@@ -6,7 +7,7 @@ logger = setup_logger(__name__)
 
 from cogniq.openai import ask
 
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+executor = PoolExecutor(mp_context=mp.get_context('fork'), max_workers=10) # https://stackoverflow.com/questions/64501481/python-concurrent-futures-processpoolexecutor-and-global-variables-works-on-lin
 
 async def ask_openai_task(*, event, reply_ts, app, history):
     channel = event["channel"]

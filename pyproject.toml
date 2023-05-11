@@ -6,6 +6,12 @@ authors = ["Jim Park <jim@ramtank.com>"]
 license = "All Rights Reserved."
 readme = "README.md"
 
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu118/"
+default = false
+secondary = true
+
 [tool.poetry.dependencies]
 python = "^3.10"
 slack-bolt = "^1.18.0"
@@ -15,8 +21,8 @@ weaviate-client = "^3.18.0"
 datasets = "^2.12.0"
 apache-beam = "^2.46.0"
 tiktoken = "^0.4.0"
-farm-haystack = "^1.16.1"
-
+torch = { version = "2.0.1+cu118", source = "pytorch" }
+farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "develop", extras = [] }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
