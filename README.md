@@ -33,6 +33,12 @@ If you mention it in a channel, CogniQ will have historical context from the cha
 
 Before you begin, make sure to have the following prerequisites in place:
 
+### YOU NEED TO DOWNLOAD NCCL
+
+I don't include this in the repo because you need to agree to a license.
+
+Download NCCL nccl_2.18.1-1+cuda11.0_x86_64. This is required for the PyTorch Docker image. You can download it from https://developer.nvidia.com/nccl/nccl-download. After checkout, place the downloaded file in the `vendor` directory.
+
 ### Docker Desktop
 
 1. **Install Docker Desktop**: Docker is used for creating isolated environments called containers. To install Docker Desktop, follow the instructions given in the official Docker documentation.
