@@ -49,16 +49,6 @@ Before you begin, make sure to have the following prerequisites in place:
 
 2. **Install Remote - Containers Extension**: This extension lets you use a Docker container as a full-featured development environment. To install the extension, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/remote/containers#_installation).
 
-### Clone the Repository
-
-1. **Clone the Repository**: You'll need to have the project repository on your local machine. If you haven't done so already, clone the repository with: `git clone git@github.com:CogniQ/CogniQ.git`
-
-### Open the Repository in a Dev Container
-
-1. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
-
-Now, your development environment is set up and ready to go!
-
 
 ## 1. Get Bing Search API Keys
 
@@ -114,25 +104,26 @@ To set up OpenAI API keys, follow these steps:
    ```
 
 
-## 3. Deploy the app
+## 4. Deploy the app
 
 1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
 2. Navigate to the project directory: `cd CogniQ`
-3. Initialize the virtualenv: `python3 -m venv .venv`
-4. Install poetry: `pip install poetry`
-5. Install the dependencies: `poetry install`
-6. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
-7. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
-8. Run the app: `python main.py`
-9. Restart the app whenever you make changes to the code.
+3. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+4. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
+5. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
+6. Run the app: `python main.py`
+7. Restart the app whenever you make changes to the code.
 
-## 4. Deploy to Slack
+## 3. Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
 2. Choose "From an app manifest" and select your workspace.
 3. Copy the app manifest from `deployments/example/slack_manifest.json`. Later, you will modify it with your public URL. But for dev, the example is fine.
 4. Modify to taste, and paste the app manifest into the text box and click "Next."
 5. Click "Create" to finish creating the app.
+6. After your app has been created, navigate to the "Basic Information" page from the side menu.
+7. Under the "App Credentials" section, find the "App Token" field. This is your `SLACK_APP_TOKEN`. Copy it.
+8. Add the `SLACK_APP_TOKEN` to the `.envrc` file
 
 # Notes
 
