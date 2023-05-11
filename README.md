@@ -37,7 +37,15 @@ Before you begin, make sure to have the following prerequisites in place:
 
 I don't include this in the repo because you need to agree to a license.
 
-Download NCCL nccl_2.18.1-1+cuda11.0_x86_64. This is required for the PyTorch Docker image. You can download it from https://developer.nvidia.com/nccl/nccl-download. After checkout, place the downloaded file in the `vendor` directory.
+NCCL is required for the PyTorch Docker image.
+
+Open [https://developer.nvidia.com/nccl/nccl-download](https://developer.nvidia.com/nccl/nccl-download)
+
+Click "Download NCCL 2.18.1, for CUDA 11.0, May 4th, 2023"
+Click "O/S agnostic local installer"
+You should get `nccl_2.18.1-1+cuda11.0_x86_64.txz`
+
+After checkout, place the downloaded file in the `vendor` directory.
 
 ### Docker Desktop
 
