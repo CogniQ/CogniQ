@@ -128,12 +128,12 @@ Protocols like REST and GraphQL already provide a common and robust interface en
 
 ### TL;DR
 
-Yes it is a framework, but it fits the paradigm of what I want to accomplish so well, I am willing to overlook the same problems I outlined above against langchain.
+I was wrong. Haystack is a) rapidly being developed, and b) comprehensive in its approach to the problem domain. I'm still not sure I'll use it in production, but I'm happy to use it for development.
 
 ### Not really a rant
 
-I know I seem like a hypocrit to write what I wrote about langchain, then turn around and use haystack. Indeed, the same problems of using frameworks continue to exist. I have to study both the framework and the API. And stepping outside the limit of the framework has me maintaining a fork.
+I know I seem like a hypocrite to write what I wrote about langchain, then turn around and use haystack. Indeed, the same problems of using frameworks continue to exist. I have to study both the framework and the API. And stepping outside the limit of the framework has me maintaining a [fork](https://github.com/CogniQ/haystack).
 
-I also recognize that haystack seems to be helping me understand the problem domain. 
+But, [haystack](https://haystack.deepset.ai/) is a solid framework, and I have a day job.
 
-I still think a production deployment will likely demand a rewrite, but for now we'll use haystack to rapidly develop what we want to see.
+I still think a serious at scale deployment will likely demand a purpose-built rewrite, but for me and right now there's more reason than not to use this framework.
