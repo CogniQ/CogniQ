@@ -37,11 +37,11 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
     logger.info("history amended query: " + history_augmented_prompt)
     # message_history.append(user_message(history_augmented_prompt))
     agent_response = agent.run(
-        #query=list(reversed(message_history)),
+        # query=list(reversed(message_history)),
         query=history_augmented_prompt,
         params={
             "Retriever": {"top_k": 3},
-        }
+        },
     )
     final_answer = agent_response["answers"][0]
     logger.debug(f"final_answer: {final_answer}")

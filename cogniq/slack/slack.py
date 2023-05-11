@@ -31,10 +31,15 @@ def start():
     if Config["APP_ENV"] == "production":
         app.start(port=int(Config["PORT"]))
     if Config["APP_ENV"] == "development":
+
         async def devstart():
-            from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+            from slack_bolt.adapter.socket_mode.async_handler import (
+                AsyncSocketModeHandler,
+            )
+
             handler = AsyncSocketModeHandler(app, Config["SLACK_APP_TOKEN"])
             await handler.start_async()
-        import asyncio
-        asyncio.run(devstart())
 
+        import asyncio
+
+        asyncio.run(devstart())

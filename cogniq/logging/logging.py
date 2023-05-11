@@ -6,6 +6,7 @@ from .config import Config
 # Set default logging level as well
 logging.basicConfig(level=Config["MUTED_LOG_LEVEL"])
 
+
 def do_setup_logger(name, log_level):
     logger = logging.getLogger(name)
     if not logger.hasHandlers():
@@ -32,6 +33,7 @@ def do_setup_logger(name, log_level):
 
 def setup_logger(name):
     return do_setup_logger(name, Config["LOG_LEVEL"])
+
 
 def setup_muted_logger(name):
     return do_setup_logger(name, Config["MUTED_LOG_LEVEL"])
