@@ -17,7 +17,7 @@ CogniQ will respond with the answer to your question.
 
 You can also message CogniQ directly. You do not have to mention it when you message it directly.
 
-<img src="https://user-images.githubusercontent.com/176915/235838098-a281d2ef-5f38-4317-a9c3-d03a15c6b426.png" alt="What's the capital of France?" width="300">
+<img src="https://github.com/CogniQ/CogniQ/assets/176915/c55a19c1-3558-4b4b-b605-db42821c8e38" alt="What is the plot to Back to the Future 3?" width="450">
 
 ## CogniQ will augment its responses using Bing. 
 
