@@ -14,7 +14,7 @@ aiohttp = "^3.8.4"
 weaviate-client = "^3.17.0"
 datasets = "^2.12.0"
 apache-beam = "^2.46.0"
-tiktoken = "^0.3.3"
+tiktoken = "^0.4.0"
 farm-haystack = "^1.16.1"
 
 
