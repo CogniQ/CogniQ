@@ -1,19 +1,27 @@
+import concurrent.futures
+import asyncio
 from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
 from cogniq.openai import ask
 
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
-async def ask_openai(*, event, say, app, history):
-    original_ts = event["ts"]
+async def ask_openai_task(*, event, reply_ts, app, history):
     channel = event["channel"]
     message = event["text"]
     bot_id = event.get("bot_id")
-    reply = await say(
-        f"Hey <@{event['user']}>, let me figure that out...", thread_ts=original_ts
-    )
-    reply_ts = reply["ts"]
     openai_response = await ask(q=message, message_history=history, bot_id=bot_id)
     # logger.debug(openai_response)
     await app.client.chat_update(channel=channel, ts=reply_ts, text=openai_response)
+
+def run_in_new_loop(coroutine):
+    new_loop = asyncio.new_event_loop()
+    try:
+        return new_loop.run_until_complete(coroutine)
+    finally:
+        new_loop.close()
+
+def ask_openai(*, event, reply_ts, app, history):
+    executor.submit(run_in_new_loop, ask_openai_task(event=event, reply_ts=reply_ts, app=app, history=history))

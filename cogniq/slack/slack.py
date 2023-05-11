@@ -7,6 +7,8 @@ from .config import Config
 from .app_mention import register_app_mention
 from .message import register_message
 
+import asyncio
+
 
 app = AsyncApp(
     token=Config["SLACK_BOT_TOKEN"],
@@ -25,21 +27,18 @@ register_message(**registration_config)
 async def handle_all_events(body):
     logger.debug(body)
 
+async def devstart():
+    from slack_bolt.adapter.socket_mode.aiohttp import (
+        AsyncSocketModeHandler,
+    )
+
+    handler = AsyncSocketModeHandler(app, Config["SLACK_APP_TOKEN"])
+    await handler.start_async()
+
 
 def start():
     logger.info("Starting Slack app!!")
     if Config["APP_ENV"] == "production":
         app.start(port=int(Config["PORT"]))
     if Config["APP_ENV"] == "development":
-
-        async def devstart():
-            from slack_bolt.adapter.socket_mode.async_handler import (
-                AsyncSocketModeHandler,
-            )
-
-            handler = AsyncSocketModeHandler(app, Config["SLACK_APP_TOKEN"])
-            await handler.start_async()
-
-        import asyncio
-
         asyncio.run(devstart())
