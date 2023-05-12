@@ -27,6 +27,7 @@ register_message(**registration_config)
 async def handle_all_events(body):
     logger.debug(body)
 
+
 async def devstart():
     from slack_bolt.adapter.socket_mode.aiohttp import (
         AsyncSocketModeHandler,

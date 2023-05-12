@@ -15,7 +15,8 @@ def register_message(*, app):
         if channel_type == "im":
             original_ts = event["ts"]
             reply = await say(
-                f"Hey <@{event['user']}>, let me figure that out...", thread_ts=original_ts
+                f"Hey <@{event['user']}>, let me figure that out...",
+                thread_ts=original_ts,
             )
             reply_ts = reply["ts"]
             history = await fetch_history(app=app, event=event)

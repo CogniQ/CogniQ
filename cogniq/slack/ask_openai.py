@@ -6,7 +6,10 @@ logger = setup_logger(__name__)
 
 from cogniq.openai import ask
 
-executor = PoolExecutor(max_workers=10) # https://stackoverflow.com/questions/64501481/python-concurrent-futures-processpoolexecutor-and-global-variables-works-on-lin
+executor = PoolExecutor(
+    max_workers=10
+)  # https://stackoverflow.com/questions/64501481/python-concurrent-futures-processpoolexecutor-and-global-variables-works-on-lin
+
 
 async def ask_openai_task(*, event, reply_ts, app, history):
     channel = event["channel"]
@@ -16,6 +19,7 @@ async def ask_openai_task(*, event, reply_ts, app, history):
     # logger.debug(openai_response)
     await app.client.chat_update(channel=channel, ts=reply_ts, text=openai_response)
 
+
 def run_in_new_loop(coroutine):
     new_loop = asyncio.new_event_loop()
     try:
@@ -23,5 +27,9 @@ def run_in_new_loop(coroutine):
     finally:
         new_loop.close()
 
+
 def ask_openai(*, event, reply_ts, app, history):
-    executor.submit(run_in_new_loop, ask_openai_task(event=event, reply_ts=reply_ts, app=app, history=history))
+    executor.submit(
+        run_in_new_loop,
+        ask_openai_task(event=event, reply_ts=reply_ts, app=app, history=history),
+    )
