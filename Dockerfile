@@ -9,7 +9,7 @@ RUN install_packages \
     libfontconfig \
     git
 
-RUN useradd -m -d /app -u 1001 -g 0 -s /bin/bash cogniq
+RUN useradd -m -d /app -u 1000 -g 0 -s /bin/bash cogniq
 
 RUN chown cogniq /app
 
