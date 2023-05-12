@@ -44,14 +44,6 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         self.pipeline.add_node(
             component=TopPSampler(top_p=0.95), name="Sampler", inputs=["Retriever"]
         )
-
-        shaper = Shaper(
-            func="top_3_documents",
-            inputs={"documents": "documents"},
-            outputs=["documents"],
-        )
-        self.pipeline.add_node(component=shaper, name="Shaper", inputs=["Sampler"])
-
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
             api_key=Config["OPENAI_API_KEY"],
@@ -77,7 +69,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             model_kwargs={"temperature": 0.2},
         )
         self.pipeline.add_node(
-            component=prompt_node, name="PromptNode", inputs=["Shaper"]
+            component=prompt_node, name="PromptNode", inputs=["Sampler"]
         )
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}

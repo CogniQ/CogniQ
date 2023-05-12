@@ -17,11 +17,9 @@ python = "^3.10"
 slack-bolt = "^1.18.0"
 openai = "^0.27.6"
 aiohttp = "^3.8.4"
-weaviate-client = "^3.18.0"
-datasets = "^2.12.0"
-apache-beam = "^2.46.0"
-tiktoken = "^0.4.0"
 torch = { version = "2.0.1+cu118", source = "pytorch" }
+multiprocess = "0.70.14"
+# farm-haystack = { version = "1.16.1", extras = [] }
 farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "develop", extras = [] }
 
 [tool.poetry.group.dev.dependencies]
