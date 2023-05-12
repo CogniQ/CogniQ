@@ -20,13 +20,10 @@ deps: pyproject.toml .venv-activate
 poetry.lock: pyproject.toml .venv
 	poetry update
 
-.devcontainer/requirements.txt: poetry.lock
-	poetry export --without-hashes --format=requirements.txt --output=$@
-
 .PHONY: docker-build
-docker-build: .devcontainer/requirements.txt
+docker-build:
 	docker buildx build -t $(DOCKER_TAG) .
 
 .PHONY: docker-build-no-cache
-docker-build-no-cache: .devcontainer/requirements.txt
+docker-build-no-cache:
 	docker buildx build -t $(DOCKER_TAG) --no-cache .
