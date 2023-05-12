@@ -168,18 +168,16 @@ To set up the development environment on WSL-Ubuntu, follow these steps:
 
 3. Install the dependencies
    ```
-   pip install --upgrade pip
-   pip install poetry
-   poetry install
+   make deps
    ```
 
 ## Setup for Mac OSX M1 Silicon
 
-Currently, there are some issues with running the huggingface-hub library on Mac OSX M1 Silicon. There is ongoing work to address these issues and build a more lightweight distribution of haystack. You can track the progress of this work on the [GitHub issue #4417](https://github.com/deepset-ai/haystack/issues/4417).
-
-Until the lightweight distribution is available, I apologize for the inconvenience, but I recommend developing on a Linux machine instead.
-
-
+1. Manually comment out the pytorch source, and swap the "torch" dependency lines.
+2. Install the dependencies
+   ```
+   make deps
+   ```
 
 
 ## Why not langchain?

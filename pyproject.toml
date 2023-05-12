@@ -10,6 +10,7 @@ classifiers = [
     "Operating System :: MacOS"
 ]
 
+# Uncomment for CUDA support
 [[tool.poetry.source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cu118/"
@@ -21,13 +22,20 @@ python = "^3.10"
 slack-bolt = "^1.18.0"
 openai = "^0.27.6"
 aiohttp = "^3.8.4"
-torch = [
-    { version = "2.0.1+cu118", source = "pytorch", markers = "sys_platform == 'linux'" },
-    { version = "2.0.1", markers = "sys_platform == 'darwin'" }
-]
+
+##
+# Torch dependencies
+# ------
+# Pick one of the following two lines.
+# If you have CUDA 11.8 installed, use the first line. Ensure that the pytorch source is uncommented above.
+torch = { version = "2.0.1+cu118", source = "pytorch" }
+# If you do not have CUDA 11.8 installed, use the second line. Comment out the pytorch source above for a significant performance improvement.
+# torch = { version = "2.0.1" }
+
 multiprocess = "0.70.14"
 # farm-haystack = { version = "1.16.1", extras = [] }
 farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "develop", extras = [] }
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
