@@ -1,4 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor as PoolExecutor
+from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 import asyncio
 from cogniq.logging import setup_logger
 
