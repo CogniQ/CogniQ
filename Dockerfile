@@ -18,7 +18,8 @@ ENV PATH="/app/.local/bin:$PATH"
 COPY pyproject.toml poetry.lock ./
 RUN pip install --upgrade pip && \
     pip install poetry && \
-    poetry update --no-interaction --no-ansi
+    poetry lock --no-interaction --no-ansi && \
+    poetry install --no-interaction --no-ansi
 
 COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
 
