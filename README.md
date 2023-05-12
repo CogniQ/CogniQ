@@ -149,7 +149,7 @@ To set up OpenAI API keys, follow these steps:
 
 # Notes
 
-## Setup for WSL-Ubuntu
+## Setup for CUDA on WSL-Ubuntu
 
 To set up the development environment on WSL-Ubuntu, follow these steps:
 
@@ -166,19 +166,25 @@ To set up the development environment on WSL-Ubuntu, follow these steps:
    apt install libcudnn8
    ```
 
-3. Install the dependencies
+3. Manually uncomment the pytorch source, and swap the "torch" dependency lines.
+
+4. Install the dependencies
    ```
    make deps
    ```
 
-## Setup for Mac OSX M1 Silicon
+5. `. .envrc`
+6. `python main.py`
+
+## Setup for non CUDA environments
 
 1. Manually comment out the pytorch source, and swap the "torch" dependency lines.
 2. Install the dependencies
    ```
    make deps
    ```
-
+3. `. .envrc`
+4. `python main.py`
 
 ## Why not langchain?
 
