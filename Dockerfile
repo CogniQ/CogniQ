@@ -18,21 +18,13 @@ ENV PATH="/app/.local/bin:$PATH"
 COPY pyproject.toml poetry.lock ./
 RUN pip install --upgrade pip && \
     pip install poetry && \
+    poetry config virtualenvs.in-project true && \
     poetry lock --no-interaction --no-ansi && \
     poetry install --no-interaction --no-ansi
 
 COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
 
-
-# RUN mkdir -p /opt/vendor
-# COPY vendor/ /opt/vendor/
-
-# Install NCCL https://developer.nvidia.com/nccl
-# RUN cd /usr/local && tar -xvf /opt/vendor/nccl_2.18.1-1+cuda11.0_x86_64.txz
-
-# Use a virtualenv we can copy over the next build stage
-# RUN python3 -m venv --system-site-packages /opt/venv
-# ENV PATH="/opt/venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH"
 
 # The JSON schema is lazily generated at first usage, but we do it explicitly here for two reasons:
 # - the schema will be already there when the container runs, saving the generation overhead when a container starts
@@ -49,7 +41,7 @@ RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_m
 #ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/conda/nsight-compute/2022.4.0/host/target-linux-x64"
 #ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/nccl_2.18.1-1+cuda11.0_x86_64/lib"
 
-USER cogniq
+# USER cogniq
 WORKDIR /app
 
 COPY . ./
