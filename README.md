@@ -149,9 +149,20 @@ To set up OpenAI API keys, follow these steps:
 
 # Notes
 
-## Setup for CUDA on WSL-Ubuntu
+## Running in various environments
 
-To set up the development environment on WSL-Ubuntu, follow these steps:
+| Environment               | PyTorch version |
+|---------------------------|-----------------|
+| WSL Ubuntu                | 2.0.1+cu118     |
+| WSL Ubuntu DevContainer   | 2.0.1+cu118     |
+| Amazon Linux              | 2.0.1+cu118     |
+| Amazon Linux DevContainer | 2.0.1+cu118     |
+| Mac OSX                   | 2.0.1           |
+| Mac OSX DevContainer      | 2.0.1           |
+
+## Setup for CUDA on Linux
+
+To set up the development environment on Linux, follow these steps:
 
 1. Install the CUDA Toolkit 11. You can find the [installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on the NVIDIA website.
    1. The files should be installed to /usr/local/cuda-11.8/
@@ -166,7 +177,7 @@ To set up the development environment on WSL-Ubuntu, follow these steps:
    apt install libcudnn8
    ```
 
-3. Manually uncomment the pytorch source, and swap the "torch" dependency lines.
+3. Manually uncomment the pytorch source, and uncomment the torch dependency line for 2.0.1+cu118
 
 4. Install the dependencies
    ```
@@ -176,9 +187,9 @@ To set up the development environment on WSL-Ubuntu, follow these steps:
 5. `. .envrc`
 6. `python main.py`
 
-## Setup for non CUDA environments
+## Setup for OSX environments
 
-1. Manually comment out the pytorch source, and swap the "torch" dependency lines.
+1. Manually comment out the pytorch source, and uncomment the torch dependency line for 2.0.1
 2. Install the dependencies
    ```
    make deps
