@@ -9,15 +9,23 @@ RUN install_packages \
     libfontconfig \
     git
 
-RUN useradd -d /app -u 1001 -g 0 -s /bin/bash cogniq
+RUN useradd -m -d /app -u 1001 -g 0 -s /bin/bash cogniq
 
 RUN chown cogniq /app
 
-USER cogniq
-WORKDIR /app
+ENV PATH="/app/.local/bin:$PATH"
 
-RUN mkdir -p /opt/vendor
-COPY vendor/ /opt/vendor/
+COPY pyproject.toml poetry.lock ./
+RUN pip install --upgrade pip && \
+    pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi
+
+COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
+
+
+# RUN mkdir -p /opt/vendor
+# COPY vendor/ /opt/vendor/
 
 # Install NCCL https://developer.nvidia.com/nccl
 # RUN cd /usr/local && tar -xvf /opt/vendor/nccl_2.18.1-1+cuda11.0_x86_64.txz
@@ -25,16 +33,6 @@ COPY vendor/ /opt/vendor/
 # Use a virtualenv we can copy over the next build stage
 # RUN python3 -m venv --system-site-packages /opt/venv
 # ENV PATH="/opt/venv/bin:$PATH"
-
-# Install common separately for Docker caching
-RUN mkdir -p /app
-RUN mkdir -p /app/.devcontainer
-COPY .devcontainer/requirements.txt /app/.devcontainer/requirements.txt
-ENV PATH="/app/.local/bin:$PATH"
-RUN pip install --upgrade pip && \
-    pip install -r /app/.devcontainer/requirements.txt
-
-COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
 
 # The JSON schema is lazily generated at first usage, but we do it explicitly here for two reasons:
 # - the schema will be already there when the container runs, saving the generation overhead when a container starts
@@ -51,14 +49,8 @@ RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_m
 #ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/conda/nsight-compute/2022.4.0/host/target-linux-x64"
 #ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/nccl_2.18.1-1+cuda11.0_x86_64/lib"
 
-RUN mkdir -p /app
+USER cogniq
 WORKDIR /app
-
-# Install dependencies separately for Docker caching
-COPY pyproject.toml poetry.lock ./
-RUN pip install poetry \
-    && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
 
 COPY . ./
 
