@@ -15,7 +15,8 @@ DOCKER_TAG:=$(LOWERCASE_APP):$(VERSION)
 .PHONY: deps
 deps: pyproject.toml .venv-activate
 	pip3 install --upgrade poetry
-	poetry update
+	poetry lock
+	poetry install
 
 poetry.lock: pyproject.toml .venv
 	poetry update
