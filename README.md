@@ -39,21 +39,45 @@ CogniQ will incorporate the top three search results into its answer and will pr
 
 Before you begin, make sure to have the following prerequisites in place:
 
-### YOU NEED TO DOWNLOAD NCCL
+### Install CUDA on Linux
 
-I don't include this in the repo because you need to agree to a license.
+To set up the development environment on Linux, follow these steps:
 
-NCCL is required for the PyTorch Docker image.
+1. Install the CUDA Toolkit 11. You can find the [installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on the NVIDIA website.
+   1. The files should be installed to /usr/local/cuda-11.8/
+   2. `export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:/usr/local/cuda-11.8/extras/CUPTI/lib64`
+2. Install cuDNN
+   1. Install the [cuDNN for CUDA 11 repo](https://developer.nvidia.com/rdp/cudnn-download)
+   ```
+   sudo dpkg -i /mnt/c/Users/myusername/Downloads/cudnn-local-repo-ubuntu2004-8.9.1.23_1.0-1_amd64.deb
+   ```
+   1. After the repo is installed, then install the package
+   ```
+   apt install libcudnn8
+   ```
 
-Open [https://developer.nvidia.com/nccl/nccl-download](https://developer.nvidia.com/nccl/nccl-download)
+3. Manually uncomment the pytorch source, and uncomment the torch dependency line for 2.0.1+cu118
 
-Click "Download NCCL 2.18.1, for CUDA 11.0, May 4th, 2023"
-Click "O/S agnostic local installer"
-You should get `nccl_2.18.1-1+cuda11.0_x86_64.txz`
+4. Install the dependencies
+   ```
+   make deps
+   ```
 
-After checkout, place the downloaded file in the `vendor` directory.
+5. `. .envrc`
+6. `python main.py`
 
-### Docker Desktop
+## No need for CUDA on OSX environments
+
+1. Manually comment out the pytorch source in pyproject.toml, and uncomment the torch dependency line for 2.0.1
+2. Install the dependencies
+   ```
+   make deps
+   ```
+3. `. .envrc`
+4. `python main.py`
+
+### Visual Studio Code Dev Containers (Optional)
+#### Docker Desktop 
 
 1. **Install Docker Desktop**: Docker is used for creating isolated environments called containers. To install Docker Desktop, follow the instructions given in the official Docker documentation.
 
@@ -63,8 +87,7 @@ After checkout, place the downloaded file in the `vendor` directory.
 
 2. **Verify Docker Desktop Installation**: After installing Docker Desktop, you can verify that it's installed correctly by opening a new terminal window and typing `docker --version`. You should see a message with your installed Docker version.
 
-### VS Code Dev Containers
-
+#### Install Visual Studio Code
 1. **Install Visual Studio Code**: VS Code is a code editor with support for development containers. To install VS Code, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/setup/setup-overview).
 
 2. **Install Remote - Containers Extension**: This extension lets you use a Docker container as a full-featured development environment. To install the extension, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/remote/containers#_installation).
@@ -148,54 +171,6 @@ To set up OpenAI API keys, follow these steps:
 8. Restart the app whenever you make changes to the code.
 
 # Notes
-
-## Running in various environments
-
-| Environment               | PyTorch version |
-|---------------------------|-----------------|
-| WSL Ubuntu                | 2.0.1+cu118     |
-| WSL Ubuntu DevContainer   | 2.0.1+cu118     |
-| Amazon Linux              | 2.0.1+cu118     |
-| Amazon Linux DevContainer | 2.0.1+cu118     |
-| Mac OSX                   | 2.0.1           |
-| Mac OSX DevContainer      | 2.0.1           |
-
-## Setup for CUDA on Linux
-
-To set up the development environment on Linux, follow these steps:
-
-1. Install the CUDA Toolkit 11. You can find the [installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html) on the NVIDIA website.
-   1. The files should be installed to /usr/local/cuda-11.8/
-   2. `export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:/usr/local/cuda-11.8/extras/CUPTI/lib64`
-2. Install cuDNN
-   1. Install the [cuDNN for CUDA 11 repo](https://developer.nvidia.com/rdp/cudnn-download)
-   ```
-   sudo dpkg -i /mnt/c/Users/myusername/Downloads/cudnn-local-repo-ubuntu2004-8.9.1.23_1.0-1_amd64.deb
-   ```
-   1. After the repo is installed, then install the package
-   ```
-   apt install libcudnn8
-   ```
-
-3. Manually uncomment the pytorch source, and uncomment the torch dependency line for 2.0.1+cu118
-
-4. Install the dependencies
-   ```
-   make deps
-   ```
-
-5. `. .envrc`
-6. `python main.py`
-
-## Setup for OSX environments
-
-1. Manually comment out the pytorch source, and uncomment the torch dependency line for 2.0.1
-2. Install the dependencies
-   ```
-   make deps
-   ```
-3. `. .envrc`
-4. `python main.py`
 
 ## Why not langchain?
 
