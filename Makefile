@@ -27,4 +27,4 @@ docker-build:
 
 .PHONY: docker-build-no-cache
 docker-build-no-cache:
-	docker buildx build -t $(DOCKER_TAG) --no-cache .
+	docker build -t $(DOCKER_TAG) --no-cache .
