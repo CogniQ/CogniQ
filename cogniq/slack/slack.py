@@ -37,9 +37,9 @@ async def devstart():
     await handler.start_async()
 
 
-def start():
+async def start():
     logger.info("Starting Slack app!!")
     if Config["APP_ENV"] == "production":
-        app.start(port=int(Config["PORT"]))
+        await app.start(port=int(Config["PORT"]))
     if Config["APP_ENV"] == "development":
-        asyncio.run(devstart())
+        await devstart()
