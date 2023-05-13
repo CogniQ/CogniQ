@@ -22,11 +22,6 @@ register_app_mention(**registration_config)
 register_message(**registration_config)
 
 
-# Handle all non-registered events
-@app.event("*")
-async def handle_all_events(body):
-    logger.debug(body)
-
 
 async def devstart():
     from slack_bolt.adapter.socket_mode.aiohttp import (
