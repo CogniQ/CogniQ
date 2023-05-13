@@ -22,7 +22,6 @@ register_app_mention(**registration_config)
 register_message(**registration_config)
 
 
-
 async def devstart():
     from slack_bolt.adapter.socket_mode.aiohttp import (
         AsyncSocketModeHandler,
