@@ -19,7 +19,9 @@ def register_app_mention(*, cslack: CogniqSlack):
             f"Hey <@{event['user']}>, let me figure that out...", thread_ts=original_ts
         )
         reply_ts = reply["ts"]
-        asyncio.create_task(ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack))
+        asyncio.create_task(
+            ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack)
+        )
 
 
 def register_message(*, cslack: CogniqSlack):
@@ -35,8 +37,9 @@ def register_message(*, cslack: CogniqSlack):
                 thread_ts=original_ts,
             )
             reply_ts = reply["ts"]
-            asyncio.create_task(ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack))
-
+            asyncio.create_task(
+                ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack)
+            )
 
 
 async def start(config=Config):

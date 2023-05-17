@@ -12,7 +12,6 @@ bing_search_config = {
     "HOST": os.environ.get("SEARCH_HOST") or "0.0.0.0",
     "PORT": os.environ.get("SEARCH_PORT") or "3000",
     "APP_ENV": os.environ.get("APP_ENV") or "production",
-
 }
 
 chat_gpt4_config = {
@@ -23,6 +22,7 @@ chat_gpt4_config = {
     "PORT": os.environ.get("CHAT_PORT") or "3001",
     "APP_ENV": os.environ.get("APP_ENV") or "production",
 }
+
 
 async def async_main():
     bing_search = cogniq.bing_search.start(config=bing_search_config)

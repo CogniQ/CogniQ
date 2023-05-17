@@ -37,7 +37,9 @@ class History:
     async def _fetch_conversations_and_convert_to_openai_sequence(
         self, *, channel_id: str, thread_ts=None
     ):
-        messages = await self._fetch_conversations(channel_id=channel_id, thread_ts=thread_ts)
+        messages = await self._fetch_conversations(
+            channel_id=channel_id, thread_ts=thread_ts
+        )
 
         bot_user_id = await self.get_bot_user_id()
 
@@ -75,10 +77,12 @@ class History:
                     )
             except SlackApiError as e:
                 if e.response["error"] == "ratelimited":
-                    retry_after = int(e.response.headers.get('Retry-After', 1))
-                    #self.logger.info(f"history fetched thus far: {messages}")
-                    #self.logger.info(f"Response: {e.response}")
-                    self.logger.warning(f"Rate limit hit. Retrying after {retry_after} seconds.")
+                    retry_after = int(e.response.headers.get("Retry-After", 1))
+                    # self.logger.info(f"history fetched thus far: {messages}")
+                    # self.logger.info(f"Response: {e.response}")
+                    self.logger.warning(
+                        f"Rate limit hit. Retrying after {retry_after} seconds."
+                    )
                     await asyncio.sleep(retry_after)
                     continue
                 else:
@@ -87,7 +91,7 @@ class History:
                     )
                     return messages
 
-            #self.logger.info("History Response: %s", response)
+            # self.logger.info("History Response: %s", response)
             for message in response["messages"]:
                 filtered_message = self._filter_message(message)
                 # If there is a thread in the conversation history, fetch the thread.
@@ -103,10 +107,11 @@ class History:
                 break
             if len(messages) >= max_messages:
                 break
-            self.logger.info(f"fetching next cursor: {response['response_metadata']['next_cursor']}")
+            self.logger.info(
+                f"fetching next cursor: {response['response_metadata']['next_cursor']}"
+            )
             cursor = response["response_metadata"]["next_cursor"]
         return messages
-
 
     def _filter_message(self, message):
         return {

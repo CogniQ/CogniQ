@@ -4,6 +4,7 @@ logger = setup_logger(__name__)
 
 from cogniq.slack import CogniqSlack
 
+
 async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
@@ -16,6 +17,7 @@ async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     await cslack.app.client.chat_update(
         channel=channel, ts=reply_ts, text=openai_response
     )
+
 
 from cogniq.openai.chat import system_message, user_message
 

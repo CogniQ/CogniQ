@@ -83,7 +83,9 @@ class CogniqSlack:
         self.logger.info("Starting Slack app!!")
         if self.config["APP_ENV"] == "production":
             # Run the web_app directly from aiohttp for greater control over the event loop
-            await web._run_app(self.app.web_app(), host=self.config["HOST"], port=self.config["PORT"])
+            await web._run_app(
+                self.app.web_app(), host=self.config["HOST"], port=self.config["PORT"]
+            )
 
         if self.config["APP_ENV"] == "development":
             from slack_bolt.adapter.socket_mode.aiohttp import (

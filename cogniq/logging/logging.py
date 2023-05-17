@@ -7,8 +7,11 @@ from .config import Config
 root = logging.getLogger()
 root.setLevel(Config["MUTED_LOG_LEVEL"])
 handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+)
 root.addHandler(handler)
+
 
 def do_setup_logger(name, log_level):
     logger = logging.getLogger(name)
@@ -31,7 +34,7 @@ def do_setup_logger(name, log_level):
         # Add the console handler to the logger
         logger.addHandler(console_handler)
 
-    #logger.info(f"Logger setup with log_level: {log_level}")
+    # logger.info(f"Logger setup with log_level: {log_level}")
     return logger
 
 

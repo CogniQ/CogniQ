@@ -6,6 +6,7 @@ from cogniq.openai import ask
 
 from cogniq.slack import CogniqSlack
 
+
 async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
@@ -20,7 +21,6 @@ async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     )
 
 
-
 from cogniq.openai.chat import system_message, user_message
 
 from cogniq.openai.history_augmented_prompt import get_history_augmented_prompt
@@ -28,6 +28,7 @@ from cogniq.openai.history_augmented_prompt import get_history_augmented_prompt
 from cogniq.openai.summarize_content import ceil_history, ceil_prompt
 
 from cogniq.openai.api import async_chat_completion_create
+
 
 async def ask(*, q, message_history=None, bot_id="CogniQ"):
     # logger.info(f"Answering: {q}")
@@ -44,10 +45,10 @@ async def ask(*, q, message_history=None, bot_id="CogniQ"):
 
     logger.info("short_q: " + short_q)
     message_history.append(user_message(short_q))
-    
+
     answer = await async_chat_completion_create(
         messages=message_history,
-        model="gpt-4", # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+        model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
     )
 
     final_answer = answer["choices"][0]["message"]["content"]
