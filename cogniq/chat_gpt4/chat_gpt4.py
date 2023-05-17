@@ -29,7 +29,6 @@ def register_message(*, cslack: CogniqSlack):
     async def handle_message_events(event, say):
         cslack.logger.info(f"message: {event.get('text')}")
         channel_type = event["channel_type"]
-        user = event["user"]
         if channel_type == "im":
             original_ts = event["ts"]
             reply = await say(
