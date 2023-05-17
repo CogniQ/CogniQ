@@ -36,6 +36,7 @@ torch = { version = "2.0.1" }
 multiprocess = "0.70.14"
 # farm-haystack = { version = "1.16.1", extras = [] }
 farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "develop", extras = [] }
+tenacity = "^8.2.2"
 
 
 [tool.poetry.group.dev.dependencies]

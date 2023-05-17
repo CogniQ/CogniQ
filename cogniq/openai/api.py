@@ -1,4 +1,5 @@
 import aiohttp
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from .config import Config
 
@@ -17,6 +18,7 @@ async def async_completion_create(*, prompt, **kwargs):
     return await async_openai(url=url, payload=payload, **kwargs)
 
 
+@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=60))
 async def async_openai(*, url, payload, **kwargs):
     headers = {
         "Content-Type": "application/json",
@@ -27,5 +29,7 @@ async def async_openai(*, url, payload, **kwargs):
         async with session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
                 return await response.json()
+            elif response.status == 429:
+                raise Exception(f"Error {response.status}: {await response.text()}")
             else:
                 raise Exception(f"Error {response.status}: {await response.text()}")
