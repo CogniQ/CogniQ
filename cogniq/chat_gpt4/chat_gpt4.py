@@ -15,9 +15,7 @@ def register_app_mention(*, cslack: CogniqSlack):
     async def handle_app_mention(event, say):
         cslack.logger.info(f"app_mention: {event.get('text')}")
         original_ts = event["ts"]
-        reply = await say(
-            f"Hey <@{event['user']}>, let me figure that out...", thread_ts=original_ts
-        )
+        reply = await say(f"Let me figure that out...", thread_ts=original_ts)
         reply_ts = reply["ts"]
         asyncio.create_task(
             ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack)
@@ -31,10 +29,7 @@ def register_message(*, cslack: CogniqSlack):
         channel_type = event["channel_type"]
         if channel_type == "im":
             original_ts = event["ts"]
-            reply = await say(
-                f"Hey <@{event['user']}>, let me figure that out...",
-                thread_ts=original_ts,
-            )
+            reply = await say(f"Let me figure that out...", thread_ts=original_ts)
             reply_ts = reply["ts"]
             asyncio.create_task(
                 ask_openai_task(event=event, reply_ts=reply_ts, cslack=cslack)

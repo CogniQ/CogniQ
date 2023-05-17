@@ -8,7 +8,7 @@ from cogniq.slack import CogniqSlack
 async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
-    bot_id = event.get("bot_id")
+    bot_id = await cslack.history.get_bot_user_id()
     history = await cslack.history.fetch_history(event=event)
     # logger.debug(f"history: {history}")
 
@@ -28,15 +28,16 @@ from cogniq.openai.summarize_content import ceil_history, ceil_prompt
 from cogniq.openai.agent import agent
 
 
-async def ask(*, q, message_history=None, bot_id="CogniQ"):
-    # logger.info(f"Answering: {q}")
-    if message_history is None:
-        message_history = [
-            system_message(f"Hello, I am {bot_id}, your personal assistant.")
-        ]
-
+async def ask(*, q, message_history=[], bot_id="CogniQ"):
     # if the history is too long, summarize it
     message_history = ceil_history(message_history)
+
+    # Set the system message
+    message_history = [
+        system_message(
+            f"Hello, I am {bot_id}. I am a slack bot that can answer your questions."
+        )
+    ] + message_history
 
     # if prompt is too long, summarize it
     short_q = await ceil_prompt(q)
