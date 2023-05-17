@@ -6,8 +6,8 @@ Config = {
 }
 
 Config["LOG_LEVEL"] = (
-    logging.DEBUG if Config["APP_ENV"] == "development" else logging.WARNING
+    logging.DEBUG if Config["APP_ENV"] == "development" else logging.INFO
 )
 Config["MUTED_LOG_LEVEL"] = (
-    logging.WARNING if Config["APP_ENV"] == "development" else logging.INFO
+    logging.INFO if Config["APP_ENV"] == "development" else logging.INFO
 )
