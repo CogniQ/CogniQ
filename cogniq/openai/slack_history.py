@@ -23,21 +23,21 @@ class History:
         auth_test = await self.app.client.auth_test()
         return auth_test["user_id"]
 
-    async def fetch_history(self, *, event):
+    async def get_history(self, *, event):
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
-        response = await self._fetch_conversations_and_convert_to_chat_sequence(
+        response = await self._get_conversations_and_convert_to_chat_sequence(
             channel_id=channel_id, thread_ts=thread_ts
         )
 
         self.logger.debug(f"History: {response}")
         return response
 
-    async def _fetch_conversations_and_convert_to_chat_sequence(
+    async def _get_conversations_and_convert_to_chat_sequence(
         self, *, channel_id: str, thread_ts=None
     ):
-        messages = await self._fetch_conversations(
+        messages = await self._get_conversations(
             channel_id=channel_id, thread_ts=thread_ts
         )
 
@@ -52,7 +52,7 @@ class History:
             messages=messages, bot_user_id=bot_user_id
         )
 
-    async def _fetch_conversations(self, *, channel_id: str, thread_ts=None):
+    async def _get_conversations(self, *, channel_id: str, thread_ts=None):
         messages = []
         cursor = None
         messages_per_page = 20
@@ -96,7 +96,7 @@ class History:
                 filtered_message = self._filter_message(message)
                 # If there is a thread in the conversation history, fetch the thread.
                 if thread_ts is None and filtered_message.get("thread_ts") is not None:
-                    replies_response = await self._fetch_conversations(
+                    replies_response = await self._get_conversations(
                         channel_id=channel_id,
                         thread_ts=filtered_message.get("thread_ts"),
                     )

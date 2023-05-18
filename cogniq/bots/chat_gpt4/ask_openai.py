@@ -11,7 +11,7 @@ async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
     bot_id = await cslack.history.get_bot_user_id()
-    history = await cslack.history.fetch_history(event=event)
+    history = await cslack.history.get_history(event=event)
     # logger.debug(f"history: {history}")
 
     openai_response = await ask(q=message, message_history=history, bot_id=bot_id)

@@ -4,6 +4,7 @@ from aiohttp import web
 
 from cogniq.openai.slack_history import History as OpenAIHistory
 
+
 class CogniqSlack:
     def __init__(
         self, *, config: dict, logger: logging.Logger, register_functions: list = []
