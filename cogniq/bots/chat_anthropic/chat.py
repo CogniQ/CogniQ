@@ -9,6 +9,8 @@ from cogniq.slack import CogniqSlack
 from .ask import ask_task
 import asyncio
 
+from cogniq.anthropic.slack_history import History
+
 
 def register_app_mention(*, cslack: CogniqSlack):
     @cslack.app.event("app_mention")
@@ -40,6 +42,7 @@ async def start(config=Config):
         config (dict, optional): Configuration for the Slack app. Defaults to Config. Pass in config when you have multiple instances.
         logger (logging.Logger): Logger object for logging application status.
     """
+    config["HISTORY_CLASS"] = History
     await CogniqSlack(
         config=config,
         logger=logger,

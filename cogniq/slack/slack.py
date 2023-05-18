@@ -2,8 +2,7 @@ import logging
 from slack_bolt.async_app import AsyncApp
 from aiohttp import web
 
-from .history import History
-
+from cogniq.openai.slack_history import History as OpenAIHistory
 
 class CogniqSlack:
     def __init__(
@@ -20,6 +19,7 @@ class CogniqSlack:
             PORT (str or int, default=3000): Port on which the app will be started.
             APP_ENV (str, either 'production' or 'development'): Environment in which the app is running.
             SLACK_APP_TOKEN (str, optional): Slack app token. Required if APP_ENV is 'development'.
+            HISTORY_CLASS (class, optional): Class to use for storing history. Defaults to OpenAIHistory.
 
         logger (logging.Logger): Logger to log information about the app's status.
 
@@ -38,6 +38,7 @@ class CogniqSlack:
         self.config.setdefault("HOST", "0.0.0.0")
         self.config.setdefault("PORT", 3000)
         self.config.setdefault("APP_ENV", "production")
+        self.config.setdefault("HISTORY_CLASS", OpenAIHistory)
 
         if self.config["APP_ENV"] == "development" and not self.config.get(
             "SLACK_APP_TOKEN"
@@ -73,7 +74,7 @@ class CogniqSlack:
             logger=self.logger,
         )
 
-        self.history = History(app=self.app, logger=self.logger)
+        self.history = self.config["HISTORY_CLASS"](app=self.app, logger=self.logger)
 
         registration_config = {"cslack": self}
 

@@ -27,14 +27,14 @@ class History:
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
-        response = await self._fetch_conversations_and_convert_to_openai_sequence(
+        response = await self._fetch_conversations_and_convert_to_chat_sequence(
             channel_id=channel_id, thread_ts=thread_ts
         )
 
         self.logger.debug(f"History: {response}")
         return response
 
-    async def _fetch_conversations_and_convert_to_openai_sequence(
+    async def _fetch_conversations_and_convert_to_chat_sequence(
         self, *, channel_id: str, thread_ts=None
     ):
         messages = await self._fetch_conversations(
@@ -48,7 +48,7 @@ class History:
         if thread_ts is None:
             messages = reversed(messages)
 
-        return self._convert_to_openai_sequence(
+        return self._convert_to_chat_sequence(
             messages=messages, bot_user_id=bot_user_id
         )
 
@@ -121,17 +121,17 @@ class History:
             "thread_ts": message.get("thread_ts"),
         }
 
-    def _convert_to_openai_sequence(self, *, messages, bot_user_id):
-        openai_sequence = []
+    def _convert_to_chat_sequence(self, *, messages, bot_user_id):
+        chat_sequence = []
         for message in messages:
             if message.get("user") == bot_user_id:
-                openai_sequence.append(assistant_message(message.get("text")))
+                chat_sequence.append(assistant_message(message.get("text")))
             else:
-                openai_sequence.append(user_message(message.get("text")))
+                chat_sequence.append(user_message(message.get("text")))
             if message.get("replies"):
                 for reply in message.get("replies"):
                     if reply.get("user") == bot_user_id:
-                        openai_sequence.append(assistant_message(reply.get("text")))
+                        chat_sequence.append(assistant_message(reply.get("text")))
                     else:
-                        openai_sequence.append(user_message(reply.get("text")))
-        return openai_sequence
+                        chat_sequence.append(user_message(reply.get("text")))
+        return chat_sequence

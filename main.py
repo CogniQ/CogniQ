@@ -40,7 +40,7 @@ chat_anthropic_config = {
 
 async def async_main():
     search = bing_search.start(config=bing_search_config)
-    # chat_gpt4 = chat_gpt4.start(config=chat_gpt4_config)
+    # chat = chat_gpt4.start(config=chat_gpt4_config)
     chat = chat_anthropic.start(config=chat_anthropic_config)
     await asyncio.gather(search, chat)
 
