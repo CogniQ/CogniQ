@@ -2,12 +2,14 @@ from cogniq.logging import setup_muted_logger
 
 logger = setup_muted_logger(__name__)
 
-from .config import Config
+from .default_config import default_config
 
 from cogniq.slack import CogniqSlack
 
 from .ask_openai import ask_openai_task
 import asyncio
+
+from .web_retriever import get_web_retriever
 
 
 def register_app_mention(*, cslack: CogniqSlack):
@@ -36,7 +38,7 @@ def register_message(*, cslack: CogniqSlack):
             )
 
 
-async def start(config=Config):
+async def start(config=default_config):
     """
     Starts the CogniqSlack application.
 
@@ -44,6 +46,8 @@ async def start(config=Config):
         config (dict, optional): Configuration for the Slack app. Defaults to Config. Pass in config when you have multiple instances.
         logger (logging.Logger): Logger object for logging application status.
     """
+
+    web_retriever = get_web_retriever(config)
     await CogniqSlack(
         config=config,
         logger=logger,
