@@ -9,18 +9,18 @@ import os
 async def ask_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
-    bot_id = await cslack.history.get_bot_user_id()
+    bot_name = await cslack.history.get_bot_name()
     history = await cslack.history.get_history(event=event)
     logger.debug(f"history: {history}")
 
-    response = await ask(q=message, message_history=history, bot_id=bot_id)
+    response = await ask(q=message, message_history=history, bot_name=bot_name)
     await cslack.app.client.chat_update(channel=channel, ts=reply_ts, text=response)
 
 
 from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLayer
 
 
-async def ask(*, q, message_history="", bot_id="CogniQ"):
+async def ask(*, q, message_history="", bot_name="CogniQ"):
     kwargs = {
         "model": "claude-instant-v1-100k",
         "max_tokens_to_sample": 100000,
