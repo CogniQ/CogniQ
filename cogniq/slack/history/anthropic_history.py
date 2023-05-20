@@ -4,10 +4,10 @@ import logging
 from slack_sdk.errors import SlackApiError
 import asyncio
 
-from cogniq.openai.slack_history import History as OpenAIHistory
+from .openai_history import OpenAIHistory
 
 
-class History(OpenAIHistory):
+class AnthropicHistory(OpenAIHistory):
     def _convert_to_chat_sequence(self, *, messages, bot_user_id):
         chat_sequence = ""
         for message in messages:

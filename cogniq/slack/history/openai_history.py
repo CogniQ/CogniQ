@@ -5,11 +5,14 @@ from slack_sdk.errors import SlackApiError
 from cogniq.openai import user_message, system_message, assistant_message
 import asyncio
 
+from .base_history import BaseHistory
 
-class History:
+
+class OpenAIHistory(BaseHistory):
     def __init__(self, app: AsyncApp, logger: logging.Logger):
         """
-        Initializes a history object for the Slack app.
+        History is intended as a subclass of CogniqSlack when interoperating with OpenAI.
+        It is responsible for storing and retrieving slack history formatted for OpenAI's consumption.
 
         Parameters:
         app (slack_bolt.async_app.AsyncApp): Instance of Slack's AsyncApp.
