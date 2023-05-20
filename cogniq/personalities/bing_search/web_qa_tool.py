@@ -4,9 +4,7 @@ logger = setup_logger(__name__)
 
 
 from .config import Config
-
-
-from cogniq.bing import web_retriever
+from .web_retriever import web_retriever
 
 
 from haystack.agents import Tool

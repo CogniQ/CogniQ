@@ -33,7 +33,7 @@ async def ask(*, q, message_history="", bot_id="CogniQ"):
 
     api_key = os.environ["ANTHROPIC_API_KEY"]
     layer = AnthropicClaudeInvocationLayer(api_key=api_key, **kwargs)
-    newprompt = message_history + f"\n\nHuman: {q}"
+    newprompt = f"{message_history}\n\nHuman: {q}"
     res = layer.invoke(prompt=newprompt)
 
     logger.info(f"res: {res}")

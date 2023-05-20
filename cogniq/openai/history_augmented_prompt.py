@@ -4,12 +4,7 @@ logger = setup_logger(__name__)
 
 from .api import async_chat_completion_create
 from .chat import system_message, user_message, assistant_message
-from .config import Config
-from cogniq.bing import web_retriever
-
-import re
-import asyncio
-from .agent import agent
+from ..personalities.bing_search.config import Config
 
 
 def history_augmented_prompt(*, q):

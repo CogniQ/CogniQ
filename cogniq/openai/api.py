@@ -1,7 +1,7 @@
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from .config import Config
+from ..personalities.bing_search.config import Config
 
 
 async def async_chat_completion_create(*, messages, **kwargs):

@@ -2,7 +2,7 @@ from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-from .config import Config
+from ..personalities.bing_search.config import Config
 from .chat import system_message, user_message
 from .api import async_chat_completion_create
 

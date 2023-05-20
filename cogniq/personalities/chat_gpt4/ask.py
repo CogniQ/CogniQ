@@ -7,7 +7,7 @@ from cogniq.openai import ask
 from cogniq.slack import CogniqSlack
 
 
-async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
+async def ask_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
     bot_id = await cslack.history.get_bot_user_id()

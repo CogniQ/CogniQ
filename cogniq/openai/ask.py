@@ -10,8 +10,8 @@ from .history_augmented_prompt import get_history_augmented_prompt
 
 from .summarize_content import ceil_history, ceil_prompt
 
-from .config import Config
-from .agent import agent
+from ..personalities.bing_search.config import Config
+from ..personalities.bing_search.agent import agent
 
 
 async def ask(*, q, message_history=None, bot_id="CogniQ"):

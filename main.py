@@ -1,49 +1,34 @@
-from cogniq.bots import (
-    bing_search,
-    chat_gpt4,
-    chat_anthropic,
-)
-import asyncio
-import os
 from cogniq.logging import setup_logger
 
 logger = setup_logger(__name__)
 
-bing_search_config = {
-    "SLACK_BOT_TOKEN": os.environ.get("SEARCH_SLACK_BOT_TOKEN"),
-    "SLACK_SIGNING_SECRET": os.environ.get("SEARCH_SLACK_SIGNING_SECRET"),
-    "SLACK_APP_TOKEN": os.environ.get("SEARCH_SLACK_APP_TOKEN"),
-    "HOST": os.environ.get("SEARCH_HOST") or "0.0.0.0",
-    "PORT": os.environ.get("SEARCH_PORT") or "3000",
-    "APP_ENV": os.environ.get("APP_ENV") or "production",
-}
+from cogniq.personalities import (
+    bing_search,
+    chat_gpt4,
+    chat_anthropic,
+)
 
-chat_gpt4_config = {
-    "SLACK_BOT_TOKEN": os.environ.get("CHAT_SLACK_BOT_TOKEN"),
-    "SLACK_SIGNING_SECRET": os.environ.get("CHAT_SLACK_SIGNING_SECRET"),
-    "SLACK_APP_TOKEN": os.environ.get("CHAT_SLACK_APP_TOKEN"),
-    "HOST": os.environ.get("CHAT_HOST") or "0.0.0.0",
-    "PORT": os.environ.get("CHAT_PORT") or "3001",
-    "APP_ENV": os.environ.get("APP_ENV") or "production",
-}
+import asyncio
+import os
 
-chat_anthropic_config = {
-    "SLACK_BOT_TOKEN": os.environ.get("CHAT_SLACK_BOT_TOKEN"),
-    "SLACK_SIGNING_SECRET": os.environ.get("CHAT_SLACK_SIGNING_SECRET"),
-    "SLACK_APP_TOKEN": os.environ.get("CHAT_SLACK_APP_TOKEN"),
-    "HOST": os.environ.get("CHAT_HOST") or "0.0.0.0",
-    "PORT": os.environ.get("CHAT_PORT") or "3001",
-    "APP_ENV": os.environ.get("APP_ENV") or "production",
-    "ANTHROPIC_API_KEY": os.environ.get("ANTHROPIC_API_KEY"),
-}
+from cogniq.slack import CogniqSlack
+from config import config
+from multiple_personalities import (
+    register_app_mention,
+    register_message,
+)
 
 
-async def async_main():
-    search = bing_search.start(config=bing_search_config)
-    # chat = chat_gpt4.start(config=chat_gpt4_config)
-    chat = chat_anthropic.start(config=chat_anthropic_config)
-    await asyncio.gather(search, chat)
+async def multiple_personalities():
+    """
+    Starts one Slack bot instance, and routes messages according to wake word.
+    """
+    await CogniqSlack(
+        config=config,
+        logger=logger,
+        register_functions=[register_app_mention, register_message],
+    ).start()
 
 
 if __name__ == "__main__":
-    asyncio.run(async_main())
+    asyncio.run(multiple_personalities())

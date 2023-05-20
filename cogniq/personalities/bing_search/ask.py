@@ -5,7 +5,7 @@ logger = setup_logger(__name__)
 from cogniq.slack import CogniqSlack
 
 
-async def ask_openai_task(*, event, reply_ts, cslack: CogniqSlack):
+async def ask_task(*, event, reply_ts, cslack: CogniqSlack):
     channel = event["channel"]
     message = event["text"]
     bot_id = await cslack.history.get_bot_user_id()
@@ -25,7 +25,7 @@ from cogniq.openai.history_augmented_prompt import get_history_augmented_prompt
 
 from cogniq.openai.summarize_content import ceil_history, ceil_prompt
 
-from cogniq.openai.agent import agent
+from cogniq.personalities.bing_search.agent import agent
 
 
 async def ask(*, q, message_history=[], bot_id="CogniQ"):
