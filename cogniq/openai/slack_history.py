@@ -22,7 +22,7 @@ class History:
     async def get_bot_user_id(self) -> str:
         auth_test = await self.app.client.auth_test()
         return auth_test["user_id"]
-    
+
     async def get_bot_name(self) -> str:
         auth_test = await self.app.client.auth_test()
         return auth_test["user"]
