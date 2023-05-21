@@ -3,8 +3,14 @@
 This project is under active development. Your experience will be buggy until a release has been cut.
 Naturally at this stage, there are no guarantees about stability.
 
-In short, the current feature set is that you can have conversations about web search results in the slack bot.
-In the coming future, I will be incorporating additional data sources to enquire about.
+In short, the current feature set is that you can have conversations about web search results in the slack bot if you give it the "search" or "bing" keywords. Otherwise, you're talking to Chat GPT4. You can also talk to Claude.
+
+If you don't have access to one of the API keys required for the personality, then modify `multiple_personalities.py` to remove the personality or personalities.
+
+The idea is that one could add an arbitrary number of personalities to CogniQ.
+
+In that sense, `multiple_personalities.py` and `main.py` are really just example files for how to use the library. You can use them as a starting point for your own bot.
+
 
 # Usage
 
@@ -44,13 +50,13 @@ CogniQ will incorporate the top three search results into its answer and will pr
 
 If you prefer Claude, you can use the wake word "Claude" or "Anthropic" to have CogniQ use Claude instead of Chat GPT4.
 
-# Development in 5 steps.
+# Development in 4 steps.
 
-## 0. Prerequisites
+## 1. Prerequisites
 
 Before you begin, make sure to have the following prerequisites in place:
 
-### Install CUDA on Linux
+### Install CUDA if on Linux
 
 To set up the development environment on Linux, follow these steps:
 
@@ -104,7 +110,9 @@ To set up the development environment on Linux, follow these steps:
 2. **Install Remote - Containers Extension**: This extension lets you use a Docker container as a full-featured development environment. To install the extension, follow the instructions in the [VS Code Documentation](https://code.visualstudio.com/docs/remote/containers#_installation).
 
 
-## 1. Get Bing Search API Keys
+## 2. Setup API Keys
+
+### Get Bing Search API Keys
 
 To set up Bing Search API keys, follow these steps:
 
@@ -136,7 +144,7 @@ To set up Bing Search API keys, follow these steps:
    ```
 
 
-## 2. Get OpenAI API Keys
+### Get OpenAI API Keys
 
 To set up OpenAI API keys, follow these steps:
 
@@ -158,6 +166,17 @@ To set up OpenAI API keys, follow these steps:
    ```
 
 
+### Get Anthropic Claude API Keys
+To set up Anthropic Claude API keys, follow these steps:
+1. Go to the Anthropic website at https://www.anthropic.com/product and request access to Claude.
+2. Once you have an account, sign in and go to the API Keys section: https://console.anthropic.com/account/keys
+3. Click on the "Create Key" button.
+4. Copy the generated API key to your clipboard.
+5. Add the Anthropic Claude API key to the `.envrc` file
+   
+   export ANTHROPIC_API_KEY=<your_anthropic_api_key>;
+   
+
 ## 3. Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
@@ -167,17 +186,37 @@ To set up OpenAI API keys, follow these steps:
 5. Click "Create" to finish creating the app.
 6. After your app has been created, navigate to the "Basic Information" page from the side menu.
 7. Under the "App Credentials" section, find the "App Token" field. This is your `SLACK_APP_TOKEN`. Copy it.
-8. Add the `SLACK_APP_TOKEN` to the `.envrc` file
+8. Add the `SLACK_APP_TOKEN` to the `.envrc` file.
+9. Still on the "Basic Information" page, locate the "Signing Secret" under the "App Credentials" section. This is your `SLACK_SIGNING_SECRET`.
+10. Add the `SLACK_SIGNING_SECRET` to the `.envrc` file.
+11. Now, navigate to the "OAuth & Permissions" page in the side menu.
+12. At the top of the "OAuth & Permissions" page, click "Install App to Workspace." This will generate your `SLACK_BOT_TOKEN`.
+13. After the installation process, you will be redirected to the "OAuth & Permissions" page again. Here, under the "Tokens for Your Workspace" section, you will find the "Bot User OAuth Token". This is your `SLACK_BOT_TOKEN`.
+16. Add the `SLACK_BOT_TOKEN` to the `.envrc` file.
+
+Remember to never commit your `.envrc` file to the repository as it contains sensitive information. 
 
 
-## 4. Deploy the app
+
+## 4. Deploy the app locally
 
 1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
 2. Navigate to the project directory: `cd CogniQ`
-3. Download NCCL nccl_2.18.1-1+cuda11.0_x86_64. This is required for the PyTorch Docker image. You can download it from https://developer.nvidia.com/nccl/nccl-download. Place the downloaded file in the `vendor` directory.
-4. **Open the Repository in a Dev Container**: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+3. Install the dependencies using `make deps`
+4. Source the .venv virtualenv: `source .venv/bin/activate`
 5. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
 6. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
+7. Run the app: `python main.py`
+8. Restart the app whenever you make changes to the code.
+
+## 4. Deploy the app using Dev Container (Optional)
+
+1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
+2. Navigate to the project directory: `cd CogniQ`
+3. Open the Repository in a Dev Container: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+4. The remaining steps are from the dev container.
+5. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
+6. `. .envrc`
 7. Run the app: `python main.py`
 8. Restart the app whenever you make changes to the code.
 
