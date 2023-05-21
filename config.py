@@ -1,6 +1,18 @@
 import os
 
-Config = {
+
+config = {
+    "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN"),
+    "SLACK_SIGNING_SECRET": os.environ.get("SLACK_SIGNING_SECRET"),
+    "SLACK_APP_TOKEN": os.environ.get("SLACK_APP_TOKEN"),
+    "HOST": os.environ.get("HOST") or "0.0.0.0",
+    "PORT": os.environ.get("PORT") or "3000",
+    "APP_ENV": os.environ.get("APP_ENV") or "production",
+    "BING_SUBSCRIPTION_KEY": os.environ["BING_SUBSCRIPTION_KEY"],
+    "BING_SEARCH_ENDPOINT": os.environ.get(
+        "BING_SEARCH_ENDPOINT", "https://api.bing.microsoft.com"
+    ),
+    "ANTHROPIC_API_KEY": os.environ.get("ANTHROPIC_API_KEY"),
     "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
     "OPENAI_API_TYPE": os.environ.get("OPENAI_API_TYPE"),  # Azure
     "OPENAI_API_BASE": os.environ.get("OPENAI_API_BASE"),  # Azure

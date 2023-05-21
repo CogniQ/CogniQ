@@ -1,2 +1,2 @@
-from .ask import ask
-from .chat import user_message, system_message, assistant_message
+from .cogniq_openai import CogniqOpenAI
+from .chat import system_message, user_message, assistant_message

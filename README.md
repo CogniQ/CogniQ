@@ -29,9 +29,20 @@ You can also message CogniQ directly. You do not have to mention it when you mes
 
 <img src="https://github.com/CogniQ/CogniQ/assets/176915/c55a19c1-3558-4b4b-b605-db42821c8e38" alt="What is the plot to Back to the Future 3?" width="450">
 
-## CogniQ will augment its responses using Bing. 
+
+# CogniQ has multiple personalities
+
+## Normally, CogniQ will just use Chat GPT4.
+
+CogniQ will respond with the answer to your question without performing any web searches.
+
+## CogniQ will augment its responses using Bing if you use the wake word "search" or "bing" or "google"
 
 CogniQ will incorporate the top three search results into its answer and will provide links to its sources.
+
+## CogniQ will use Anthropic Claude if you use the wake word "Claude" or "Anthropic".
+
+If you prefer Claude, you can use the wake word "Claude" or "Anthropic" to have CogniQ use Claude instead of Chat GPT4.
 
 # Development in 5 steps.
 

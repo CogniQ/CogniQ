@@ -1,15 +1,7 @@
-from cogniq.logging import setup_logger
+import logging
 
-logger = setup_logger(__name__)
+from .prompts import web_retriever_prompt
 
-
-from .config import Config
-
-
-from cogniq.bing import web_retriever
-
-
-from haystack.agents import Tool
 from haystack.pipelines import BaseStandardPipeline
 
 from haystack.nodes.retriever.web import WebRetriever
@@ -21,6 +13,8 @@ from haystack.nodes import (
 )
 from haystack.pipelines.base import Pipeline
 from haystack.nodes.prompt.shapers import AnswerParser
+from haystack.nodes.retriever.web import WebRetriever
+from haystack.nodes.preprocessor import PreProcessor
 
 from typing import Optional
 
@@ -30,15 +24,30 @@ class CustomWebQAPipeline(BaseStandardPipeline):
     Pipeline for Generative Question Answering performed based on Documents returned from a web search engine.
     """
 
-    def __init__(self):
+    def __init__(self, *, config: dict, logger: logging.Logger):
         """
-        :param retriever: The WebRetriever used for retrieving documents from a web search engine.
-        :param prompt_node: The PromptNode used for generating the answer based on retrieved documents.
+        CustomWebQAPipeline constructor.
+
+        Parameters:
+        config (dict): Configuration for the pipeline with the following keys:
+            OPENAI_API_KEY (str): OpenAI API key.
+            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens in the response.
+            BING_SUBSCRIPTION_KEY (str): Bing subscription key.
         """
+        self.config = config
+        self.logger = logger
+
+        self.web_retriever = WebRetriever(
+            api_key=self.config["BING_SUBSCRIPTION_KEY"],
+            search_engine_provider="BingAPI",
+            top_k=3,
+            mode="preprocessed_documents",
+            preprocessor=PreProcessor(progress_bar=False),
+        )
 
         self.pipeline = Pipeline()
         self.pipeline.add_node(
-            component=web_retriever, name="Retriever", inputs=["Query"]
+            component=self.web_retriever, name="Retriever", inputs=["Query"]
         )
 
         self.pipeline.add_node(
@@ -46,22 +55,11 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         )
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
-            api_key=Config["OPENAI_API_KEY"],
-            max_length=Config["OPENAI_MAX_TOKENS_RESPONSE"],
+            api_key=self.config["OPENAI_API_KEY"],
+            max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
             default_prompt_template=PromptTemplate(
                 name="custom-question-answering-with-references",
-                prompt_text="Create an informative answer (approximately 100 words) for a given question encased in citatations"
-                "Either quote directly or summarize. If you summarize, adopt the tone of the source material. If either case, provide citations for every piece of information you include in the answer."
-                "Always cite your sources, even if they do not directly answer the question.\n"
-                "If the documents do not contain the answer to the question, provide a summary of the relevant information you find instead.\n\n"
-                "Here are some examples:\n"
-                "<https://example1.com|The Eiffel Tower is located in Paris>.'\n"
-                "Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The Eiffel Tower is located in Paris>.\n"
-                "<https://example2a.com|Python is a high-level programming language>.'\n"
-                "<https://example2b.com|Python is a scripting language>.'\n"
-                "Question: What is Python?; Answer: <https://example2a.com|Python is a high-level programming language>. <https://example2b.com|Python is a scripting language> \n\n"
-                "Now, it's your turn.\n"
-                "{join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '[': '(', ']': ')'})} \n Question: {query}; Answer: ",
+                prompt_text=web_retriever_prompt,
                 output_parser=AnswerParser(
                     reference_pattern=r"<(https?://[^|]+)\|[^>]+>"
                 ),
@@ -89,13 +87,5 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         """
         output = self.pipeline.run(query=query, params=params, debug=debug)
         # Extract the answer from the last line of the PromptNode's output
-        logger.debug(f"output: {output}")
+        self.logger.debug(f"output: {output}")
         return output
-
-
-web_qa_tool = Tool(
-    name="Search",
-    pipeline_or_node=CustomWebQAPipeline(),
-    description="useful for when you need to Google questions.",
-    output_variable="answers",
-)

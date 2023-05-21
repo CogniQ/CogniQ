@@ -1,17 +1,4 @@
-from .config import Config
-
-from haystack.nodes import PromptNode, PromptTemplate
-
-# For the pipeline to work, you'd need to import the Reader, Retriever, and DocumentStore
-# This example skips the pipeline configuration steps
-from haystack.agents import Agent
-from haystack.agents.base import ToolsManager
-from haystack.nodes import PromptNode, PromptTemplate
-
-from .web_qa_tool import web_qa_tool
-
-
-few_shot_prompt = """
+agent_prompt = """\
 You have the ability to answer complex questions using tools like Search and Ask. 
 Use targeted questions for accurate results. 
 Each step involves selecting a tool, creating an input, and receiving observations.
@@ -51,19 +38,19 @@ Thought: We've learned that the <https://www.af.mil/About-Us/Fact-Sheets/Display
 Final Answer: The <https://www.cnet.com/pictures/the-16-fastest-combat-planes-in-the-us-air-force/2/|fastest US fighter jet is the F-15E Strike Eagle, with a speed of up to 1,875 miles per hour>. Its specifications include <https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104470/f-15e-strike-eagle/|two Pratt & Whitney F100-PW-220 or 229 engines, each capable of producing 25,000 or 29,000 pounds of thrust respectively.>
 ##
 Question: {query}
-Thought:
-"""
-few_shot_agent_template = PromptTemplate("few-shot-react", prompt_text=few_shot_prompt)
+Thought:"""
 
-prompt_node = PromptNode(
-    "gpt-3.5-turbo",
-    api_key=Config["OPENAI_API_KEY"],
-    max_length=Config["OPENAI_MAX_TOKENS_RESPONSE"],
-    stop_words=["Observation:"],
-)
-
-agent = Agent(
-    prompt_node=prompt_node,
-    prompt_template=few_shot_agent_template,
-    tools_manager=ToolsManager([web_qa_tool]),
-)
+web_retriever_prompt = """\
+Create an informative answer (approximately 100 words) for a given question encased in citatations
+Either quote directly or summarize. If you summarize, adopt the tone of the source material. If either case, provide citations for every piece of information you include in the answer.
+Always cite your sources, even if they do not directly answer the question.
+If the documents do not contain the answer to the question, provide a summary of the relevant information you find instead.
+Here are some examples:
+<https://example1.com|The Eiffel Tower is located in Paris>.'
+Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The Eiffel Tower is located in Paris>.
+<https://example2a.com|Python is a high-level programming language>.'
+<https://example2b.com|Python is a scripting language>.'
+Question: What is Python?; Answer: <https://example2a.com|Python is a high-level programming language>. <https://example2b.com|Python is a scripting language>
+Now, it's your turn.
+{join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '[': '(', ']': ')'})}
+Question: {query}; Answer:"""
