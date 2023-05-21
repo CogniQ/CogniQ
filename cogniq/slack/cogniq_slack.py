@@ -8,7 +8,7 @@ from .history.anthropic_history import AnthropicHistory
 
 class CogniqSlack:
     def __init__(
-        self, *, config: dict, logger: logging.Logger, register_functions: list = []
+        self, *, config: dict, logger: logging.Logger
     ):
         """
         Slack bot with given configuration, app, and logger.
@@ -24,14 +24,9 @@ class CogniqSlack:
             HISTORY_CLASS (class, optional): Class to use for storing and retrieving history formatted for LLM consumption. Defaults to OpenAIHistory.
 
         logger (logging.Logger): Logger to log information about the app's status.
-
-        register_functions (list[callable], optional): List of functions to register events
-            for the Slack app. Each function should accept a dict with the key 'cslack' and its
-            value being an instance of CogniqSlack.
         """
         self.logger = logger
         self.config = config
-        self.register_functions = register_functions
 
         self.app = AsyncApp(
             token=self.config["SLACK_BOT_TOKEN"],
