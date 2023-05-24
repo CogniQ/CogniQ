@@ -2,7 +2,7 @@ agent_prompt = """\
 You have the ability to answer complex questions using tools like Search.
 Use targeted questions for accurate results. 
 Each step involves selecting a tool, creating an input, and receiving observations.
-Compose a final answer with key points, ensuring that you cite your sources.
+Compose a final answer with your compiled observations, ensuring that you cite your sources.
 You have access to the following tools:
 
 Search: useful for when you need to Google questions.
@@ -41,10 +41,11 @@ Question: {query}
 Thought:"""
 
 web_retriever_prompt = """\
-Create an informative answer (approximately 100 words) for a given question encased in citatations
-Either quote directly or summarize. If you summarize, adopt the tone of the source material. If either case, provide citations for every piece of information you include in the answer.
+Create an informative answer for the given question encased in citatations
+Either quote directly or summarize. If you summarize, adopt the tone of the source material. In either case, provide citations for every piece of information you include in the answer.
 Always cite your sources, even if they do not directly answer the question.
 If the documents do not contain the answer to the question, provide a summary of the relevant information you find instead.
+If there is no relevant information, respond with what you know about the topic.
 Here are some examples:
 <https://example1.com|The Eiffel Tower is located in Paris>.'
 Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The Eiffel Tower is located in Paris>.
