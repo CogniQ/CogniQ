@@ -1,5 +1,5 @@
 agent_prompt = """\
-You have the ability to answer complex questions using tools like Search and Ask. 
+You have the ability to answer complex questions using tools like Search.
 Use targeted questions for accurate results. 
 Each step involves selecting a tool, creating an input, and receiving observations.
 Compose a final answer with key points, ensuring that you cite your sources.
