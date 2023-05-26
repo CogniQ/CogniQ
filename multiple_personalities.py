@@ -7,6 +7,7 @@ from cogniq.personalities import (
     BingSearch,
     ChatGPT4,
     ChatAnthropic,
+    Banana
 )
 
 from config import config
@@ -42,6 +43,10 @@ class MultiplePersonalities:
             cslack=self.cslack,
         )
 
+        self.banana = Banana(
+            config=config, logger=logger, cslack=self.cslack, copenai=self.copenai
+        )
+
         # Finally, register the app_mention and message events
         self.register_app_mention()
         self.register_message()
@@ -53,6 +58,7 @@ class MultiplePersonalities:
         await self.bing_search.async_setup()
         await self.chat_gpt4.async_setup()
         await self.chat_anthropic.async_setup()
+        await self.banana.async_setup()
         await self.cslack.start()
 
     async def dispatch(self, *, event, say, original_ts):
@@ -66,6 +72,7 @@ class MultiplePersonalities:
             self.bing_search.wake_pattern(): self.bing_search.ask_task,
             self.chat_anthropic.wake_pattern(): self.chat_anthropic.ask_task,
             self.chat_gpt4.wake_pattern(): self.chat_gpt4.ask_task,
+            self.banana.wake_pattern(): self.banana.ask_task,
         }
 
         # Initialize the default task
