@@ -42,9 +42,7 @@ class Banana(BasePersonality):
         self.copenai = copenai
 
         self.ask = Ask(config=config, logger=logger, cslack=cslack, copenai=copenai)
-        self._wake_pattern = re.compile(
-            r"\b(banana)\b", re.IGNORECASE
-        )
+        self._wake_pattern = re.compile(r"\b(banana)\b", re.IGNORECASE)
 
     async def async_setup(self):
         """

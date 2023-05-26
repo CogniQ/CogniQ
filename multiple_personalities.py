@@ -3,12 +3,7 @@ from cogniq.openai import CogniqOpenAI
 
 import asyncio
 
-from cogniq.personalities import (
-    BingSearch,
-    ChatGPT4,
-    ChatAnthropic,
-    Banana
-)
+from cogniq.personalities import BingSearch, ChatGPT4, ChatAnthropic, Banana
 
 from config import config
 

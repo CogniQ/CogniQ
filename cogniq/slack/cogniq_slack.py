@@ -7,9 +7,7 @@ from .history.anthropic_history import AnthropicHistory
 
 
 class CogniqSlack:
-    def __init__(
-        self, *, config: dict, logger: logging.Logger
-    ):
+    def __init__(self, *, config: dict, logger: logging.Logger):
         """
         Slack bot with given configuration, app, and logger.
 
