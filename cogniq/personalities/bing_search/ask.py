@@ -130,8 +130,7 @@ class Ask:
         if not final_answer_text:
             transcript = agent_response["transcript"]
             summarized_transcript = await self.copenai.summarizer.summarize_content(
-                transcript,
-                self.config["OPENAI_MAX_TOKENS_RESPONSE"]
+                transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"]
             )
             final_answer_text = summarized_transcript
         return final_answer_text
