@@ -1,15 +1,19 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+import asyncio
 from typing import List
 from slack_bolt.async_app import AsyncApp
-import logging
 from slack_sdk.errors import SlackApiError
+
 from cogniq.openai import user_message, system_message, assistant_message
-import asyncio
 
 from .base_history import BaseHistory
 
 
 class OpenAIHistory(BaseHistory):
-    def __init__(self, app: AsyncApp, logger: logging.Logger):
+    def __init__(self, app: AsyncApp):
         """
         History is intended as a subclass of CogniqSlack when interoperating with OpenAI.
         It is responsible for storing and retrieving slack history formatted for OpenAI's consumption.
@@ -20,7 +24,6 @@ class OpenAIHistory(BaseHistory):
         logger (logging.Logger): Logger to log information about the history object.
         """
         self.app = app
-        self.logger = logger
 
     async def get_bot_user_id(self) -> str:
         auth_test = await self.app.client.auth_test()
@@ -38,7 +41,7 @@ class OpenAIHistory(BaseHistory):
             channel_id=channel_id, thread_ts=thread_ts
         )
 
-        self.logger.debug(f"History: {response}")
+        logger.debug(f"History: {response}")
         return response
 
     async def _get_conversations_and_convert_to_chat_sequence(
@@ -85,20 +88,20 @@ class OpenAIHistory(BaseHistory):
             except SlackApiError as e:
                 if e.response["error"] == "ratelimited":
                     retry_after = int(e.response.headers.get("Retry-After", 1))
-                    # self.logger.info(f"history fetched thus far: {messages}")
-                    # self.logger.info(f"Response: {e.response}")
-                    self.logger.warning(
+                    # logger.info(f"history fetched thus far: {messages}")
+                    # logger.info(f"Response: {e.response}")
+                    logger.warning(
                         f"Rate limit hit. Retrying after {retry_after} seconds."
                     )
                     await asyncio.sleep(retry_after)
                     continue
                 else:
-                    self.logger.error(
+                    logger.error(
                         f"Error fetching conversations due to Slack API Error: {e}"
                     )
                     return messages
 
-            # self.logger.info("History Response: %s", response)
+            # logger.info("History Response: %s", response)
             for message in response["messages"]:
                 filtered_message = self._filter_message(message)
                 # If there is a thread in the conversation history, fetch the thread.
@@ -114,7 +117,7 @@ class OpenAIHistory(BaseHistory):
                 break
             if len(messages) >= max_messages:
                 break
-            self.logger.info(
+            logger.info(
                 f"fetching next cursor: {response['response_metadata']['next_cursor']}"
             )
             cursor = response["response_metadata"]["next_cursor"]

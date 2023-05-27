@@ -1,7 +1,11 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
-import logging
 
 from .prompts import agent_prompt
 from .custom_web_qa_pipeline import CustomWebQAPipeline
@@ -21,7 +25,6 @@ class Ask:
         self,
         *,
         config: dict,
-        logger: logging.Logger,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -31,7 +34,7 @@ class Ask:
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        ask = Ask(config=config, cslack=cslack, copenai=copenai)
         await ask.async_setup()
         ```
 
@@ -43,18 +46,18 @@ class Ask:
 
 
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
-        self.logger = logger
+
         self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
         self.web_qa_tool = Tool(
             name="Search",
-            pipeline_or_node=CustomWebQAPipeline(config=config, logger=logger),
+            pipeline_or_node=CustomWebQAPipeline(config=config),
             description="useful for when you need to Google questions.",
             output_variable="answers",
         )
@@ -95,13 +98,13 @@ class Ask:
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        self.logger.info("short_q: " + short_q)
+        logger.info("short_q: " + short_q)
         history_augmented_prompt = await self.get_history_augmented_prompt(
             q=short_q,
             message_history=message_history,
         )
 
-        self.logger.info("history amended query: " + history_augmented_prompt)
+        logger.info("history amended query: " + history_augmented_prompt)
         # message_history.append(user_message(history_augmented_prompt))
         agent_response = self.agent.run(
             # query=list(reversed(message_history)),
@@ -111,7 +114,7 @@ class Ask:
             },
         )
         final_answer = agent_response["answers"][0]
-        self.logger.debug(f"final_answer: {final_answer}")
+        logger.debug(f"final_answer: {final_answer}")
         # transcript = agent_response["transcript"]
         # logger.debug(f"transcript: {transcript}")
         final_answer_text = final_answer.answer
@@ -145,5 +148,5 @@ class Ask:
             presence_penalty=0,  # modifies the probability distribution to make less likely words that were present in the input prompt or seed text
         )
         answer = response["choices"][0]["message"]["content"].strip()
-        self.logger.debug(f"modifying query for history: {answer}")
+        logger.debug(f"modifying query for history: {answer}")
         return answer

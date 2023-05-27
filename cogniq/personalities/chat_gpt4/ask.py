@@ -1,7 +1,11 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
-import logging
+
 
 
 class Ask:
@@ -9,7 +13,6 @@ class Ask:
         self,
         *,
         config: dict,
-        logger: logging.Logger,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -19,7 +22,7 @@ class Ask:
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        ask = Ask(config=config, cslack=cslack, copenai=copenai)
         await ask.async_setup()
         ```
 
@@ -28,12 +31,12 @@ class Ask:
             OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
             OPENAI_API_KEY (str): OpenAI API key.
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
 
         """
-        self.logger = logger
+
         self.config = config
         self.cslack = cslack
         self.copenai = copenai
@@ -61,7 +64,7 @@ class Ask:
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        self.logger.info("short_q: " + short_q)
+        logger.info("short_q: " + short_q)
         message_history.append(user_message(short_q))
 
         answer = await self.copenai.async_chat_completion_create(
@@ -70,5 +73,5 @@ class Ask:
         )
 
         final_answer = answer["choices"][0]["message"]["content"]
-        self.logger.info(f"final_answer: {final_answer}")
+        logger.info(f"final_answer: {final_answer}")
         return final_answer

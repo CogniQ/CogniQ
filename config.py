@@ -1,5 +1,5 @@
 import os
-
+import logging
 
 config = {
     "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN"),
@@ -23,3 +23,10 @@ config = {
     "OPENAI_MAX_TOKENS_PROMPT": os.environ.get("OPENAI_MAX_TOKENS_PROMPT", 1000),
     "OPENAI_MAX_TOKENS_RESPONSE": os.environ.get("OPENAI_MAX_TOKENS_RESPONSE", 800),
 }
+
+config["LOG_LEVEL"] = (
+    logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO
+)
+config["MUTED_LOG_LEVEL"] = (
+    logging.INFO if config["APP_ENV"] == "development" else logging.INFO
+)

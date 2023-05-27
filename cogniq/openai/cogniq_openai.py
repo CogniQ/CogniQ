@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 import aiohttp
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -7,7 +9,7 @@ from .summarizer import Summarizer
 
 
 class CogniqOpenAI:
-    def __init__(self, *, config: dict, logger: logging.Logger):
+    def __init__(self, *, config: dict):
         """
         OpenAI model
 
@@ -27,10 +29,8 @@ class CogniqOpenAI:
             OPENAI_MAX_TOKENS_RETRIEVAL (int): Context from retrieval, such as Bing.
             OPENAI_MAX_TOKENS_PROMPT (int): The text that the user types will be summarized to this length if necessary.
             OPENAI_MAX_TOKENS_RESPONSE (int): Response from OpenAI.
-
-        logger (logging.Logger): Logger to log information about the app's status.
         """
-        self.logger = logger
+
         self.config = config
 
         # set defaults
@@ -52,7 +52,6 @@ class CogniqOpenAI:
         # initialize summarizer
         self.summarizer = Summarizer(
             config=self.config,
-            logger=self.logger,
             async_chat_completion_create=self.async_chat_completion_create,
         )
 

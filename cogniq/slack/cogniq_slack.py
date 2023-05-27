@@ -1,4 +1,6 @@
 import logging
+
+logger = logging.getLogger(__name__)
 from slack_bolt.async_app import AsyncApp
 from aiohttp import web
 
@@ -7,9 +9,7 @@ from .history.anthropic_history import AnthropicHistory
 
 
 class CogniqSlack:
-    def __init__(
-        self, *, config: dict, logger: logging.Logger
-    ):
+    def __init__(self, *, config: dict):
         """
         Slack bot with given configuration, app, and logger.
 
@@ -23,19 +23,18 @@ class CogniqSlack:
             SLACK_APP_TOKEN (str, optional): Slack app token. Required if APP_ENV is 'development'.
             HISTORY_CLASS (class, optional): Class to use for storing and retrieving history formatted for LLM consumption. Defaults to OpenAIHistory.
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         """
-        self.logger = logger
+
         self.config = config
 
         self.app = AsyncApp(
             token=self.config["SLACK_BOT_TOKEN"],
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
-            logger=self.logger,
         )
 
-        self.anthropic_history = AnthropicHistory(app=self.app, logger=self.logger)
-        self.openai_history = OpenAIHistory(app=self.app, logger=self.logger)
+        self.anthropic_history = AnthropicHistory(app=self.app)
+        self.openai_history = OpenAIHistory(app=self.app)
 
         # Set defaults
         self.config.setdefault("HOST", "0.0.0.0")
@@ -48,7 +47,7 @@ class CogniqSlack:
         ):
             raise ValueError("SLACK_APP_TOKEN is required in development mode")
 
-        self.history = self.config["HISTORY_CLASS"](app=self.app, logger=self.logger)
+        self.history = self.config["HISTORY_CLASS"](app=self.app)
 
     async def start(self):
         """
@@ -69,7 +68,7 @@ class CogniqSlack:
         - If the app environment is 'development', make sure to provide the `SLACK_APP_TOKEN` in the configuration.
         - The app will keep running until it is manually stopped or encounters an error.
         """
-        self.logger.info("Starting Slack app!!")
+        logger.info("Starting Slack app!!")
         if self.config["APP_ENV"] == "production":
             # Run the web_app directly from aiohttp for greater control over the event loop
             await web._run_app(

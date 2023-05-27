@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 from .prompts import web_retriever_prompt
 
 from haystack.pipelines import BaseStandardPipeline
@@ -24,7 +26,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
     Pipeline for Generative Question Answering performed based on Documents returned from a web search engine.
     """
 
-    def __init__(self, *, config: dict, logger: logging.Logger):
+    def __init__(self, *, config: dict):
         """
         CustomWebQAPipeline constructor.
 
@@ -35,7 +37,6 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             BING_SUBSCRIPTION_KEY (str): Bing subscription key.
         """
         self.config = config
-        self.logger = logger
 
         self.web_retriever = WebRetriever(
             api_key=self.config["BING_SUBSCRIPTION_KEY"],
@@ -87,5 +88,5 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         """
         output = self.pipeline.run(query=query, params=params, debug=debug)
         # Extract the answer from the last line of the PromptNode's output
-        self.logger.debug(f"output: {output}")
+        logger.debug(f"output: {output}")
         return output

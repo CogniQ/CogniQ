@@ -4,7 +4,7 @@ import tiktoken
 
 
 class Summarizer:
-    def __init__(self, *, config, async_chat_completion_create, logger):
+    def __init__(self, *, config, async_chat_completion_create):
         """
         Summarizer is intended as a subclass of CogniqOpenAI and is responsible for managing context window.
 
@@ -17,11 +17,10 @@ class Summarizer:
             OPENAI_MAX_TOKENS_RESPONSE (int): Response from OpenAI.
 
         async_chat_completion_create (function): Function to create a chat completion.
-        logger (logging.Logger): Logger to log information about the app's status.
+
         """
         self.config = config
         self.async_chat_completion_create = async_chat_completion_create
-        self.logger = logger
 
         self.encoding = tiktoken.encoding_for_model(self.config["OPENAI_CHAT_MODEL"])
 

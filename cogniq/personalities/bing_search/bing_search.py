@@ -1,9 +1,14 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+import re
+
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
-import logging
-import re
+
 
 from .ask import Ask
 
@@ -13,7 +18,6 @@ class BingSearch(BasePersonality):
         self,
         *,
         config: dict,
-        logger: logging.Logger,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
     ):
@@ -23,7 +27,7 @@ class BingSearch(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        bing_search = BingSearch(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        bing_search = BingSearch(config=config, cslack=cslack, copenai=copenai)
         await bing_search.async_setup()
         ```
 
@@ -33,16 +37,16 @@ class BingSearch(BasePersonality):
             OPENAI_API_KEY (str): OpenAI API key.
             BING_SUBSCRIPTION_KEY (str): Bing subscription key.
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
-        self.logger = logger
+
         self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
         self._wake_pattern = re.compile(
             r"\b(search|bing|websearch|google)\b", re.IGNORECASE
         )

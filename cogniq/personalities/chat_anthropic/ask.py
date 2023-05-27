@@ -1,5 +1,6 @@
 import logging
-import os
+
+logger = logging.getLogger(__name__)
 
 from cogniq.slack import CogniqSlack
 
@@ -7,15 +8,13 @@ from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLaye
 
 
 class Ask:
-    def __init__(
-        self, *, config: dict, logger: logging.Logger, cslack: CogniqSlack, **kwargs
-    ):
+    def __init__(self, *, config: dict, cslack: CogniqSlack, **kwargs):
         """
         Ask subclass of ChatAnthropic personality
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, logger=logger, cslack=cslack)
+        ask = Ask(config=config, cslack=cslack)
         await ask.async_setup()
         ```
 
@@ -23,11 +22,11 @@ class Ask:
         config (dict): Configuration for the Chat Anthropic personality with the following keys:
             ANTHROPIC_API_KEY (str): Anthropics API key.
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         cslack (CogniqSlack): CogniqSlack instance.
 
         """
-        self.logger = logger
+
         self.config = config
         self.cslack = cslack
 
@@ -54,5 +53,5 @@ class Ask:
         newprompt = f"{message_history}\n\nHuman: {q}"
         res = layer.invoke(prompt=newprompt)
 
-        self.logger.info(f"res: {res}")
+        logger.info(f"res: {res}")
         return "".join(res)

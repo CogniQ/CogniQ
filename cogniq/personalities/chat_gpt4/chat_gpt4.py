@@ -2,7 +2,6 @@ from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
-import logging
 import re
 
 from .ask import Ask
@@ -10,20 +9,14 @@ from .ask import Ask
 
 class ChatGPT4(BasePersonality):
     def __init__(
-        self,
-        *,
-        config: dict,
-        logger: logging.Logger,
-        cslack: CogniqSlack,
-        copenai: CogniqOpenAI,
-        **kwargs
+        self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs
     ):
         """
         Chat GPT4 personality
         Please call async_setup after initializing the personality.
 
         ```
-        chat_gpt4 = ChatGPT4(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        chat_gpt4 = ChatGPT4(config=config, cslack=cslack, copenai=copenai)
         await chat_gpt4.async_setup()
         ```
 
@@ -32,16 +25,15 @@ class ChatGPT4(BasePersonality):
             OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
             OPENAI_API_KEY (str): OpenAI API key.
 
-        logger (logging.Logger): Logger to log information about the app's status.
+
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
-        self.logger = logger
         self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, logger=logger, cslack=cslack, copenai=copenai)
+        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
         self._wake_pattern = re.compile(
             r"\b(chat|gpt4|chatgpt|openai)\b", re.IGNORECASE
         )

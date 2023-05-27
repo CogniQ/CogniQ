@@ -1,8 +1,6 @@
-from typing import List
-from slack_bolt.async_app import AsyncApp
 import logging
-from slack_sdk.errors import SlackApiError
-import asyncio
+
+logger = logging.getLogger(__name__)
 
 from .openai_history import OpenAIHistory
 

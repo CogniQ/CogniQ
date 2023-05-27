@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
@@ -9,36 +13,34 @@ from cogniq.personalities import (
     ChatAnthropic,
 )
 
+
 from config import config
 
 import re
 
 
 class MultiplePersonalities:
-    def __init__(self, *, config, logger):
+    def __init__(self, *, config):
         self.config = config
-        self.logger = logger
 
         # Initialize the slack bot
         self.cslack = CogniqSlack(
             config=config,
-            logger=logger,
         )
 
         # Setup the personalities
-        self.copenai = CogniqOpenAI(config=config, logger=logger)
+        self.copenai = CogniqOpenAI(config=config)
 
         self.bing_search = BingSearch(
-            config=config, logger=logger, cslack=self.cslack, copenai=self.copenai
+            config=config, cslack=self.cslack, copenai=self.copenai
         )
 
         self.chat_gpt4 = ChatGPT4(
-            config=config, logger=logger, cslack=self.cslack, copenai=self.copenai
+            config=config, cslack=self.cslack, copenai=self.copenai
         )
 
         self.chat_anthropic = ChatAnthropic(
             config=config,
-            logger=logger,
             cslack=self.cslack,
         )
 
@@ -90,14 +92,14 @@ class MultiplePersonalities:
     def register_app_mention(self):
         @self.cslack.app.event("app_mention")
         async def handle_app_mention(event, say):
-            self.logger.info(f"app_mention: {event.get('text')}")
+            logger.info(f"app_mention: {event.get('text')}")
             original_ts = event["ts"]
             await self.dispatch(event=event, say=say, original_ts=original_ts)
 
     def register_message(self):
         @self.cslack.app.event("message")
         async def handle_message_events(event, say):
-            self.logger.info(f"message: {event.get('text')}")
+            logger.info(f"message: {event.get('text')}")
             channel_type = event["channel_type"]
             if channel_type == "im":
                 original_ts = event["ts"]
