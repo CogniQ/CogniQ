@@ -60,5 +60,5 @@ Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The 
 Question: What is Python?; Answer: <https://example2a.com|Python is a high-level programming language>. <https://example2b.com|Python is a scripting language>
 Now, it's your turn.
 {join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '(': '[', ')': ']', '<': '[', '>': ']'})}\nQuestion: {query}\n Answer:""",
-    output_parser = AnswerParser(reference_pattern=r"<(https?://[^|]+)\|[^>]+>")
+    output_parser=AnswerParser(reference_pattern=r"<(https?://[^|]+)\|[^>]+>"),
 )
