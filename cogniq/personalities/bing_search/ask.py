@@ -62,7 +62,7 @@ class Ask:
             output_variable="answers",
         )
 
-        agent_template = PromptTemplate("few-shot-react", prompt_text=agent_prompt)
+        agent_template = PromptTemplate(prompt=agent_prompt)
 
         agent_prompt_node = PromptNode(
             "gpt-3.5-turbo",

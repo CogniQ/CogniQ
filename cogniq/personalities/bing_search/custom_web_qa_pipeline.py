@@ -59,8 +59,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             api_key=self.config["OPENAI_API_KEY"],
             max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
             default_prompt_template=PromptTemplate(
-                name="custom-question-answering-with-references",
-                prompt_text=web_retriever_prompt,
+                prompt=web_retriever_prompt,
                 output_parser=AnswerParser(
                     reference_pattern=r"<(https?://[^|]+)\|[^>]+>"
                 ),
