@@ -58,12 +58,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             "gpt-3.5-turbo",
             api_key=self.config["OPENAI_API_KEY"],
             max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
-            default_prompt_template=PromptTemplate(
-                prompt=web_retriever_prompt,
-                output_parser=AnswerParser(
-                    reference_pattern=r"<(https?://[^|]+)\|[^>]+>"
-                ),
-            ),
+            default_prompt_template=web_retriever_prompt,
             model_kwargs={"temperature": 0.2},
         )
         self.pipeline.add_node(
@@ -88,4 +83,5 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         output = self.pipeline.run(query=query, params=params, debug=debug)
         # Extract the answer from the last line of the PromptNode's output
         logger.debug(f"output: {output}")
+        # logger.info(f"debug: {output['_debug']}")
         return output

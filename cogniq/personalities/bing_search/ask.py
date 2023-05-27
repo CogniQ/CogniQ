@@ -64,8 +64,6 @@ class Ask:
             output_variable="answers",
         )
 
-        agent_template = PromptTemplate(prompt=agent_prompt)
-
         agent_prompt_node = PromptNode(
             "gpt-3.5-turbo",
             api_key=self.config["OPENAI_API_KEY"],
@@ -75,7 +73,7 @@ class Ask:
 
         self.agent = Agent(
             prompt_node=agent_prompt_node,
-            prompt_template=agent_template,
+            prompt_template=agent_prompt,
             tools_manager=ToolsManager([self.web_qa_tool]),
         )
 

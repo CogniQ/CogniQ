@@ -1,4 +1,8 @@
-agent_prompt = """\
+from haystack.nodes.prompt.prompt_template import PromptTemplate
+from haystack.nodes.prompt.shapers import AnswerParser
+
+agent_prompt = PromptTemplate(
+    prompt="""\
 You have the ability to answer complex questions using tools like Search.
 Use targeted questions for accurate results. 
 Each step involves selecting a tool, creating an input, and receiving observations.
@@ -39,8 +43,10 @@ Final Answer: The <https://www.cnet.com/pictures/the-16-fastest-combat-planes-in
 ##
 Question: {query}
 Thought:"""
+)
 
-web_retriever_prompt = """\
+web_retriever_prompt = PromptTemplate(
+    prompt="""\
 Create an informative answer for the given question encased in citatations
 Either quote directly or summarize. If you summarize, adopt the tone of the source material. In either case, provide citations for every piece of information you include in the answer.
 Always cite your sources, even if they do not directly answer the question.
@@ -53,5 +59,6 @@ Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The 
 <https://example2b.com|Python is a scripting language>.'
 Question: What is Python?; Answer: <https://example2a.com|Python is a high-level programming language>. <https://example2b.com|Python is a scripting language>
 Now, it's your turn.
-{join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '[': '(', ']': ')'})}
-Question: {query}; Answer:"""
+{join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '(': '[', ')': ']', '<': '[', '>': ']'})}\nQuestion: {query}\n Answer:""",
+    output_parser = AnswerParser(reference_pattern=r"<(https?://[^|]+)\|[^>]+>")
+)
