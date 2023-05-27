@@ -2,6 +2,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import asyncio
+from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
@@ -84,6 +86,14 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
+    def agent_run(self, query):
+        return self.agent.run(
+            query=query,
+            params={
+                "Retriever": {"top_k": 3},
+            },
+        )
+
     async def ask(self, *, q, message_history=[]):
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
@@ -105,19 +115,25 @@ class Ask:
         )
 
         logger.info("history amended query: " + history_augmented_prompt)
-        # message_history.append(user_message(history_augmented_prompt))
-        agent_response = self.agent.run(
-            # query=list(reversed(message_history)),
-            query=history_augmented_prompt,
-            params={
-                "Retriever": {"top_k": 3},
-            },
-        )
+
+        loop = asyncio.get_event_loop()
+        with PoolExecutor() as executor:
+            agent_response_task = loop.run_in_executor(
+                executor,
+                self.agent_run,
+                history_augmented_prompt,
+            )
+            agent_response = await agent_response_task
         final_answer = agent_response["answers"][0]
         logger.debug(f"final_answer: {final_answer}")
-        # transcript = agent_response["transcript"]
-        # logger.debug(f"transcript: {transcript}")
         final_answer_text = final_answer.answer
+        if not final_answer_text:
+            transcript = agent_response["transcript"]
+            summarized_transcript = await self.copenai.summarizer.summarize_content(
+                transcript,
+                self.config["OPENAI_MAX_TOKENS_RESPONSE"]
+            )
+            final_answer_text = summarized_transcript
         return final_answer_text
 
     def history_augmented_prompt(self, *, q):

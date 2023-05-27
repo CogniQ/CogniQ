@@ -82,7 +82,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         :param debug: Whether the pipeline should instruct nodes to collect debug information
                       about their execution. By default, these include the input parameters
                       they received and the output they generated.
-                      YOu can then find all debug information in the dict thia method returns
+                      You can then find all debug information in the dict thia method returns
                       under the key "_debug".
         """
         output = self.pipeline.run(query=query, params=params, debug=debug)
