@@ -13,13 +13,11 @@ from .prompts import agent_prompt
 from .custom_web_qa_pipeline import CustomWebQAPipeline
 
 
-from haystack.nodes import PromptNode, PromptTemplate
-
 # For the pipeline to work, you'd need to import the Reader, Retriever, and DocumentStore
 # This example skips the pipeline configuration steps
 from haystack.agents import Agent, Tool
 from haystack.agents.base import ToolsManager
-from haystack.nodes import PromptNode, PromptTemplate
+from haystack.nodes import PromptNode
 
 
 class Ask:
@@ -45,9 +43,6 @@ class Ask:
             OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
             OPENAI_API_KEY (str): OpenAI API key.
             BING_SUBSCRIPTION_KEY (str): Bing subscription key.
-
-
-
 
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
@@ -75,6 +70,8 @@ class Ask:
             prompt_node=agent_prompt_node,
             prompt_template=agent_prompt,
             tools_manager=ToolsManager([self.web_qa_tool]),
+            max_steps=4,
+            streaming=True,
         )
 
     async def async_setup(self):
@@ -135,6 +132,10 @@ class Ask:
 
     def history_augmented_prompt(self, *, q):
         return f"""Please rephrase the Query in a way that an information retrieval system can provide an answer.
+        If you are unable to due to lack of context, or any other reason, do not ask for more context.
+        Instead, reply exactly as follows:
+
+        "{q}"
 
         Examples:
         ##

@@ -8,13 +8,9 @@ from haystack.pipelines import BaseStandardPipeline
 
 from haystack.nodes.retriever.web import WebRetriever
 from haystack.nodes import (
-    PromptTemplate,
     PromptNode,
-    Shaper,
-    TopPSampler,
 )
 from haystack.pipelines.base import Pipeline
-from haystack.nodes.prompt.shapers import AnswerParser
 from haystack.nodes.retriever.web import WebRetriever
 from haystack.nodes.preprocessor import PreProcessor
 
@@ -51,9 +47,6 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             component=self.web_retriever, name="Retriever", inputs=["Query"]
         )
 
-        self.pipeline.add_node(
-            component=TopPSampler(top_p=0.95), name="Sampler", inputs=["Retriever"]
-        )
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
             api_key=self.config["OPENAI_API_KEY"],
@@ -62,7 +55,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             model_kwargs={"temperature": 0.2},
         )
         self.pipeline.add_node(
-            component=prompt_node, name="PromptNode", inputs=["Sampler"]
+            component=prompt_node, name="PromptNode", inputs=["Retriever"]
         )
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}
