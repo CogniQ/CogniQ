@@ -1,0 +1,13 @@
+name: on_push_build
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+on:
+  push:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
