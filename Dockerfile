@@ -35,13 +35,6 @@ RUN python3 -c "from haystack.utils.docker import cache_schema; cache_schema()"
 # We cache these models for seemless user experience.
 RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_model()"
 
-#ENV LD_LIBRARY_PATH="/opt/conda/lib"
-#ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/conda/lib64"
-#ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/conda/pkgs/pytorch-1.13.1-py3.10_cuda11.6_cudnn8.3.2_0/lib/python3.10/site-packages/torch/lib"
-#ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/opt/conda/nsight-compute/2022.4.0/host/target-linux-x64"
-#ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/nccl_2.18.1-1+cuda11.0_x86_64/lib"
-
-# USER cogniq
 WORKDIR /app
 
 COPY . ./
