@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 import asyncio
 from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
-from cogniq.openai import system_message, user_message, CogniqOpenAI
+from cogniq.openai import system_message, user_message, assistant_message, message_to_string, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
 
@@ -59,20 +59,13 @@ class Ask:
             output_variable="answers",
         )
 
-        agent_prompt_node = PromptNode(
+        self.agent_prompt_node = PromptNode(
             "gpt-3.5-turbo",
             api_key=self.config["OPENAI_API_KEY"],
             max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
             stop_words=["Observation:"],
         )
 
-        self.agent = Agent(
-            prompt_node=agent_prompt_node,
-            prompt_template=agent_prompt,
-            tools_manager=ToolsManager([self.web_qa_tool]),
-            max_steps=4,
-            streaming=True,
-        )
 
     async def async_setup(self):
         """
@@ -82,7 +75,14 @@ class Ask:
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
     def agent_run(self, query):
-        return self.agent.run(
+        agent = Agent(
+            prompt_node=self.agent_prompt_node,
+            prompt_template=agent_prompt,
+            tools_manager=ToolsManager([self.web_qa_tool]),
+            max_steps=4,
+            streaming=True,
+        )
+        return agent.run(
             query=query,
             params={
                 "Retriever": {"top_k": 3},
@@ -130,37 +130,12 @@ class Ask:
             final_answer_text = summarized_transcript
         return final_answer_text
 
-    def history_augmented_prompt(self, *, q):
-        return f"""Please rephrase the Query in a way that an information retrieval system can provide an answer.
-        If you are unable to due to lack of context, or any other reason, do not ask for more context.
-        Instead, reply exactly as follows:
-
-        "{q}"
-
-        Examples:
-        ##
-        Query: "why is that the case?"
-        Response: "Why is it the case that the sky is blue?"
-        ##
-        Query: "tell me more"
-        Response: "Tell me more about the weather in Seattle and how it is often rainy."
-        ##
-        Query: {q}
-        Response:"""
-
     async def get_history_augmented_prompt(self, *, q, message_history):
-        history_augmented_message_history = message_history.copy()
-        history_augmented_message_history.append(
-            user_message(self.history_augmented_prompt(q=q))
-        )
-        response = await self.copenai.async_chat_completion_create(
-            messages=history_augmented_message_history,
-            temperature=0.7,
-            max_tokens=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
-            top_p=1,
-            frequency_penalty=0,  # scales down the log probabilities of words that the model has seen frequently during training
-            presence_penalty=0,  # modifies the probability distribution to make less likely words that were present in the input prompt or seed text
-        )
-        answer = response["choices"][0]["message"]["content"].strip()
-        logger.debug(f"modifying query for history: {answer}")
-        return answer
+        """
+        Returns a prompt augmented with the message history.
+        """
+        history="\n\n".join([message_to_string(message) for message in message_history]),
+        prompt = f"""Conversation history: {history}
+
+        Query: {q}"""
+        return prompt

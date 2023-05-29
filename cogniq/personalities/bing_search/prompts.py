@@ -10,6 +10,8 @@ correctly, you have access to the following tools:\n\n
 To answer questions, you'll need to go through multiple steps involving step-by-step thinking and
 selecting appropriate tools and their inputs; tools will respond with observations.
 Compose a final answer with your compiled observations, ensuring that you cite your sources.
+
+If you need to ask the user anything, respond with `Final Answer:` and then ask your question.
 When you are ready for a final answer, respond with the `Final Answer:`\n\n
 
 Use the following format:\n\n
@@ -53,7 +55,7 @@ Thought: We've learned that the <https://www.af.mil/About-Us/Fact-Sheets/Display
 Final Answer: The <https://www.cnet.com/pictures/the-16-fastest-combat-planes-in-the-us-air-force/2/|fastest US fighter jet is the F-15E Strike Eagle, with a speed of up to 1,875 miles per hour>. Its specifications include <https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104470/f-15e-strike-eagle/|two Pratt & Whitney F100-PW-220 or 229 engines, each capable of producing 25,000 or 29,000 pounds of thrust respectively.>
 ##
 Question: {query}\n
-Thought: Let's think step-by-step, I first need to {transcript}"""
+Thought: Let's think step-by-step. {transcript}"""
 )
 
 web_retriever_prompt = PromptTemplate(
