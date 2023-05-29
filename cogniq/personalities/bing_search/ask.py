@@ -5,7 +5,13 @@ logger = logging.getLogger(__name__)
 import asyncio
 from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
-from cogniq.openai import system_message, user_message, assistant_message, message_to_string, CogniqOpenAI
+from cogniq.openai import (
+    system_message,
+    user_message,
+    assistant_message,
+    message_to_string,
+    CogniqOpenAI,
+)
 from cogniq.slack import CogniqSlack
 
 
@@ -65,7 +71,6 @@ class Ask:
             max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
             stop_words=["Observation:"],
         )
-
 
     async def async_setup(self):
         """
@@ -134,7 +139,9 @@ class Ask:
         """
         Returns a prompt augmented with the message history.
         """
-        history="\n\n".join([message_to_string(message) for message in message_history]),
+        history = (
+            "\n\n".join([message_to_string(message) for message in message_history]),
+        )
         prompt = f"""Conversation history: {history}
 
         Query: {q}"""
