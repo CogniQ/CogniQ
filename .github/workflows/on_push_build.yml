@@ -1,4 +1,4 @@
-name: on_push_build
+name: on_push
 
 permissions:
   id-token: write
