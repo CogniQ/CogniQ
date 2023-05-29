@@ -26,11 +26,19 @@ tiktoken = "^0.4.0"
 # Torch dependencies
 # ------
 # Pick one of the following two lines.
-# If you have CUDA 11.8 installed, use the first line. Ensure that the pytorch source is uncommented above.
-# torch = { version = "2.0.1+cu118", source = "pytorch" }
-# torchvision =   { version = "0.15.2+cu118", source = "pytorch" }
-# # If you do not have CUDA 11.8 installed, use the second line. Comment out the pytorch source above for a significant performance improvement.
-  torch = { version = "2.0.1" }
+# If you have CUDA 11.8 installed (ie. Linux), use the the official pytorch source. Ensure that the pytorch source is uncommented above.
+# If you do not have CUDA 11.8 installed (ie. OSX), use pypi.
+
+torch = [ 
+  { version = "2.0.1+cu118", source = "pytorch", markers = "sys_platform=='linux'"  },
+  { version = "2.0.1", markers = "sys_platform=='darwin'" }
+]
+torchvision = [ 
+  { version = "0.15.2+cu118", source = "pytorch", markers = "sys_platform=='linux'" },
+  { version = "0.15.2", markers = "sys_platform=='darwin'" }
+] 
+
+
 
 multiprocess = "0.70.14"
 # farm-haystack = { version = "1.16.1", extras = [] }
@@ -44,3 +52,4 @@ black = "^23.3.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
