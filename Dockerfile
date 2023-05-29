@@ -1,19 +1,21 @@
-FROM bitnami/python:3.10.11 AS build-image
+FROM deepset/haystack:base-gpu-v1.17.0-rc2 AS build-image
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER 0
-RUN install_packages \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     curl \
     vim \
     libfontconfig \
-    git
+    git && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -d /app -u 1000 -g 0 -s /bin/bash cogniq
 
 RUN chown cogniq /app
 
-ENV PATH="/app/.local/bin:$PATH"
+ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml poetry.lock ./
 RUN pip install --upgrade pip && \
@@ -23,8 +25,6 @@ RUN pip install --upgrade pip && \
     poetry install --no-interaction --no-ansi
 
 COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
-
-ENV PATH="/app/.venv/bin:$PATH"
 
 # The JSON schema is lazily generated at first usage, but we do it explicitly here for two reasons:
 # - the schema will be already there when the container runs, saving the generation overhead when a container starts
@@ -42,6 +42,7 @@ COPY . ./
 
 # Expose any ports the app is expected to run on
 EXPOSE 3000
+USER 1000
 
 # If you have an entrypoint script, copy it and make it executable
 # COPY docker-entrypoint.sh /usr/local/bin/
