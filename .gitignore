@@ -1,11 +1,6 @@
-# Given poetry shenanigans being unable to detect the architecture of the underlying system,
-# We'll manually check in the poetry.lock file when necessary.
-# Re-evaluate this when poetry releases 1.5
-poetry.lock
-pyproject.toml
-
 deployments/*
 .envrc
+.venv
 # Created by https://www.toptal.com/developers/gitignore/api/macos,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,python
 
