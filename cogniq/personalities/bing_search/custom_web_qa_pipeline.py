@@ -8,13 +8,9 @@ from haystack.pipelines import BaseStandardPipeline
 
 from haystack.nodes.retriever.web import WebRetriever
 from haystack.nodes import (
-    PromptTemplate,
     PromptNode,
-    Shaper,
-    TopPSampler,
 )
 from haystack.pipelines.base import Pipeline
-from haystack.nodes.prompt.shapers import AnswerParser
 from haystack.nodes.retriever.web import WebRetriever
 from haystack.nodes.preprocessor import PreProcessor
 
@@ -51,24 +47,15 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             component=self.web_retriever, name="Retriever", inputs=["Query"]
         )
 
-        self.pipeline.add_node(
-            component=TopPSampler(top_p=0.95), name="Sampler", inputs=["Retriever"]
-        )
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
             api_key=self.config["OPENAI_API_KEY"],
             max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
-            default_prompt_template=PromptTemplate(
-                name="custom-question-answering-with-references",
-                prompt_text=web_retriever_prompt,
-                output_parser=AnswerParser(
-                    reference_pattern=r"<(https?://[^|]+)\|[^>]+>"
-                ),
-            ),
+            default_prompt_template=web_retriever_prompt,
             model_kwargs={"temperature": 0.2},
         )
         self.pipeline.add_node(
-            component=prompt_node, name="PromptNode", inputs=["Sampler"]
+            component=prompt_node, name="PromptNode", inputs=["Retriever"]
         )
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}
@@ -83,10 +70,11 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         :param debug: Whether the pipeline should instruct nodes to collect debug information
                       about their execution. By default, these include the input parameters
                       they received and the output they generated.
-                      YOu can then find all debug information in the dict thia method returns
+                      You can then find all debug information in the dict thia method returns
                       under the key "_debug".
         """
         output = self.pipeline.run(query=query, params=params, debug=debug)
         # Extract the answer from the last line of the PromptNode's output
         logger.debug(f"output: {output}")
+        # logger.info(f"debug: {output['_debug']}")
         return output

@@ -12,3 +12,7 @@ def system_message(content):
 
 def assistant_message(content):
     return message("assistant", content)
+
+
+def message_to_string(message):
+    return f"{message['role']}: {message['content']}"

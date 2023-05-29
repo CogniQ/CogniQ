@@ -9,7 +9,6 @@ from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
 
-
 from .ask import Ask
 
 

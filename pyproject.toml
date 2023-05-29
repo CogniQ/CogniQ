@@ -34,7 +34,7 @@ tiktoken = "^0.4.0"
 
 multiprocess = "0.70.14"
 # farm-haystack = { version = "1.16.1", extras = [] }
-farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "develop", extras = [] }
+farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "v1.17.0-rc1", extras = [] }
 tenacity = "^8.2.2"
 
 

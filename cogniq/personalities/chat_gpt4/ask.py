@@ -6,8 +6,6 @@ from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
 
-
-
 class Ask:
     def __init__(
         self,
