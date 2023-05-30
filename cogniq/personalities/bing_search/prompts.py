@@ -56,7 +56,7 @@ Thought: We've learned that the <https://www.af.mil/About-Us/Fact-Sheets/Display
 Final Answer: The <https://www.cnet.com/pictures/the-16-fastest-combat-planes-in-the-us-air-force/2/|fastest US fighter jet is the F-15E Strike Eagle, with a speed of up to 1,875 miles per hour>. Its specifications include <https://www.af.mil/About-Us/Fact-Sheets/Display/Article/104470/f-15e-strike-eagle/|two Pratt & Whitney F100-PW-220 or 229 engines, each capable of producing 25,000 or 29,000 pounds of thrust respectively.>
 ##
 Question: {query}\n
-Thought: Let's think step-by-step. {transcript}"""
+Thought: Let's think step-by-step. {transcript}""",
 )
 
 web_retriever_prompt = PromptTemplate(
