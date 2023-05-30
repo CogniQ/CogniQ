@@ -20,7 +20,7 @@ RUN apt-get update && \
 
 RUN useradd -m -d /app -u 1000 -g 0 -s /bin/bash cogniq
 
-RUN chown cogniq /app
+RUN chown -R cogniq /app /tmp
 
 ENV PATH="/opt/venv/bin:$PATH"
 

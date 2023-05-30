@@ -11,7 +11,7 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3000]
+	"forwardPorts": [3000],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	//"postCreateCommand": ". /opt/venv/bin/activate && pip install --upgrade pip && pip install poetry && poetry install"
@@ -19,6 +19,6 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
-	//"runArgs": ["--gpus", "all"]
+	"remoteUser": "1000",
+	"runArgs": ["--gpus", "all"]
 }
