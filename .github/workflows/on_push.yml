@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/_build.yml
 
   deploy-cogniq-community-main:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*' || github.ref == 'refs/heads/jimp/cidev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*'
     needs:
       - build
       - vars
