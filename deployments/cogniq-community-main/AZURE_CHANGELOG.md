@@ -51,7 +51,7 @@ az role assignment create \
 cat > credential.json
 {
     "name": "cogniq-gha-main",
-    "issuer": "https://token.actions.githubusercontent.com/",
+    "issuer": "https://token.actions.githubusercontent.com",
     "subject": "repo:CogniQ/CogniQ:ref:refs/heads/main",
     "description": "cogniq-gha-main",
     "audiences": [
@@ -69,7 +69,7 @@ Again for pull requests.
 cat > credential.json
 {
     "name": "cogniq-gha-pull-requests",
-    "issuer": "https://token.actions.githubusercontent.com/",
+    "issuer": "https://token.actions.githubusercontent.com",
     "subject": "repo:CogniQ/CogniQ:pull_request",
     "description": "cogniq-gha-pull-request",
     "audiences": [
@@ -86,7 +86,7 @@ Again for the cogniq-community-main environment.
 cat > credential.json
 {
     "name": "cogniq-gha-environment-cogniq-community-main",
-    "issuer": "https://token.actions.githubusercontent.com/",
+    "issuer": "https://token.actions.githubusercontent.com",
     "subject": "repo:CogniQ/CogniQ:environment:cogniq-community-main",
     "description": "cogniq-gha-environment-cogniq-community-main",
     "audiences": [
@@ -128,3 +128,9 @@ az role assignment create \
   | Variable Name | Value |
   |---------------|-------|
   | AZURE_RESOURCE_GROUP_NAME | cogniq-community-main |
+
+8. Register for the provider
+
+```bash
+az provider register --namespace Microsoft.ContainerInstance
+```
