@@ -43,8 +43,11 @@ jobs:
           --push \
           --cache-from $REPOSITORY:main \
           --cache-from $REPOSITORY:${{ steps.vars.outputs.image_tag }} \
+          --build-arg BUILD_TIME=$(TIMESTAMP) \
+          --build-arg BUILD_VERSION=${{ steps.vars.outputs.image_tag }} \
+          --build-arg BUILD_SHA=${{ steps.vars.outputs.short_sha }} \
+          --label "org.opencontainers.image.url=${GITHUB_RUN_ID}" \
           -t $REPOSITORY:${{ steps.vars.outputs.image_tag }} \
           -t $REPOSITORY:${{ steps.vars.outputs.short_sha }} \
-          --label "runnumber=${GITHUB_RUN_ID}" \
           -f Dockerfile \
           .
