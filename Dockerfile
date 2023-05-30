@@ -1,5 +1,12 @@
 FROM deepset/haystack:base-gpu-v1.17.0-rc2 AS build-image
 
+LABEL org.opencontainers.image.base.name="docker.io/deepset/haystack:base-gpu-v1.17.0-rc2" \
+      org.opencontainers.image.description="Application packaged by CogniQ" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.title="CogniQ" \
+      org.opencontainers.image.vendor="CogniQ" \
+      org.opencontainers.image.source="https://github.com/CogniQ/CogniQ"
+
 ARG DEBIAN_FRONTEND=noninteractive
 
 USER 0
@@ -17,35 +24,26 @@ RUN chown cogniq /app
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 RUN pip install --upgrade pip && \
     pip install poetry && \
-    poetry config virtualenvs.in-project true && \
+    poetry config virtualenvs.create false && \
     poetry lock --no-interaction --no-ansi && \
     poetry install --no-interaction --no-ansi
-
-COPY --from=deepset/xpdf:latest /opt/pdftotext /usr/local/bin
-
-# The JSON schema is lazily generated at first usage, but we do it explicitly here for two reasons:
-# - the schema will be already there when the container runs, saving the generation overhead when a container starts
-# - derived images don't need to write the schema and can run with lower user privileges
-RUN python3 -c "from haystack.utils.docker import cache_schema; cache_schema()"
-
-# Haystack Preprocessor uses NLTK punkt model to divide text into a list of sentences.
-# We cache these models for seemless user experience.
-RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_model()"
 
 WORKDIR /app
 
 COPY . ./
 
-
 # Expose any ports the app is expected to run on
 EXPOSE 3000
+
 USER 1000
 
-# If you have an entrypoint script, copy it and make it executable
-# COPY docker-entrypoint.sh /usr/local/bin/
-# RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ARG BUILD_TIME="2023-00-00T00:00:00Z"
+ARG BUILD_VERSION="0.0.0+unversioned"
+ARG BUILD_SHA="00000000"
 
-# ENTRYPOINT ["docker-entrypoint.sh"]
+LABEL org.opencontainers.image.created=${BUILD_TIME} \
+      org.opencontainers.image.revision=${BUILD_SHA} \
+      org.opencontainers.image.version=${BUILD_VERSION}

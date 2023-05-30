@@ -15,20 +15,22 @@ name = "pytorch"
 url = "https://download.pytorch.org/whl/cu118/"
 priority = "explicit"
 
+# Valid in Docker and in local installs.
 [tool.poetry.dependencies]
 python = "^3.10"
 slack-bolt = "^1.18.0"
 openai = "^0.27.6"
 aiohttp = "^3.8.4"
 tiktoken = "^0.4.0"
+multiprocess = "0.70.14"
+tenacity = "^8.2.2"
 
-##
-# Torch dependencies
-# ------
-# Pick one of the following two lines.
-# If you have CUDA 11.8 installed (ie. Linux), use the the official pytorch source. Ensure that the pytorch source is uncommented above.
-# If you do not have CUDA 11.8 installed (ie. OSX), use pypi.
 
+# Only necessary when installing locally.
+[tool.poetry.group.localinstall]
+optional = true
+
+[tool.poetry.group.localinstall.dependencies]
 torch = [ 
   { version = "2.0.1+cu118", source = "pytorch", markers = "sys_platform=='linux'"  },
   { version = "2.0.1", markers = "sys_platform=='darwin'" }
@@ -37,13 +39,7 @@ torchvision = [
   { version = "0.15.2+cu118", source = "pytorch", markers = "sys_platform=='linux'" },
   { version = "0.15.2", markers = "sys_platform=='darwin'" }
 ] 
-
-
-
-multiprocess = "0.70.14"
-# farm-haystack = { version = "1.16.1", extras = [] }
-farm-haystack = { git = "https://github.com/CogniQ/haystack.git", branch = "v1.17.0-rc1", extras = [] }
-tenacity = "^8.2.2"
+farm-haystack = { version = "1.17.0-rc2", extras = [] }
 
 
 [tool.poetry.group.dev.dependencies]
