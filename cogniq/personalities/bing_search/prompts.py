@@ -2,7 +2,8 @@ from haystack.nodes.prompt.prompt_template import PromptTemplate
 from haystack.nodes.prompt.shapers import AnswerParser
 
 agent_prompt = PromptTemplate(
-    prompt="""\
+    "custom-agent",
+    prompt_text="""\
 You are a helpful and knowledgeable agent. To achieve your goal of answering complex questions
 correctly, you have access to the following tools:\n\n
 {tool_names_with_descriptions}\n\n
@@ -59,7 +60,8 @@ Thought: Let's think step-by-step. {transcript}"""
 )
 
 web_retriever_prompt = PromptTemplate(
-    prompt="""\
+    "custom-web-retriever",
+    prompt_text="""\
 Create an informative answer for the given question encased in citatations
 Either quote directly or summarize. If you summarize, adopt the tone of the source material. In either case, provide citations for every piece of information you include in the answer.
 Always cite your sources, even if they do not directly answer the question.

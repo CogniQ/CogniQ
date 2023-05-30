@@ -541,12 +541,14 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "farm-haystack"
-version = "1.17.0rc1"
+version = "1.17.0rc2"
 description = "Neural Question Answering & Semantic Search at Scale. Use modern transformer based models like BERT to find answers in large document collections"
 optional = false
 python-versions = ">=3.8"
-files = []
-develop = false
+files = [
+    {file = "farm_haystack-1.17.0rc2-py3-none-any.whl", hash = "sha256:6eaf7f670d0187e7c8eb96de633059fbefacf794635938c7f3679fbf725bc53a"},
+    {file = "farm_haystack-1.17.0rc2.tar.gz", hash = "sha256:2f394d76d2ba46291f99622646db9aee1cb9a867841b5efdbbd607005de82b09"},
+]
 
 [package.dependencies]
 azure-ai-formrecognizer = ">=3.2.0b2"
@@ -605,12 +607,6 @@ preprocessing = ["langdetect", "nltk"]
 ray = ["aiorwlock (>=1.3.0,<2)", "ray[serve] (>=1.9.1,!=1.12.0,<2)", "ray[serve] (>=1.9.1,<2)"]
 sql = ["psycopg2-binary", "sqlalchemy (>=1.4.2,<2)", "sqlalchemy-utils"]
 weaviate = ["weaviate-client (<3.19.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/CogniQ/haystack.git"
-reference = "v1.17.0-rc1"
-resolved_reference = "b8911dfae01643dccf0803648ef3fb705d43dfbd"
 
 [[package]]
 name = "filelock"
@@ -2657,4 +2653,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9b76ac3f14d8e093585f4d2b2e69bc1f3bafe8d0f1793605a6baf5b15a813aa1"
+content-hash = "f3bc843dd8581ac773667994bd0dfb783fc0519c72f7d268449c569593b82d71"
