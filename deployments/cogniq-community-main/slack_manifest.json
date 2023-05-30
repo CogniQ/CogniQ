@@ -28,7 +28,7 @@
     },
     "settings": {
         "event_subscriptions": {
-            "request_url": "http://cogniq-community-main.eastus.azurecontainer.io/slack/events",
+            "request_url": "http://cogniq-community-main.eastus.azurecontainer.io:3000/slack/events",
             "bot_events": [
                 "app_mention",
                 "message.app_home",
