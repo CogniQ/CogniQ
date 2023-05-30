@@ -80,6 +80,27 @@ cat > credential.json
 az ad app federated-credential create --id ${AZURE_APPLICATION_OBJECT_ID} --parameters credential.json
 ```
 
+Again for the cogniq-community-main environment.
+
+```bash
+cat > credential.json
+{
+    "name": "cogniq-gha-environment-cogniq-community-main",
+    "issuer": "https://token.actions.githubusercontent.com/",
+    "subject": "repo:CogniQ/CogniQ:environment:cogniq-community-main",
+    "description": "cogniq-gha-environment-cogniq-community-main",
+    "audiences": [
+        "api://AzureADTokenExchange"
+    ]
+}
+
+az ad app federated-credential create --id ${AZURE_APPLICATION_OBJECT_ID} --parameters credential.json
+```
+
+
+
+
+
 5. Grant Azure Container Instances access
 
 Grant [Contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles) to the App.
