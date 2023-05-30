@@ -25,7 +25,8 @@ RUN chown -R cogniq /app /tmp
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml ./
-RUN pip install --upgrade pip && \
+RUN --mount=type=cache,target=/root/.cache \
+    pip install --upgrade pip && \
     pip install poetry && \
     poetry config virtualenvs.create false && \
     poetry lock --no-interaction --no-ansi && \
