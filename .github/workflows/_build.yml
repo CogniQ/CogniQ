@@ -30,6 +30,9 @@ jobs:
     - name: Log in to registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
+    - name: Free up disk space for this particularly large build
+      uses: jlumbroso/free-disk-space@v1.2.0
+
     - id: build
       env:
         DOCKER_BUILDKIT: 1
