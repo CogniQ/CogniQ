@@ -35,14 +35,12 @@ jobs:
         DOCKER_BUILDKIT: 1
         REPOSITORY: 'ghcr.io/cogniq/cogniq'
       run: |
-        docker pull $REPOSITORY:main || true
-        docker pull $REPOSITORY:${{ steps.vars.outputs.image_tag }} || true
-
         docker buildx build  \
           --pull \
           --push \
-          --cache-from $REPOSITORY:main \
-          --cache-from $REPOSITORY:${{ steps.vars.outputs.image_tag }} \
+          --cache-to type=gha,mode=max,ignore-error=true \
+          --cache-from type=gha,scope=main \
+          --cache-from type=gha \
           --build-arg BUILD_TIME=$(TIMESTAMP) \
           --build-arg BUILD_VERSION=${{ steps.vars.outputs.image_tag }} \
           --build-arg BUILD_SHA=${{ steps.vars.outputs.short_sha }} \
