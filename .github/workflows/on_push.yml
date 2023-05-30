@@ -9,5 +9,37 @@ on:
   push:
 
 jobs:
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.vars.outputs.image_tag }}
+      short_sha: ${{ steps.vars.outputs.short_sha }}
+      short_commit_message: ${{ steps.vars.outputs.short_commit_message }}
+      author_email: ${{ steps.vars.outputs.author_email }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set outputs
+      id: vars
+      run: |
+        # Extract branch or tag from GitHub ref, and remove 'v' prefix for tags
+        IMAGE_TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' -e '/^refs\/tags\//s/^v//')
+        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+        echo "short_sha=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
+
+        echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
+        echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
+
   build:
     uses: ./.github/workflows/_build.yml
+
+  deploy-cogniq-community-main:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*' || github.ref == 'refs/heads/jimp/cidev'
+    needs:
+      - build
+      - vars
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      image_tag: ${{ needs.vars.outputs.image_tag }}
+      environment: cogniq-community-main
+    secrets: inherit

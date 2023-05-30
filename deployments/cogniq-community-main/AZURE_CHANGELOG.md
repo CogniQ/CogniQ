@@ -90,10 +90,10 @@ This is frankly, very broad credentials. TODO: Narrow this down.
 az role assignment create \
 --assignee ${AZURE_CLIENT_ID} \
 --role Contributor \
- --scope /subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP_NAME}
+ --scope /subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP_NAME}/providers/Microsoft.Web/sites/cogniq-community-main
  ```
 
- 6. Create Secrets in GitHub with the following names and values
+6. Create Secrets in GitHub with the following names and values
 
   | Secret Name | Value |
   | ----------- | ----- |
