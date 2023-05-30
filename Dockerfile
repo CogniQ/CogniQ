@@ -47,3 +47,5 @@ ARG BUILD_SHA="00000000"
 LABEL org.opencontainers.image.created=${BUILD_TIME} \
       org.opencontainers.image.revision=${BUILD_SHA} \
       org.opencontainers.image.version=${BUILD_VERSION}
+
+CMD python main.py
