@@ -1,4 +1,4 @@
-name: on_push
+name: on_pull_request
 
 permissions:
   id-token: write
