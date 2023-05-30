@@ -1,0 +1,12 @@
+name: on_push
+
+permissions:
+  id-token: write
+  contents: write
+
+on:
+  push:
+
+jobs:
+  build:
+    uses: ./.github/workflows/_auto_lint.yml

@@ -1,8 +1,10 @@
-name: Auto Lint
+name: _auto_lint
 
 on:
-  pull_request:
+  workflow_call:
 
+# Permissions can only be downgraded by the called workflow.
+# Make sure that the calling workflow has at least the following permissions.
 permissions:
   contents: write # This is needed to commit changes
 
