@@ -44,8 +44,9 @@ jobs:
         location: 'east us'
         cpu: 1
         memory: 1
+        ports: "3000"
         environment-variables: |
-          PORT=80
+          PORT=3000
         secure-environment-variables: |
           SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}
           SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}
