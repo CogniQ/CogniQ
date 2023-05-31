@@ -50,6 +50,38 @@ CogniQ will incorporate the top three search results into its answer and will pr
 
 If you prefer Claude, you can use the wake word "Claude" or "Anthropic" to have CogniQ use Claude instead of Chat GPT4.
 
+# Deployment
+
+## Running locally
+
+- [ ] Install the prerequisites (below in the development section)
+
+```bash
+
+# If you haven't already, initialize a virtualenv: 
+python -m venv .venv
+
+# Install the dependencies:  
+make deps
+source .venv/bin/activate
+
+# Copy the example .envrc file to .envrc
+cp .env.example .env
+
+# Edit the .envrc file to add your API keys
+echo "edit .env to add your API keys"
+
+
+# Run the app
+python main.py
+```
+
+## Running in a Docker container
+
+```
+docker run --env_file .env ghcr.io/cogniq/cogniq:main
+```
+
 # Development in 4 steps.
 
 ## 1. Prerequisites

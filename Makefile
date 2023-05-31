@@ -39,7 +39,7 @@ docker-build-no-cache:
 .PHONY: docker-run
 docker-run: .envrc
 	docker run \
-		--env-file .envrc \
+		--env-file .env \
 		$(DOCKER_TAG)
 
 .PHONY: azure-container-logs

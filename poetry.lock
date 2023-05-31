@@ -329,18 +329,28 @@ mermaid = ["requests"]
 
 [[package]]
 name = "cattrs"
-version = "22.2.0"
+version = "23.1.1"
 description = "Composable complex class support for attrs and dataclasses."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "cattrs-22.2.0-py3-none-any.whl", hash = "sha256:bc12b1f0d000b9f9bee83335887d532a1d3e99a833d1bf0882151c97d3e68c21"},
-    {file = "cattrs-22.2.0.tar.gz", hash = "sha256:f0eed5642399423cf656e7b66ce92cdc5b963ecafd041d1b24d136fdde7acf6d"},
+    {file = "cattrs-23.1.1-py3-none-any.whl", hash = "sha256:6558a4ed415bffb202993cdc8ce0ba5b919c6eab19b996251a61a3329f900d62"},
+    {file = "cattrs-23.1.1.tar.gz", hash = "sha256:7d7372fe0156f2868c6b8852e069a0cfa2b493b77850fc7353f45057ac5f5d2d"},
 ]
 
 [package.dependencies]
 attrs = ">=20"
 exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
+typing_extensions = {version = "*", markers = "python_version < \"3.11\""}
+
+[package.extras]
+bson = ["pymongo (>=4.2.0,<5.0.0)"]
+cbor2 = ["cbor2 (>=5.4.6,<6.0.0)"]
+msgpack = ["msgpack (>=1.0.2,<2.0.0)"]
+orjson = ["orjson (>=3.5.2,<4.0.0)"]
+pyyaml = ["PyYAML (>=6.0,<7.0)"]
+tomlkit = ["tomlkit (>=0.11.4,<0.12.0)"]
+ujson = ["ujson (>=5.4.0,<6.0.0)"]
 
 [[package]]
 name = "certifi"
@@ -1619,6 +1629,20 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-dotenv"
+version = "1.0.0"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python-dotenv-1.0.0.tar.gz", hash = "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba"},
+    {file = "python_dotenv-1.0.0-py3-none-any.whl", hash = "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"},
+]
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "pytz"
 version = "2023.3"
 description = "World timezone definitions, modern and historical"
@@ -2653,4 +2677,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f3bc843dd8581ac773667994bd0dfb783fc0519c72f7d268449c569593b82d71"
+content-hash = "410b3b5e112f3bff91f0c0dc3d4635fc6885797e9de6b2122451864a1bb4d705"

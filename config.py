@@ -1,28 +1,32 @@
 import os
 import logging
+from dotenv import dotenv_values
 
-config = {
-    "SLACK_BOT_TOKEN": os.environ.get("SLACK_BOT_TOKEN"),
-    "SLACK_SIGNING_SECRET": os.environ.get("SLACK_SIGNING_SECRET"),
-    "SLACK_APP_TOKEN": os.environ.get("SLACK_APP_TOKEN"),
-    "HOST": os.environ.get("HOST") or "0.0.0.0",
-    "PORT": os.environ.get("PORT") or "3000",
-    "APP_ENV": os.environ.get("APP_ENV") or "production",
-    "BING_SUBSCRIPTION_KEY": os.environ["BING_SUBSCRIPTION_KEY"],
-    "BING_SEARCH_ENDPOINT": os.environ.get(
-        "BING_SEARCH_ENDPOINT", "https://api.bing.microsoft.com"
-    ),
-    "ANTHROPIC_API_KEY": os.environ.get("ANTHROPIC_API_KEY"),
-    "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
-    "OPENAI_API_TYPE": os.environ.get("OPENAI_API_TYPE"),  # Azure
-    "OPENAI_API_BASE": os.environ.get("OPENAI_API_BASE"),  # Azure
-    "OPENAI_API_VERSION": os.environ.get("OPENAI_API_VERSION"),  # Azure
-    "OPENAI_CHAT_MODEL": os.environ.get("OPENAI_CHAT_MODEL", "gpt-3.5-turbo"),
-    "OPENAI_MAX_TOKENS_HISTORY": os.environ.get("OPENAI_MAX_TOKENS_HISTORY", 800),
-    "OPENAI_MAX_TOKENS_RETRIEVAL": os.environ.get("OPENAI_MAX_TOKENS_RETRIEVAL", 700),
-    "OPENAI_MAX_TOKENS_PROMPT": os.environ.get("OPENAI_MAX_TOKENS_PROMPT", 1000),
-    "OPENAI_MAX_TOKENS_RESPONSE": os.environ.get("OPENAI_MAX_TOKENS_RESPONSE", 800),
+# Define default values
+defaults = {
+    "HOST": "0.0.0.0",
+    "PORT": "3000",
+    "APP_ENV": "production",
+    "BING_SEARCH_ENDPOINT": "https://api.bing.microsoft.com",
+    "OPENAI_CHAT_MODEL": "gpt-3.5-turbo",
+    "OPENAI_MAX_TOKENS_HISTORY": 800,
+    "OPENAI_MAX_TOKENS_RETRIEVAL": 700,
+    "OPENAI_MAX_TOKENS_PROMPT": 1000,
+    "OPENAI_MAX_TOKENS_RESPONSE": 800,
 }
+
+# Attempt to load .env values, fallback to empty dict if .env file doesn't exist
+try:
+    dotenv_config = dotenv_values(".env")
+except FileNotFoundError:
+    dotenv_config = {}
+
+# Merge .env values and environment variables
+config = {**dotenv_config, **os.environ}
+
+# Set default values if neither an environment variable nor a .env value is present
+for var, default in defaults.items():
+    config.setdefault(var, default)
 
 config["LOG_LEVEL"] = (
     logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO

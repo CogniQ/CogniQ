@@ -24,6 +24,7 @@ aiohttp = "^3.8.4"
 tiktoken = "^0.4.0"
 multiprocess = "0.70.14"
 tenacity = "^8.2.2"
+python-dotenv = "^1.0.0"
 
 
 # Only necessary when installing locally.
