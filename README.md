@@ -185,9 +185,9 @@ To set up Bing Search API keys, follow these steps:
 
 To set up OpenAI API keys, follow these steps:
 
-1. Go to the OpenAI website at https://beta.openai.com/signup/ and sign up for an account if you don't have one already.
+1. Go to the OpenAI website at <https://platform.openai.com/signup/> and sign up for an account if you don't have one already.
 
-2. Once you have an account, sign in and go to the API Keys section in your OpenAI Dashboard: https://beta.openai.com/dashboard/api-keys
+2. Once you have an account, sign in and go to the API Keys section in your OpenAI Dashboard: <https://platform.openai.com/account/api-keys>
 
 3. Click on the "Create an API key" button.
 
@@ -213,7 +213,7 @@ To set up Anthropic Claude API keys, follow these steps:
 
    ```
    ANTHROPIC_API_KEY=<your_anthropic_api_key>
-   ```   
+   ```
 
 ### Deploy to Slack
 
@@ -233,7 +233,6 @@ To set up Anthropic Claude API keys, follow these steps:
 16. Add the `SLACK_BOT_TOKEN` to the `.env` file.
 
 > ⚠️ **Remember to never commit your `.env` file to the repository as it contains sensitive information.** ⚠️
-
 
 
 ## 3a. Run the app locally
