@@ -6,7 +6,7 @@ Thank you for your interest in contributing to CogniQ! Your contributions are va
 
 1. Fork the repository on GitHub.
 2. Clone your fork of the repository to your local machine: `git clone https://github.com/<your-username>/CogniQ.git`
-3. Set up the development environment following the instructions in the [README.md](https://github.com/CogniQ/CogniQ#development-in-5-steps) file.
+3. Set up the development environment following the instructions in the [README.md](https://github.com/CogniQ/CogniQ#development) file.
 4. Create a new branch for your feature or bugfix: `git checkout -b my-feature-or-bugfix-branch`
 5. Make your changes in the new branch.
 6. Commit your changes with a [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) message: `git commit -m "feat: New feature or fix bug"`
@@ -27,7 +27,7 @@ If you encounter a bug or want to request a new feature, please create an issue 
 
 ## Community
 
-If you have questions or need help with the project, feel free to join our [Community Slack](https://join.slack.com/t/cogniqcommunity/signup). Please be respectful and considerate when interacting with other community members.
+If you have questions or need help with the project, feel free to join our [Community Slack](https://www.cogniq.info/join-slack). Please be respectful and considerate when interacting with other community members.
 
 Thank you for your contributions to CogniQ! We look forward to collaborating with you.
 

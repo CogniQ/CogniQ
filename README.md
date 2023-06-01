@@ -54,7 +54,7 @@ If you prefer Claude, you can use the wake word "Claude" or "Anthropic" to have 
 
 ## Running locally
 
-- [ ] Install the prerequisites (below in the development section)
+- [ ] Install the prerequisites (see details in the [development](#development) section)
 
 ```bash
 
@@ -65,10 +65,10 @@ python -m venv .venv
 make deps
 source .venv/bin/activate
 
-# Copy the example .envrc file to .envrc
+# Copy the example .env file to .env
 cp .env.example .env
 
-# Edit the .envrc file to add your API keys
+# Edit the .env file to add your API keys
 echo "edit .env to add your API keys"
 
 
@@ -82,7 +82,13 @@ python main.py
 docker run --env_file .env ghcr.io/cogniq/cogniq:main
 ```
 
-# Development in 4 steps.
+## Deploying to Azure Container Instances
+
+See the workflow in `.github/workflows/_deploy.yml`. 
+
+> The workflow is used to deploy the bot to the CogniQ Community Slack ([please join!](https://www.cogniq.info/join-slack)).
+
+# Development
 
 ## 1. Prerequisites
 
@@ -107,23 +113,22 @@ To set up the development environment on Linux, follow these steps:
 
 3. Manually uncomment the pytorch source, and uncomment the torch dependency line for 2.0.1+cu118
 
-4. Install the dependencies
+4. Install the dependencies and run the app:
    ```
+   python -m venv .venv
+   source .venv/bin/activate
    make deps
+   python main.py
    ```
-
-5. `. .envrc`
-6. `python main.py`
 
 ## No need for CUDA on OSX environments
 
-1. Manually comment out the pytorch source in pyproject.toml, and uncomment the torch dependency line for 2.0.1
-2. Install the dependencies
-   ```
-   make deps
-   ```
-3. `. .envrc`
-4. `python main.py`
+```
+python -m venv .venv
+source .venv/bin/activate
+make deps
+python main.py
+```
 
 ### Visual Studio Code Dev Containers (Optional)
 #### Docker Desktop 
@@ -169,10 +174,10 @@ To set up Bing Search API keys, follow these steps:
 
 8. Click on "Keys and Endpoint" in the left-hand menu. Here, you'll find your Bing Search API keys.
 
-9. Copy one of the API keys and add it to the `.envrc` file
+9. Copy one of the API keys and add it to the `.env` file
 
    ```
-   export BING_SUBSCRIPTION_KEY=<your_bing_search_api_key>
+   BING_SUBSCRIPTION_KEY=<your_bing_search_api_key>
    ```
 
 
@@ -192,9 +197,9 @@ To set up OpenAI API keys, follow these steps:
 
 6. Copy the generated API key to your clipboard.
 
-7. Add the OpenAI API key to the `.envrc` file
+7. Add the OpenAI API key to the `.env` file
    ```
-   export OPENAI_API_KEY=<your_openai_api_key>
+   OPENAI_API_KEY=<your_openai_api_key>
    ```
 
 
@@ -204,12 +209,13 @@ To set up Anthropic Claude API keys, follow these steps:
 2. Once you have an account, sign in and go to the API Keys section: https://console.anthropic.com/account/keys
 3. Click on the "Create Key" button.
 4. Copy the generated API key to your clipboard.
-5. Add the Anthropic Claude API key to the `.envrc` file
-   
-   export ANTHROPIC_API_KEY=<your_anthropic_api_key>;
-   
+5. Add the Anthropic Claude API key to the `.env` file
 
-## 3. Deploy to Slack
+   ```
+   ANTHROPIC_API_KEY=<your_anthropic_api_key>
+   ```   
+
+### Deploy to Slack
 
 1. Go to https://api.slack.com/apps and click "Create New App."
 2. Choose "From an app manifest" and select your workspace.
@@ -218,39 +224,30 @@ To set up Anthropic Claude API keys, follow these steps:
 5. Click "Create" to finish creating the app.
 6. After your app has been created, navigate to the "Basic Information" page from the side menu.
 7. Under the "App Credentials" section, find the "App Token" field. This is your `SLACK_APP_TOKEN`. Copy it.
-8. Add the `SLACK_APP_TOKEN` to the `.envrc` file.
+8. Add the `SLACK_APP_TOKEN` to the `.env` file.
 9. Still on the "Basic Information" page, locate the "Signing Secret" under the "App Credentials" section. This is your `SLACK_SIGNING_SECRET`.
-10. Add the `SLACK_SIGNING_SECRET` to the `.envrc` file.
+10. Add the `SLACK_SIGNING_SECRET` to the `.env` file.
 11. Now, navigate to the "OAuth & Permissions" page in the side menu.
 12. At the top of the "OAuth & Permissions" page, click "Install App to Workspace." This will generate your `SLACK_BOT_TOKEN`.
 13. After the installation process, you will be redirected to the "OAuth & Permissions" page again. Here, under the "Tokens for Your Workspace" section, you will find the "Bot User OAuth Token". This is your `SLACK_BOT_TOKEN`.
-16. Add the `SLACK_BOT_TOKEN` to the `.envrc` file.
+16. Add the `SLACK_BOT_TOKEN` to the `.env` file.
 
-Remember to never commit your `.envrc` file to the repository as it contains sensitive information. 
+> ⚠️ **Remember to never commit your `.env` file to the repository as it contains sensitive information.** ⚠️
 
 
 
-## 4. Deploy the app locally
+## 3a. Run the app locally
 
-1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
-2. Navigate to the project directory: `cd CogniQ`
-3. Install the dependencies using `make deps`
-4. Source the .venv virtualenv: `source .venv/bin/activate`
-5. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
-6. Either source the `.envrc` file manually, or use [direnv](https://direnv.net/) to automatically source it.
+1. Once you have all of the API keys in the .env file, you can run the app locally.
 7. Run the app: `python main.py`
 8. Restart the app whenever you make changes to the code.
 
-## 4. Deploy the app using Dev Container (Optional)
+## 3b. Run the app in Dev Container (Optional)
 
-1. Clone the repository: `git clone git@github.com:CogniQ/CogniQ.git`
-2. Navigate to the project directory: `cd CogniQ`
-3. Open the Repository in a Dev Container: With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
-4. The remaining steps are from the dev container.
-5. Use the `.envrc.example` file to create a `.envrc` file with your environment variables.
-6. `. .envrc`
-7. Run the app: `python main.py`
-8. Restart the app whenever you make changes to the code.
+1. With the repository open in VS Code, press F1 and select the "Remote-Containers: Reopen in Container" command. VS Code will start building the Docker container based on the specifications in the `.devcontainer/devcontainer.json` file in the repository. This may take some time when run for the first time.
+2. Assuming that the .env file is setup correctly, you can run the app in the dev container.
+3. Run the app: `python main.py`
+4. Restart the app whenever you make changes to the code.
 
 # Notes
 

@@ -34,6 +34,7 @@ The application will run in the CogniQ Community Dev subscription, sponsored by 
 
 `export AZURE_ASSIGNEE_OBJECT_ID=REDACTED`
 
+
 3. Create a new role assignment by subscription and object.
 
 ```bash
@@ -45,42 +46,21 @@ az role assignment create \
   --assignee-principal-type ServicePrincipal
 ```
 
-4. Run the following command to create a new [federated identity credential](https://learn.microsoft.com/en-us/graph/api/application-post-federatedidentitycredentials?) for your active directory application.
+4. At this point, you may wish to save your credentials to a .envrc file for later use.
 
 ```bash
-cat > credential.json
-{
-    "name": "cogniq-gha-main",
-    "issuer": "https://token.actions.githubusercontent.com",
-    "subject": "repo:CogniQ/CogniQ:ref:refs/heads/main",
-    "description": "cogniq-gha-main",
-    "audiences": [
-        "api://AzureADTokenExchange"
-    ]
-}
-
-az ad app federated-credential create --id ${AZURE_APPLICATION_OBJECT_ID} --parameters credential.json
+# cogniq-community-main
+export AZURE_SUBSCRIPTION_ID=REDACTED
+export AZURE_RESOURCE_GROUP_NAME=cogniq-community-main
+export AZURE_CLIENT_ID=REDACTED
+export AZURE_APPLICATION_OBJECT_ID=REDACTED
+export AZURE_TENANT_ID=REDACTED
+export AZURE_ASSIGNEE_OBJECT_ID=REDACTED
+export AZURE_ROLE_ASSIGNMENT_OBJECT_ID="/subscriptions/REDACTED/resourceGroups/cogniq-community-main/providers/Microsoft.Authorization/roleAssignments/REDACTED"
 
 ```
 
-Again for pull requests.
-
-```bash
-cat > credential.json
-{
-    "name": "cogniq-gha-pull-requests",
-    "issuer": "https://token.actions.githubusercontent.com",
-    "subject": "repo:CogniQ/CogniQ:pull_request",
-    "description": "cogniq-gha-pull-request",
-    "audiences": [
-        "api://AzureADTokenExchange"
-    ]
-}
-
-az ad app federated-credential create --id ${AZURE_APPLICATION_OBJECT_ID} --parameters credential.json
-```
-
-Again for the cogniq-community-main environment.
+5. Run the following command to create a new [federated identity credential](https://learn.microsoft.com/en-us/graph/api/application-post-federatedidentitycredentials?) for deploying the active directory application for the cogniq-community-main environment.
 
 ```bash
 cat > credential.json
@@ -97,11 +77,7 @@ cat > credential.json
 az ad app federated-credential create --id ${AZURE_APPLICATION_OBJECT_ID} --parameters credential.json
 ```
 
-
-
-
-
-5. Grant Azure Container Instances access
+6. Grant Azure Container Instances access
 
 Grant [Contributor role](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles) to the App.
 
@@ -114,7 +90,7 @@ az role assignment create \
  --scope /subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP_NAME}
  ```
 
-6. Create Secrets in GitHub with the following names and values
+7. Create Secrets in GitHub with the following names and values
 
   | Secret Name | Value |
   | ----------- | ----- |
@@ -122,12 +98,6 @@ az role assignment create \
   | AZURE_TENANT_ID | ${AZURE_TENANT_ID} |
   | AZURE_SUBSCRIPTION_ID | ${AZURE_SUBSCRIPTION_ID} |
 
-
-7. Create Environment variables with the following names and values
-
-  | Variable Name | Value |
-  |---------------|-------|
-  | AZURE_RESOURCE_GROUP_NAME | cogniq-community-main |
 
 8. Register for the provider
 
