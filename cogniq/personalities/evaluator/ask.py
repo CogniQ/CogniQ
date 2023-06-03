@@ -53,7 +53,9 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(self, *, q, openai_history=None, anthropic_history=None, personalities):
+    async def ask(
+        self, *, q, openai_history=None, anthropic_history=None, personalities
+    ):
         openai_history = openai_history or []
         anthropic_history = anthropic_history or ""
 
@@ -74,20 +76,29 @@ class Ask:
         # Run the personalities
         for personality in personalities:
             # TODO: detect whether the personality needs openai_history or anthropic_history. For now, only limit to openai_history
-            response_future = asyncio.create_task(personality.ask_directly(q=short_q, message_history=openai_history))
+            response_future = asyncio.create_task(
+                personality.ask_directly(q=short_q, message_history=openai_history)
+            )
             response_futures.append((personality.description, response_future))
 
         # Wait for the futures to finish
-        responses = await asyncio.gather(*(response_future for _, response_future in response_futures))
-        responses_with_descriptions = [(description, response) for (description, _), response in zip(response_futures, responses)]
+        responses = await asyncio.gather(
+            *(response_future for _, response_future in response_futures)
+        )
+        responses_with_descriptions = [
+            (description, response)
+            for (description, _), response in zip(response_futures, responses)
+        ]
 
         # Log the responses
         for description, response in responses_with_descriptions:
             logger.debug(f"{description}: {response}")
 
-        prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
+        prompt = evaluator_prompt(
+            q=short_q, responses_with_descriptions=responses_with_descriptions
+        )
 
-        logger.info (f"Evaluation prompt: {prompt}")
+        logger.info(f"Evaluation prompt: {prompt}")
 
         openai_history.append(user_message(prompt))
 
