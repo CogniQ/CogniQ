@@ -68,7 +68,9 @@ class BingSearch(BasePersonality):
 
     async def ask_directly(self, *, q, message_history, **kwargs):
         _answer, agent_response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
-        return agent_response["transcript"]
+        transcript = agent_response["transcript"]
+        transcript_summary = await self.copenai.summarizer.ceil_prompt(transcript)
+        return transcript_summary
 
     @property
     def description(self):
