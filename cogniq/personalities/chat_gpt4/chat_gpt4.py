@@ -62,5 +62,6 @@ class ChatGPT4(BasePersonality):
         response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
         return response
     
+    @property
     def description(self):
         return "I do not modify the query, and simply ask the question to ChatGPT 4."
