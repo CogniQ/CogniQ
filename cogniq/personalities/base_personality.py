@@ -19,3 +19,7 @@ class BasePersonality(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def ask_directly(self, *, q, message_history, **kwargs):
         pass
+
+    @abc.abstractmethod
+    def description(self):
+        pass

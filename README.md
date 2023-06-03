@@ -38,17 +38,13 @@ You can also message CogniQ directly. You do not have to mention it when you mes
 
 # CogniQ has multiple personalities
 
-## Normally, CogniQ will just use Chat GPT4.
+## CogniQ will ask Chat GPT for an answer, and also search the web using Bing.
 
-CogniQ will respond with the answer to your question without performing any web searches.
+CogniQ will incorporate the top three search results into its answer and will provide links to any relevant sources.
 
-## CogniQ will augment its responses using Bing if you use the wake word "search" or "bing" or "google"
+It gets its answer by performing a straight query to ChatGPT and then using an agent to draw context from Bing Search. 
+The set of responses are then combined to produce a search augmented response.
 
-CogniQ will incorporate the top three search results into its answer and will provide links to its sources.
-
-## CogniQ will use Anthropic Claude if you use the wake word "Claude" or "Anthropic".
-
-If you prefer Claude, you can use the wake word "Claude" or "Anthropic" to have CogniQ use Claude instead of Chat GPT4.
 
 # Deployment
 

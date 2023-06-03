@@ -59,3 +59,6 @@ class ChatAnthropic(BasePersonality):
         """
         response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
         return response
+    
+    def description(self):
+        return "I do not modify the query. I simply ask the question to Anthropic Claude."
