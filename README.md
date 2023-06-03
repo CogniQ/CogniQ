@@ -33,7 +33,7 @@ CogniQ will respond with the answer to your question.
 
 You can also message CogniQ directly. You do not have to mention it when you message it directly.
 
-<img src="https://github.com/CogniQ/CogniQ/assets/176915/c55a19c1-3558-4b4b-b605-db42821c8e38" alt="What is the plot to Back to the Future 3?" width="450">
+<img src="https://user-images.githubusercontent.com/176915/243065469-d6cc3f54-198f-411e-b280-e6aab922a4ef.png" alt="What is the Riker Maneuver?" width="450">
 
 
 # CogniQ has multiple personalities
