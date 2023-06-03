@@ -11,6 +11,9 @@ The idea is that one could add an arbitrary number of personalities to CogniQ.
 
 In that sense, `multiple_personalities.py` and `main.py` are really just example files for how to use the library. You can use them as a starting point for your own bot.
 
+# Demo
+
+Join the [community slack channel](www.cogniq.info/join-slack) to interact with @CogniQMain, the demo bot deployed from the `main` branch of this repository. 
 
 # Usage
 
