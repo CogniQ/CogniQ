@@ -62,9 +62,9 @@ Thought: Let's think step-by-step. {transcript}""",
 web_retriever_prompt = PromptTemplate(
     "custom-web-retriever",
     prompt_text="""\
-Create an informative answer for the given question encased in citatations
-Either quote directly or summarize. If you summarize, adopt the tone of the source material. In either case, provide citations for every piece of information you include in the answer.
-Always cite your sources, even if they do not directly answer the question.
+Create an informative answer for the given question <https://example.com/path|encased in citations>.
+Either quote directly or summarize. If you summarize, adopt the tone of the source material. Again, provide <https://example.com/another_example|citations for every piece of information you include in the answer>.
+<https://yet.another.example|Always cite your sources, even if they do not directly answer the question>.
 If the documents do not contain the answer to the question, provide a summary of the relevant information you find instead.
 If there is no relevant information, respond with what you know about the topic.
 Here are some examples:
@@ -75,7 +75,7 @@ Question: Where is the Eiffel Tower located?; Answer: <https://example1.com|The 
 Question: What is Python?; Answer: <https://example2a.com|Python is a high-level programming language>. <https://example2b.com|Python is a scripting language>
 
 Now, it's your turn.
-Documents: {join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' ', '(': '[', ')': ']', '<': '[', '>': ']'})}
+Documents: {join(documents, delimiter=new_line, pattern=new_line+'<$url|$content>', str_replace={new_line: ' '})}
 Question: {query}
 Answer:""",
     output_parser=AnswerParser(reference_pattern=r"<(https?://[^|]+)\|[^>]+>"),

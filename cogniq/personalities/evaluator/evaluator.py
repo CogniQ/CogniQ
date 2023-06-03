@@ -7,17 +7,17 @@ import re
 from .ask import Ask
 
 
-class ChatGPT4(BasePersonality):
+class Evaluator(BasePersonality):
     def __init__(
         self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs
     ):
         """
-        Chat GPT4 personality
+        Evaluator personality
         Please call async_setup after initializing the personality.
 
         ```
-        chat_gpt4 = ChatGPT4(config=config, cslack=cslack, copenai=copenai)
-        await chat_gpt4.async_setup()
+        evaluator = Evaluator(config=config, copenai=copenai)
+        await evaluator.async_setup()
         ```
 
         Parameters:
@@ -42,22 +42,24 @@ class ChatGPT4(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts):
+    async def ask_task(self, *, event, reply_ts, personalities):
+        """
+        Executes the ask_task against all the personalities and returns the best or compiled response.
+        """
         channel = event["channel"]
         message = event["text"]
 
-        history = await self.cslack.openai_history.get_history(event=event)
-        # logger.debug(f"history: {history}")
-
-        openai_response = await self.ask.ask(q=message, message_history=history)
+        openai_history = await self.cslack.openai_history.get_history(event=event)
+        anthropic_history = await self.cslack.anthropic_history.get_history(event=event)
+        openai_response = await self.ask.ask(q=message, openai_history=openai_history, anthropic_history=anthropic_history, personalities=personalities)
         # logger.debug(openai_response)
         await self.cslack.app.client.chat_update(
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    async def ask_directly(self, *, q, message_history, **kwargs):
+    async def ask_directly(self, *, q, openai_history, anthropic_history, personalities, **kwargs):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        response = await self.ask.ask(q=q, openai_history=openai_history, anthropic_history=anthropic_history, personalities=personalities, **kwargs)
         return response

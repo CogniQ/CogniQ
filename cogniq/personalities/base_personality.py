@@ -12,7 +12,10 @@ class BasePersonality(metaclass=abc.ABCMeta):
     def ask_task(self, *, event, reply_ts, **kwargs):
         pass
 
-    @property
     @abc.abstractmethod
-    def wake_pattern(self):
+    def async_setup(self):
+        pass
+
+    @abc.abstractmethod
+    def ask_directly(self, *, q, message_history, **kwargs):
         pass

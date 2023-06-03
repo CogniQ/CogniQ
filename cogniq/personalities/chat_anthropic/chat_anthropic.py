@@ -34,7 +34,6 @@ class ChatAnthropic(BasePersonality):
         self.cslack = cslack
 
         self.ask = Ask(config=config, cslack=cslack)
-        self._wake_pattern = re.compile(r"\b(anthropic|claude)\b", re.IGNORECASE)
 
     async def async_setup(self):
         """
@@ -54,5 +53,9 @@ class ChatAnthropic(BasePersonality):
             channel=channel, ts=reply_ts, text=response
         )
 
-    def wake_pattern(self):
-        return self._wake_pattern
+    async def ask_directly(self, *, q, message_history, **kwargs):
+        """
+        Ask directly to the personality.
+        """
+        response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        return response
