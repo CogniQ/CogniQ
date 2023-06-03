@@ -134,7 +134,7 @@ class Ask:
                 transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"]
             )
             final_answer_text = summarized_transcript
-        return final_answer_text
+        return [final_answer_text, agent_response]
 
     async def get_history_augmented_prompt(self, *, q, message_history):
         """

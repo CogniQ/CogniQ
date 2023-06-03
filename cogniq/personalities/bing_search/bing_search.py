@@ -60,14 +60,16 @@ class BingSearch(BasePersonality):
         history = await self.cslack.openai_history.get_history(event=event)
         # logger.debug(f"history: {history}")
 
-        openai_response = await self.ask.ask(q=message, message_history=history)
+        answer, _agent_response = await self.ask.ask(q=message, message_history=history)
         # logger.debug(openai_response)
         await self.cslack.app.client.chat_update(
-            channel=channel, ts=reply_ts, text=openai_response
+            channel=channel, ts=reply_ts, text=answer
         )
 
     async def ask_directly(self, *, q, message_history, **kwargs):
-        return await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        _answer, agent_response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        return agent_response["transcript"]
 
+    @property
     def description(self):
         return "I perform extractive generation of answers from Bing search results."

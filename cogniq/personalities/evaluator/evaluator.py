@@ -64,5 +64,6 @@ class Evaluator(BasePersonality):
         response = await self.ask.ask(q=q, openai_history=openai_history, anthropic_history=anthropic_history, personalities=personalities, **kwargs)
         return response
     
+    @property
     def description(self):
         return "I evaluate the responses from the other personalities and return the best one."
