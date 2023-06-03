@@ -75,16 +75,17 @@ class Ask:
         for personality in personalities:
             # TODO: detect whether the personality needs openai_history or anthropic_history. For now, only limit to openai_history
             response_future = asyncio.create_task(personality.ask_directly(q=short_q, message_history=openai_history))
-            response_futures.append(response_future)
+            response_futures.append((personality.description, response_future))
 
         # Wait for the futures to finish
-        responses = await asyncio.gather(*response_futures)
+        responses = await asyncio.gather(*(response_future for _, response_future in response_futures))
+        responses_with_descriptions = [(description, response) for (description, _), response in zip(response_futures, responses)]
 
         # Log the responses
-        for response in responses:
-            logger.debug(f"Evaluating candidate response: {response}")
+        for description, response in responses_with_descriptions:
+            logger.debug(f"{description}: {response}")
 
-        prompt = evaluator_prompt(q=short_q, responses=responses)
+        prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
         logger.info (f"Evaluation prompt: {prompt}")
 

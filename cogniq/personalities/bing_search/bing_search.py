@@ -68,3 +68,6 @@ class BingSearch(BasePersonality):
 
     async def ask_directly(self, *, q, message_history, **kwargs):
         return await self.ask.ask(q=q, message_history=message_history, **kwargs)
+
+    def description(self):
+        return "I perform extractive generation of answers from Bing search results."
