@@ -11,6 +11,7 @@ from cogniq.personalities import (
     BingSearch,
     ChatGPT4,
     ChatAnthropic,
+    Evaluator,
 )
 
 
@@ -44,17 +45,24 @@ class MultiplePersonalities:
             cslack=self.cslack,
         )
 
+        self.evaluator = Evaluator(
+            config=config,
+            cslack=self.cslack,
+            copenai=self.copenai,
+        )
+
         # Finally, register the app_mention and message events
         self.register_app_mention()
         self.register_message()
 
     async def start(self):
         """
-        Starts one Slack bot instance, and routes messages according to wake word.
+        Starts one Slack bot instance, and multiple personalities.
         """
         await self.bing_search.async_setup()
         await self.chat_gpt4.async_setup()
         await self.chat_anthropic.async_setup()
+        await self.evaluator.async_setup()
         await self.cslack.start()
 
     async def dispatch(self, *, event, say, original_ts):
@@ -64,30 +72,12 @@ class MultiplePersonalities:
         # Text from the event
         text = event.get("text")
         # Dictionary with the module's wake patterns and corresponding ask tasks
-        tasks = {
-            self.bing_search.wake_pattern(): self.bing_search.ask_task,
-            self.chat_anthropic.wake_pattern(): self.chat_anthropic.ask_task,
-            self.chat_gpt4.wake_pattern(): self.chat_gpt4.ask_task,
-        }
+        personalities = [
+            self.bing_search,
+            self.chat_gpt4,
+        ]
 
-        # Initialize the default task
-        default_task = self.chat_gpt4.ask_task
-
-        # Flag to check if any task was created
-        task_created = False
-
-        # Loop through the tasks dictionary
-        for wake_pattern, ask_task in tasks.items():
-            # If the wake pattern is found in the text
-            if re.search(wake_pattern, text):
-                # Create a new task for the corresponding ask task
-                asyncio.create_task(ask_task(event=event, reply_ts=reply_ts))
-                # Set the flag to True
-                task_created = True
-
-        # If no wake patterns match, run the default task
-        if not task_created:
-            asyncio.create_task(default_task(event=event, reply_ts=reply_ts))
+        _evaluation_task = asyncio.create_task(self.evaluator.ask_task(event=event, reply_ts=reply_ts, personalities=personalities))
 
     def register_app_mention(self):
         @self.cslack.app.event("app_mention")

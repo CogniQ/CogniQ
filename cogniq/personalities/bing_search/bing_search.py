@@ -46,9 +46,6 @@ class BingSearch(BasePersonality):
         self.copenai = copenai
 
         self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
-        self._wake_pattern = re.compile(
-            r"\b(search|bing|websearch|google)\b", re.IGNORECASE
-        )
 
     async def async_setup(self):
         """
@@ -69,5 +66,5 @@ class BingSearch(BasePersonality):
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    def wake_pattern(self):
-        return self._wake_pattern
+    async def ask_directly(self, *, q, message_history, **kwargs):
+        return await self.ask.ask(q=q, message_history=message_history, **kwargs)
