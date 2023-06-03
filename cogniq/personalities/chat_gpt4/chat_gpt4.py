@@ -35,7 +35,6 @@ class ChatGPT4(BasePersonality):
 
         self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
 
-
     async def async_setup(self):
         """
         Please call after initializing the personality.
@@ -61,7 +60,7 @@ class ChatGPT4(BasePersonality):
         """
         response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
         return response
-    
+
     @property
     def description(self):
         return "I do not modify the query, and simply ask the question to ChatGPT 4."

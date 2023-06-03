@@ -35,7 +35,6 @@ class Evaluator(BasePersonality):
 
         self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
 
-
     async def async_setup(self):
         """
         Please call after initializing the personality.
@@ -51,19 +50,32 @@ class Evaluator(BasePersonality):
 
         openai_history = await self.cslack.openai_history.get_history(event=event)
         anthropic_history = await self.cslack.anthropic_history.get_history(event=event)
-        openai_response = await self.ask.ask(q=message, openai_history=openai_history, anthropic_history=anthropic_history, personalities=personalities)
+        openai_response = await self.ask.ask(
+            q=message,
+            openai_history=openai_history,
+            anthropic_history=anthropic_history,
+            personalities=personalities,
+        )
         # logger.debug(openai_response)
         await self.cslack.app.client.chat_update(
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    async def ask_directly(self, *, q, openai_history, anthropic_history, personalities, **kwargs):
+    async def ask_directly(
+        self, *, q, openai_history, anthropic_history, personalities, **kwargs
+    ):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, openai_history=openai_history, anthropic_history=anthropic_history, personalities=personalities, **kwargs)
+        response = await self.ask.ask(
+            q=q,
+            openai_history=openai_history,
+            anthropic_history=anthropic_history,
+            personalities=personalities,
+            **kwargs
+        )
         return response
-    
+
     @property
     def description(self):
         return "I evaluate the responses from the other personalities and return the best one."

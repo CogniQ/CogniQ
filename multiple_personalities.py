@@ -77,7 +77,11 @@ class MultiplePersonalities:
             self.bing_search,
         ]
 
-        _evaluation_task = asyncio.create_task(self.evaluator.ask_task(event=event, reply_ts=reply_ts, personalities=personalities))
+        _evaluation_task = asyncio.create_task(
+            self.evaluator.ask_task(
+                event=event, reply_ts=reply_ts, personalities=personalities
+            )
+        )
 
     def register_app_mention(self):
         @self.cslack.app.event("app_mention")
