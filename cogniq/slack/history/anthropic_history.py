@@ -22,12 +22,12 @@ class AnthropicHistory(OpenAIHistory):
                         chat_sequence += f"\n\nHuman: {reply.get('text')}"
         return chat_sequence
 
-    def openai_to_anthropic(self, *, openai_chat_history):
+    def openai_to_anthropic(self, *, message_history):
         # Initialize an empty list to store the messages
         messages = []
 
         # Iterate over the chat history
-        for message in openai_chat_history:
+        for message in message_history:
             # Extract the role and content from the message
             role = message["role"]
             content = message["content"]

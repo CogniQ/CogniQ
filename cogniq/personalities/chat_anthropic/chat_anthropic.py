@@ -55,8 +55,9 @@ class ChatAnthropic(BasePersonality):
         """
         Ask directly to the personality.
         """
+        # Convert the message history from OpenAI to Anthropic format
         message_history = self.cslack.anthropic_history.openai_to_anthropic(
-            message_history
+            message_history=message_history
         )
         response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
         return response
