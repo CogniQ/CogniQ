@@ -11,6 +11,7 @@ from cogniq.personalities import (
     BingSearch,
     ChatGPT4,
     ChatAnthropic,
+    SlackSearch,
     Evaluator,
 )
 
@@ -45,6 +46,12 @@ class MultiplePersonalities:
             cslack=self.cslack,
         )
 
+        self.slack_search = SlackSearch(
+            config=config,
+            cslack=self.cslack,
+            copenai=self.copenai,
+        )
+
         self.evaluator = Evaluator(
             config=config,
             cslack=self.cslack,
@@ -62,6 +69,7 @@ class MultiplePersonalities:
         await self.bing_search.async_setup()
         await self.chat_gpt4.async_setup()
         await self.chat_anthropic.async_setup()
+        await self.slack_search.async_setup()
         await self.evaluator.async_setup()
         await self.cslack.start()
 
@@ -73,8 +81,10 @@ class MultiplePersonalities:
         text = event.get("text")
         # Dictionary with the module's wake patterns and corresponding ask tasks
         personalities = [
-            self.chat_gpt4,
-            self.bing_search,
+            # self.chat_gpt4,
+            # self.bing_search,
+            # self.chat_anthropic,
+            self.slack_search,
         ]
 
         _evaluation_task = asyncio.create_task(

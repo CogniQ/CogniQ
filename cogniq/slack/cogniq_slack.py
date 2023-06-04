@@ -18,6 +18,7 @@ import asyncio
 
 from .history.openai_history import OpenAIHistory
 from .history.anthropic_history import AnthropicHistory
+from .search import Search
 
 
 class CogniqSlack:
@@ -33,8 +34,6 @@ class CogniqSlack:
             PORT (str or int, default=3000): Port on which the app will be started.
             APP_ENV (str, either 'production' or 'development'): Environment in which the app is running.
             SLACK_APP_TOKEN (str, optional): Slack app token. Required if APP_ENV is 'development'.
-            HISTORY_CLASS (class, optional): Class to use for storing and retrieving history formatted for LLM consumption. Defaults to OpenAIHistory.
-
 
         """
 
@@ -55,14 +54,13 @@ class CogniqSlack:
         self.config.setdefault("HOST", "0.0.0.0")
         self.config.setdefault("PORT", 3000)
         self.config.setdefault("APP_ENV", "production")
-        self.config.setdefault("HISTORY_CLASS", OpenAIHistory)
 
         if self.config["APP_ENV"] == "development" and not self.config.get(
             "SLACK_APP_TOKEN"
         ):
             raise ValueError("SLACK_APP_TOKEN is required in development mode")
 
-        self.history = self.config["HISTORY_CLASS"](app=self.app)
+        self.search = Search(cslack=self)
 
     async def start(self):
         """
