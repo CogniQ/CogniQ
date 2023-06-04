@@ -3,6 +3,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .openai_history import OpenAIHistory
+from cogniq.openai import system_message, user_message, assistant_message
 
 
 class AnthropicHistory(OpenAIHistory):
@@ -20,3 +21,25 @@ class AnthropicHistory(OpenAIHistory):
                     else:
                         chat_sequence += f"\n\nHuman: {reply.get('text')}"
         return chat_sequence
+
+    def openai_to_anthropic(self, *, openai_chat_history):
+        # Initialize an empty list to store the messages
+        messages = []
+
+        # Iterate over the chat history
+        for message in openai_chat_history:
+            # Extract the role and content from the message
+            role = message["role"]
+            content = message["content"]
+
+            # Add the message to the list
+            if role == "user":
+                messages.append(f"Human: {content}")
+            elif role == "assistant":
+                messages.append(f"Assistant: {content}")
+            elif role == "system":
+                messages.append(f"Human: {content}")
+
+        # Convert the list of messages to the Anthropic format
+        anthropic_chat_history = "\n\n".join(messages)
+        return anthropic_chat_history

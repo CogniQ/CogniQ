@@ -37,7 +37,8 @@ class Ask:
         self.bot_id = await self.cslack.anthropic_history.get_bot_user_id()
         self.bot_name = await self.cslack.anthropic_history.get_bot_name()
 
-    async def ask(self, *, q, message_history=""):
+    async def ask(self, *, q, message_history=None):
+        message_history = message_history or ""
         kwargs = {
             "model": "claude-instant-v1-100k",
             "max_tokens_to_sample": 100000,
