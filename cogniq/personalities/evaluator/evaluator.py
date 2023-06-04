@@ -48,12 +48,10 @@ class Evaluator(BasePersonality):
         channel = event["channel"]
         message = event["text"]
 
-        openai_history = await self.cslack.openai_history.get_history(event=event)
-        anthropic_history = await self.cslack.anthropic_history.get_history(event=event)
+        message_history = await self.cslack.openai_history.get_history(event=event)
         openai_response = await self.ask.ask(
             q=message,
-            openai_history=openai_history,
-            anthropic_history=anthropic_history,
+            message_history=message_history,
             personalities=personalities,
         )
         # logger.debug(openai_response)
@@ -61,18 +59,12 @@ class Evaluator(BasePersonality):
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    async def ask_directly(
-        self, *, q, openai_history, anthropic_history, personalities, **kwargs
-    ):
+    async def ask_directly(self, *, q, message_history, personalities, **kwargs):
         """
         Ask directly to the personality.
         """
         response = await self.ask.ask(
-            q=q,
-            openai_history=openai_history,
-            anthropic_history=anthropic_history,
-            personalities=personalities,
-            **kwargs
+            q=q, message_history=message_history, personalities=personalities, **kwargs
         )
         return response
 

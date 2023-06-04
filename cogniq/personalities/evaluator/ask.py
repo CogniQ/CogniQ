@@ -53,21 +53,18 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(
-        self, *, q, openai_history=None, anthropic_history=None, personalities
-    ):
-        openai_history = openai_history or []
-        anthropic_history = anthropic_history or ""
+    async def ask(self, *, q, message_history=None, personalities):
+        message_history = message_history or []
 
         # if the history is too long, summarize it
-        openai_history = self.copenai.summarizer.ceil_history(openai_history)
+        message_history = self.copenai.summarizer.ceil_history(message_history)
 
         # Set the system message
-        openai_history = [
+        message_history = [
             system_message(
                 f"Hello, I am {self.bot_name}. I am a slack bot that can answer your questions."
             )
-        ] + openai_history
+        ] + message_history
 
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)
@@ -75,9 +72,9 @@ class Ask:
         response_futures = []
         # Run the personalities
         for personality in personalities:
-            # TODO: detect whether the personality needs openai_history or anthropic_history. For now, only limit to openai_history
+            # TODO: detect whether the personality needs message_history or anthropic_history. For now, only limit to message_history
             response_future = asyncio.create_task(
-                personality.ask_directly(q=short_q, message_history=openai_history)
+                personality.ask_directly(q=short_q, message_history=message_history)
             )
             response_futures.append((personality.description, response_future))
 
@@ -98,12 +95,19 @@ class Ask:
             q=short_q, responses_with_descriptions=responses_with_descriptions
         )
 
-        logger.info(f"Evaluation prompt: {prompt}")
+        # If prompt is too long, summarize it
+        short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
 
-        openai_history.append(user_message(prompt))
+        if prompt != short_prompt:
+            logger.info(f"Original prompt: {prompt}")
+            logger.info(f"Evaluating shortened prompt: {short_prompt}")
+        else:
+            logger.info(f"Evaluating prompt: {short_prompt}")
+
+        message_history.append(user_message(short_prompt))
 
         answer = await self.copenai.async_chat_completion_create(
-            messages=openai_history,
+            messages=message_history,
             model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )
 

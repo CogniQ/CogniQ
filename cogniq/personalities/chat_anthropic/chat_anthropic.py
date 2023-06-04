@@ -2,8 +2,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import re
-
 
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
@@ -53,10 +51,13 @@ class ChatAnthropic(BasePersonality):
             channel=channel, ts=reply_ts, text=response
         )
 
-    async def ask_directly(self, *, q, message_history, **kwargs):
+    async def ask_directly(self, *, q: str, message_history: list, **kwargs):
         """
         Ask directly to the personality.
         """
+        message_history = self.cslack.anthropic_history.openai_to_anthropic(
+            message_history
+        )
         response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
         return response
 
