@@ -3,7 +3,7 @@
 This project is under active development. Your experience will be buggy until a release has been cut.
 Naturally at this stage, there are no guarantees about stability.
 
-In short, the current feature set is that you can have conversations about web search results in the slack bot if you give it the "search" or "bing" keywords. Otherwise, you're talking to Chat GPT4. You can also talk to Claude.
+In short, the current feature set is that you can have conversations that will be composed of responses from Bing Search, Chat GPT, and Anthropic Claude.
 
 If you don't have access to one of the API keys required for the personality, then modify `multiple_personalities.py` to remove the personality or personalities.
 
