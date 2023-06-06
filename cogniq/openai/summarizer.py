@@ -55,12 +55,12 @@ class Summarizer:
 
         return retrieval
 
-    async def ceil_prompt(self, prompt):
+    async def ceil_prompt(self, prompt, max_tokens=None):
+        if max_tokens is None:
+            max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
+
         simple_coerced_string = str(prompt)
-        if (
-            self.count_tokens(simple_coerced_string)
-            > self.config["OPENAI_MAX_TOKENS_PROMPT"]
-        ):
+        if self.count_tokens(simple_coerced_string) > max_tokens:
             return await self.summarize_content(
                 simple_coerced_string, self.config["OPENAI_MAX_TOKENS_PROMPT"]
             )

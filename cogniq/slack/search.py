@@ -20,6 +20,7 @@ class Search:
         cslack (CogniqSlack): CogniqSlack instance.
         """
         self.client = cslack.app.client
+        # self.user_token = cslack.config["SLACK_USER_TOKEN"]
 
     async def async_setup(self):
         """
@@ -27,7 +28,7 @@ class Search:
         """
         pass
 
-    async def search_texts(self, *, q: str, **kwargs) -> list:
+    async def search_texts(self, *, q: str, context: dict, **kwargs) -> list:
         """
         Search slack and format the response.
 
@@ -38,7 +39,7 @@ class Search:
         Returns:
         list: List of formatted messages.
         """
-        messages = await self.search(q=q, **kwargs)
+        messages = await self.search(q=q, context=context, **kwargs)
 
         str_messages = []
         for message in messages:
@@ -51,7 +52,7 @@ class Search:
 
         return str_messages
 
-    async def search(self, *, q: str, **kwargs) -> list:
+    async def search(self, *, q: str, context: dict, **kwargs) -> list:
         """
         Search slack and return the messages.
 
@@ -62,10 +63,10 @@ class Search:
         Returns:
         list: List of messages.
         """
-        response = await self._search(q=q, **kwargs)
+        response = await self._search(q=q, context=context, **kwargs)
         return response["messages"]["matches"]
 
-    async def _search(self, *, q: str, **kwargs) -> list:
+    async def _search(self, *, q: str, context: dict, **kwargs) -> list:
         """
         Private method to perform the actual slack search.
 
@@ -90,7 +91,12 @@ class Search:
         search_parameters = {**default_parameters, **kwargs}
 
         try:
-            response = await self.client.search_messages(query=q, **search_parameters)
+            logger.info(f"Searching slack for {q}")
+            team_id = context["team_id"]
+            user_token = context["user_token"]
+            response = await self.client.search_messages(
+                query=q, team_id=team_id, token=user_token, **search_parameters
+            )
         except SlackApiError as e:
             if e.response["error"] == "not_allowed_token_type":
                 error_string = f"""\

@@ -56,11 +56,13 @@ class SlackSearch(BasePersonality):
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    async def ask_directly(self, *, q, message_history, **kwargs):
+    async def ask_directly(self, *, q, message_history, context: dict, **kwargs):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        response = await self.ask.ask(
+            q=q, message_history=message_history, context=context, **kwargs
+        )
         return response
 
     @property

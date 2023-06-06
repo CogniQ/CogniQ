@@ -5,12 +5,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import asyncio
 
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
-from .prompts import search_prompt, retrieval_augmented_prompt
+from .prompts import retrieval_augmented_prompt
 
 
 class Ask:
@@ -50,10 +49,11 @@ class Ask:
         """
         Call me after initialization, please!
         """
-        self.bot_id = await self.cslack.openai_history.get_bot_user_id()
-        self.bot_name = await self.cslack.openai_history.get_bot_name()
+        pass
 
-    async def ask(self, *, q, message_history=None):
+    async def ask(self, *, q, message_history=None, context: dict, **kwargs):
+        # bot_id = await self.cslack.openai_history.get_bot_user_id()
+        bot_name = await self.cslack.openai_history.get_bot_name()
         message_history = message_history or []
 
         # if the history is too long, summarize it
@@ -62,35 +62,27 @@ class Ask:
         # Set the system message
         message_history = [
             system_message(
-                f"Hello, I am {self.bot_name}. I am a slack bot that can answer your questions."
+                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
             )
         ] + message_history
 
         # if prompt is too long, summarize it
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        my_search_prompt = search_prompt(q=short_q)
+        search_query = await self.copenai.summarizer.ceil_prompt(q, max_tokens=100)
 
-        search_prompt_history = message_history.copy() + [
-            user_message(my_search_prompt)
-        ]
-
-        search_query_response = await self.copenai.async_chat_completion_create(
-            messages=search_prompt_history,
-            model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+        slack_search_response = await self.cslack.search.search_texts(
+            q=search_query, context=context
         )
 
-        search_query = search_query_response["choices"][0]["message"]["content"]
-
-        slack_search_response = await self.cslack.search.search_texts(q=search_query)
-
         # logger.info(f"slack_search_response: {slack_search_response}")
+
+        short_q = await self.copenai.summarizer.ceil_prompt(q)
 
         prompt = retrieval_augmented_prompt(
             q=short_q, slack_search_response=slack_search_response
         )
 
-        logger.info(f"Retrieval augmented prompt: {prompt}")
+        # logger.info(f"Retrieval augmented prompt: {prompt}")
 
         # If prompt is too long, summarize it
         short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)

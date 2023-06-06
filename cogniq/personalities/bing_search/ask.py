@@ -76,8 +76,7 @@ class Ask:
         """
         Call me after initialization, please!
         """
-        self.bot_id = await self.cslack.openai_history.get_bot_user_id()
-        self.bot_name = await self.cslack.openai_history.get_bot_name()
+        pass
 
     def agent_run(self, query: str, stream_callback: callable = None):
         agent = Agent(
@@ -98,6 +97,8 @@ class Ask:
     async def ask(
         self, *, q: str, message_history: list = None, stream_callback: callable = None
     ):
+        # bot_id = await self.cslack.openai_history.get_bot_user_id()
+        bot_name = await self.cslack.openai_history.get_bot_name()
         message_history = message_history or []
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
@@ -105,7 +106,7 @@ class Ask:
         # Set the system message
         message_history = [
             system_message(
-                f"Hello, I am {self.bot_name}. I am a slack bot that can answer your questions."
+                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
             )
         ] + message_history
 

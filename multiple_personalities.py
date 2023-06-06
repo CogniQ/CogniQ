@@ -2,11 +2,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from cogniq.slack import CogniqSlack
-from cogniq.openai import CogniqOpenAI
-
 import asyncio
 
+from cogniq.slack import CogniqSlack
+from cogniq.openai import CogniqOpenAI
 from cogniq.personalities import (
     BingSearch,
     ChatGPT4,
@@ -15,10 +14,7 @@ from cogniq.personalities import (
     Evaluator,
 )
 
-
 from config import config
-
-import re
 
 
 class MultiplePersonalities:
@@ -73,8 +69,10 @@ class MultiplePersonalities:
         await self.evaluator.async_setup()
         await self.cslack.start()
 
-    async def dispatch(self, *, event, say, original_ts):
-        reply = await say(f"Let me figure that out...", thread_ts=original_ts)
+    async def dispatch(self, *, event, context, original_ts):
+        reply = await context["say"](
+            f"Let me figure that out...", thread_ts=original_ts
+        )
         reply_ts = reply["ts"]
 
         # Text from the event
@@ -89,22 +87,27 @@ class MultiplePersonalities:
 
         _evaluation_task = asyncio.create_task(
             self.evaluator.ask_task(
-                event=event, reply_ts=reply_ts, personalities=personalities
+                event=event,
+                reply_ts=reply_ts,
+                personalities=personalities,
+                context=context,
             )
         )
 
     def register_app_mention(self):
         @self.cslack.app.event("app_mention")
-        async def handle_app_mention(event, say):
+        async def handle_app_mention(event, context):
             logger.info(f"app_mention: {event.get('text')}")
             original_ts = event["ts"]
-            await self.dispatch(event=event, say=say, original_ts=original_ts)
+            await self.dispatch(event=event, context=context, original_ts=original_ts)
 
     def register_message(self):
         @self.cslack.app.event("message")
-        async def handle_message_events(event, say):
+        async def handle_message_events(event, context):
             logger.info(f"message: {event.get('text')}")
             channel_type = event["channel_type"]
             if channel_type == "im":
                 original_ts = event["ts"]
-                await self.dispatch(event=event, say=say, original_ts=original_ts)
+                await self.dispatch(
+                    event=event, context=context, original_ts=original_ts
+                )

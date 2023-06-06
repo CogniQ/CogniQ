@@ -50,10 +50,11 @@ class Ask:
         """
         Call me after initialization, please!
         """
-        self.bot_id = await self.cslack.openai_history.get_bot_user_id()
-        self.bot_name = await self.cslack.openai_history.get_bot_name()
+        pass
 
-    async def ask(self, *, q, message_history=None, personalities: dict):
+    async def ask(self, *, q, message_history=None, personalities: dict, context: dict):
+        # bot_id = await self.cslack.openai_history.get_bot_user_id()
+        bot_name = await self.cslack.openai_history.get_bot_name()
         message_history = message_history or []
 
         # if the history is too long, summarize it
@@ -62,7 +63,7 @@ class Ask:
         # Set the system message
         message_history = [
             system_message(
-                f"Hello, I am {self.bot_name}. I am a slack bot that can answer your questions."
+                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
             )
         ] + message_history
 
@@ -79,6 +80,7 @@ class Ask:
                     q=short_q,
                     message_history=message_history,
                     stream_callback=stream_callback,
+                    context=context
                 )
             )
             response_futures.append((personality.description, response_future))

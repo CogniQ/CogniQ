@@ -48,7 +48,7 @@ class Evaluator(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts, personalities):
+    async def ask_task(self, *, event, reply_ts, personalities, context):
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -85,6 +85,7 @@ class Evaluator(BasePersonality):
             q=message,
             message_history=message_history,
             personalities=personalities,
+            context=context,
         )
         buffer_post_end.set()  # end the buffer_and_post loop
         await buffer_and_post_task  # ensure buffer_and_post task is finished
@@ -106,12 +107,18 @@ class Evaluator(BasePersonality):
                 )
             await asyncio.sleep(interval)
 
-    async def ask_directly(self, *, q, message_history, personalities, **kwargs):
+    async def ask_directly(
+        self, *, q, message_history, personalities, context, **kwargs
+    ):
         """
         Ask directly to the personality.
         """
         response = await self.ask.ask(
-            q=q, message_history=message_history, personalities=personalities, **kwargs
+            q=q,
+            message_history=message_history,
+            personalities=personalities,
+            context=context,
+            **kwargs
         )
         return response
 
