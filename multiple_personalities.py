@@ -75,7 +75,6 @@ class MultiplePersonalities:
         personalities = [
             self.chat_gpt4,
             self.bing_search,
-            self.chat_anthropic,
         ]
 
         _evaluation_task = asyncio.create_task(
