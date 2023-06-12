@@ -53,9 +53,7 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(
-        self, *, q, message_history=None, personalities: dict
-    ):
+    async def ask(self, *, q, message_history=None, personalities: dict):
         message_history = message_history or []
 
         # if the history is too long, summarize it

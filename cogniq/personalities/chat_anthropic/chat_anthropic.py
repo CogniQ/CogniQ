@@ -51,7 +51,14 @@ class ChatAnthropic(BasePersonality):
             channel=channel, ts=reply_ts, text=response
         )
 
-    async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
+    async def ask_directly(
+        self,
+        *,
+        q: str,
+        message_history: list,
+        stream_callback: callable = None,
+        **kwargs,
+    ):
         """
         Ask directly to the personality.
         """

@@ -67,7 +67,8 @@ class Evaluator(BasePersonality):
 
         # Wrap personalities and their callbacks in a dict of dicts
         personalities = {
-            p.name: {"object": p, "stream_callback": partial(stream_callback, p.name)} for p in personalities
+            p.name: {"object": p, "stream_callback": partial(stream_callback, p.name)}
+            for p in personalities
         }
 
         buffer_post_end = (

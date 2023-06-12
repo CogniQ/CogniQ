@@ -46,7 +46,9 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
+    async def ask(
+        self, *, q: str, message_history: list = None, stream_callback: callable = None
+    ):
         message_history = message_history or []
         # logger.info(f"Answering: {q}")
 
