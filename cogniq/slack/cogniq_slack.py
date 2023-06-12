@@ -109,27 +109,30 @@ class CogniqSlack:
             await handler.start_async()
 
     async def chat_update(self, *, channel, ts, text, retry_on_rate_limit=True):
-            """
-            Updates the chat message in the given channel and thread with the given text.
-            """
-            try:
-                await self.app.client.chat_update(
-                    channel=channel,
-                    ts=ts,
-                    text=text,
-                )
-            except SlackApiError as e:
-                if e.response["error"] == "ratelimited":
-                    if retry_on_rate_limit:
-                        # Extract the retry value from the headers
-                        retry_after = int(e.response.headers.get("Retry-After", 1))
-                        # Wait for the requested amount of time before retrying
-                        await asyncio.sleep(retry_after)
-                        await self.chat_update(channel=channel, ts=ts, text=text, retry_on_rate_limit=retry_on_rate_limit)
-                    else:
-                        # Log the rate limit error and move on
-                        logger.error("Rate limit hit, not retrying: %s", e)
+        """
+        Updates the chat message in the given channel and thread with the given text.
+        """
+        try:
+            await self.app.client.chat_update(
+                channel=channel,
+                ts=ts,
+                text=text,
+            )
+        except SlackApiError as e:
+            if e.response["error"] == "ratelimited":
+                if retry_on_rate_limit:
+                    # Extract the retry value from the headers
+                    retry_after = int(e.response.headers.get("Retry-After", 1))
+                    # Wait for the requested amount of time before retrying
+                    await asyncio.sleep(retry_after)
+                    await self.chat_update(
+                        channel=channel,
+                        ts=ts,
+                        text=text,
+                        retry_on_rate_limit=retry_on_rate_limit,
+                    )
                 else:
-                    raise e
-
-
+                    # Log the rate limit error and move on
+                    logger.error("Rate limit hit, not retrying: %s", e)
+            else:
+                raise e
