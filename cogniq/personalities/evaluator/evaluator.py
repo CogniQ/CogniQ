@@ -1,10 +1,17 @@
+import asyncio
+
+from functools import partial
+
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
-import re
-
 from .ask import Ask
+
+
+class Buffer:
+    def __init__(self):
+        self.text = ""
 
 
 class Evaluator(BasePersonality):
@@ -48,16 +55,52 @@ class Evaluator(BasePersonality):
         channel = event["channel"]
         message = event["text"]
 
+        # create a buffer for each personality
+        response_buffers = {p.name: Buffer() for p in personalities}
+        for name, buf in response_buffers.items():
+            buf.text += f"-------------------------\n{name} Stream of Thought:\n"
+
+        buffer_post_end = asyncio.Event()
+
+        def stream_callback(name, token, **kwargs):
+            setattr(response_buffers[name], "text", response_buffers[name].text + token)
+
+        # Wrap personalities and their callbacks in a dict of dicts
+        personalities = {
+            p.name: {"object": p, "stream_callback": partial(stream_callback, p.name)} for p in personalities
+        }
+
+        buffer_post_end = (
+            asyncio.Event()
+        )  # event flag for ending the buffer_and_post loop
+        buffer_and_post_task = asyncio.create_task(
+            self.buffer_and_post(
+                response_buffers, channel, reply_ts, 0.25, buffer_post_end
+            )
+        )  # posts every 0.25 seconds
         message_history = await self.cslack.openai_history.get_history(event=event)
+
         openai_response = await self.ask.ask(
             q=message,
             message_history=message_history,
             personalities=personalities,
         )
-        # logger.debug(openai_response)
-        await self.cslack.app.client.chat_update(
+        buffer_post_end.set()  # end the buffer_and_post loop
+        await buffer_and_post_task  # ensure buffer_and_post task is finished
+        await self.cslack.chat_update(
             channel=channel, ts=reply_ts, text=openai_response
         )
+
+    async def buffer_and_post(
+        self, buffers, channel, reply_ts, interval, buffer_post_end
+    ):
+        while not buffer_post_end.is_set():
+            combined_text = "\n".join(buf.text for buf in buffers.values())
+            if combined_text:
+                await self.cslack.chat_update(
+                    channel=channel, ts=reply_ts, text=combined_text
+                )
+            await asyncio.sleep(interval)
 
     async def ask_directly(self, *, q, message_history, personalities, **kwargs):
         """
@@ -71,3 +114,7 @@ class Evaluator(BasePersonality):
     @property
     def description(self):
         return "I evaluate the responses from the other personalities and return the best one."
+
+    @property
+    def name(self):
+        return "Evaluator"

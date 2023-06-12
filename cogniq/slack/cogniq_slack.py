@@ -2,7 +2,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 from slack_bolt.async_app import AsyncApp
-from aiohttp import web
+from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
+from fastapi import FastAPI, Request, Response
+import uvicorn
+
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
+import asyncio
 
 from .history.openai_history import OpenAIHistory
 from .history.anthropic_history import AnthropicHistory
@@ -32,6 +43,9 @@ class CogniqSlack:
             token=self.config["SLACK_BOT_TOKEN"],
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
         )
+
+        self.app_handler = AsyncSlackRequestHandler(self.app)
+        self.api = FastAPI()
 
         self.anthropic_history = AnthropicHistory(app=self.app)
         self.openai_history = OpenAIHistory(app=self.app)
@@ -70,10 +84,20 @@ class CogniqSlack:
         """
         logger.info("Starting Slack app!!")
         if self.config["APP_ENV"] == "production":
-            # Run the web_app directly from aiohttp for greater control over the event loop
-            await web._run_app(
-                self.app.web_app(), host=self.config["HOST"], port=self.config["PORT"]
+
+            @self.api.post("/slack/events")
+            async def slack_events(request: Request):
+                return await self.app_handler.handle(request)
+
+            # Run the FastAPI app using Uvicorn
+            uvicorn_config = uvicorn.Config(
+                self.api,
+                host=self.config["HOST"],
+                port=int(self.config["PORT"]),
+                log_level=self.config["LOG_LEVEL"],
             )
+            uvicorn_server = uvicorn.Server(uvicorn_config)
+            await uvicorn_server.serve()
 
         if self.config["APP_ENV"] == "development":
             from slack_bolt.adapter.socket_mode.aiohttp import (
@@ -82,3 +106,18 @@ class CogniqSlack:
 
             handler = AsyncSocketModeHandler(self.app, self.config["SLACK_APP_TOKEN"])
             await handler.start_async()
+
+    @retry(
+        stop=stop_after_attempt(2),
+        wait=wait_exponential(multiplier=2, min=2, max=8),
+        retry=retry_if_exception_type(asyncio.TimeoutError),
+    )
+    async def chat_update(self, *, channel, ts, text):
+        """
+        Updates the chat message in the given channel and thread with the given text.
+        """
+        await self.app.client.chat_update(
+            channel=channel,
+            ts=ts,
+            text=text,
+        )

@@ -46,7 +46,8 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(self, *, q, message_history=[]):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
+        message_history = message_history or []
         # logger.info(f"Answering: {q}")
 
         # if the history is too long, summarize it
@@ -67,6 +68,7 @@ class Ask:
 
         answer = await self.copenai.async_chat_completion_create(
             messages=message_history,
+            stream_callback=stream_callback,
             model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )
 

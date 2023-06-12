@@ -36,3 +36,11 @@ class BasePersonality(metaclass=abc.ABCMeta):
         A short description of the personality. This is used by an evaluator to note the context of the response.
         """
         pass
+
+    @property
+    @abc.abstractmethod
+    def name(self):
+        """
+        The name of the personality.
+        """
+        pass

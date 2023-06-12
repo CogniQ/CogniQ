@@ -79,14 +79,15 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    def agent_run(self, query):
+    def agent_run(self, query: str, stream_callback: callable = None):
         agent = Agent(
             prompt_node=self.agent_prompt_node,
             prompt_template=agent_prompt,
             tools_manager=ToolsManager([self.web_qa_tool]),
             max_steps=4,
-            streaming=True,
+            streaming=False,  # Disable the native streaming callback
         )
+        agent.callback_manager.on_new_token = stream_callback
         return agent.run(
             query=query,
             params={
@@ -94,7 +95,7 @@ class Ask:
             },
         )
 
-    async def ask(self, *, q, message_history=None):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
         message_history = message_history or []
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
@@ -123,6 +124,7 @@ class Ask:
                 executor,
                 self.agent_run,
                 history_augmented_prompt,
+                stream_callback,
             )
             agent_response = await agent_response_task
         final_answer = agent_response["answers"][0]
