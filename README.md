@@ -3,17 +3,12 @@
 This project is under active development. Your experience will be buggy until a release has been cut.
 Naturally at this stage, there are no guarantees about stability.
 
-In short, the current feature set is that you can have conversations that will be composed of responses from Bing Search, Chat GPT, and Anthropic Claude.
+In short, the current feature set is that you can have conversations that will be composed of responses from Bing Search, and Chat GPT. 
 
-If you don't have access to one of the API keys required for the personality, then modify `multiple_personalities.py` to remove the personality or personalities.
-
-The idea is that one could add an arbitrary number of personalities to CogniQ.
-
-In that sense, `multiple_personalities.py` and `main.py` are really just example files for how to use the library. You can use them as a starting point for your own bot.
 
 # Demo
 
-Join the [community slack channel](www.cogniq.info/join-slack) to interact with @CogniQMain, the demo bot deployed from the `main` branch of this repository. 
+Join the [community slack channel](www.cogniq.info/join-slack) to interact with @CogniQ, the demo bot deployed from the `main` branch of this repository. 
 
 # Usage
 
@@ -39,6 +34,17 @@ You can also message CogniQ directly. You do not have to mention it when you mes
 <img src="https://user-images.githubusercontent.com/176915/243065469-d6cc3f54-198f-411e-b280-e6aab922a4ef.png" alt="What is the Riker Maneuver?" width="450">
 
 
+## CogniQ will stream its thinking before answering
+
+
+*Each personality comes up with an answer*  
+<img width="547" alt="image" src="https://github.com/CogniQ/CogniQ/assets/176915/02cdef2d-6cce-4268-831a-d123d3d9a2f0">  
+
+
+*The evaluator will compose a final answer.*  
+<img width="527" alt="image" src="https://github.com/CogniQ/CogniQ/assets/176915/ed7b95ed-162f-4149-878f-10d45728d595">  
+
+
 # CogniQ has multiple personalities
 
 ## CogniQ will ask Chat GPT for an answer, and also search the web using Bing.
@@ -47,6 +53,12 @@ CogniQ will incorporate the top three search results into its answer and will pr
 
 It gets its answer by performing a straight query to ChatGPT and then using an agent to draw context from Bing Search. 
 The set of responses are then combined to produce a search augmented response.
+
+If you don't have access to one of the API keys required for the personality, then modify `multiple_personalities.py` to remove the personality or personalities.
+
+The idea is that one could add an arbitrary number of personalities to CogniQ.
+
+In that sense, `multiple_personalities.py` and `main.py` are really just example files for how to use the library. You can use them as a starting point for your own bot.
 
 
 # Deployment
