@@ -76,7 +76,7 @@ class Evaluator(BasePersonality):
         )  # event flag for ending the buffer_and_post loop
         buffer_and_post_task = asyncio.create_task(
             self.buffer_and_post(
-                response_buffers, channel, reply_ts, 0.25, buffer_post_end
+                response_buffers, channel, reply_ts, 1, buffer_post_end
             )
         )  # posts every 0.25 seconds
         message_history = await self.cslack.openai_history.get_history(event=event)
