@@ -56,7 +56,9 @@ class CogniqOpenAI:
             async_chat_completion_create=self.async_chat_completion_create,
         )
 
-    async def async_chat_completion_create(self, *, messages, stream_callback=None, **kwargs):
+    async def async_chat_completion_create(
+        self, *, messages, stream_callback=None, **kwargs
+    ):
         stream_callback_set = stream_callback is not None
         url = f"https://api.openai.com/v1/chat/completions"
         payload = {
@@ -97,13 +99,10 @@ class CogniqOpenAI:
                 else:
                     raise Exception(f"Error {response.status}: {await response.text()}")
 
-
     @retry(
         stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=60)
     )
-    async def async_openai_stream(
-        self, *, url, payload, stream_callback, **kwargs
-    ):
+    async def async_openai_stream(self, *, url, payload, stream_callback, **kwargs):
         headers = {
             "Content-Type": "application/json",
             "Authorization": f'Bearer {self.config["OPENAI_API_KEY"]}',
@@ -112,22 +111,24 @@ class CogniqOpenAI:
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 200:
-                # Tokens will be sent as data-only server-sent events as they become available, 
-                # with the stream terminated by a data: [DONE] message.
+                    # Tokens will be sent as data-only server-sent events as they become available,
+                    # with the stream terminated by a data: [DONE] message.
                     final_content = {"choices": [{"message": {"content": ""}}]}
                     while True:
                         line = await response.content.readline()
                         line = line.strip()
-                        if line == b'data: [DONE]':
+                        if line == b"data: [DONE]":
                             return final_content
-                        elif line.startswith(b'data: '):
-                            line = line[len(b"data: "):]
+                        elif line.startswith(b"data: "):
+                            line = line[len(b"data: ") :]
                             obj = json.loads(line.decode("utf-8"))
                             try:
                                 delta = obj.get("choices", [{}])[0].get("delta", {})
                                 content = delta.get("content")
                                 if content:
-                                    final_content["choices"][0]["message"]["content"] += content
+                                    final_content["choices"][0]["message"][
+                                        "content"
+                                    ] += content
                                     stream_callback(content)
                             except (KeyError, IndexError):
                                 logger.error("Unexpected data structure: %s", obj)
@@ -135,4 +136,3 @@ class CogniqOpenAI:
                     raise Exception(f"Error {response.status}: {await response.text()}")
                 else:
                     raise Exception(f"Error {response.status}: {await response.text()}")
-                

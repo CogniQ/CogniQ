@@ -95,7 +95,9 @@ class Ask:
             },
         )
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
+    async def ask(
+        self, *, q: str, message_history: list = None, stream_callback: callable = None
+    ):
         message_history = message_history or []
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)

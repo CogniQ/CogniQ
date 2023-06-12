@@ -66,7 +66,14 @@ class BingSearch(BasePersonality):
             channel=channel, ts=reply_ts, text=answer
         )
 
-    async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
+    async def ask_directly(
+        self,
+        *,
+        q: str,
+        message_history: list,
+        stream_callback: callable = None,
+        **kwargs,
+    ):
         _answer, agent_response = await self.ask.ask(
             q=q,
             message_history=message_history,

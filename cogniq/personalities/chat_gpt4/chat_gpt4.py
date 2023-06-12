@@ -54,11 +54,23 @@ class ChatGPT4(BasePersonality):
             channel=channel, ts=reply_ts, text=openai_response
         )
 
-    async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
+    async def ask_directly(
+        self,
+        *,
+        q: str,
+        message_history: list,
+        stream_callback: callable = None,
+        **kwargs
+    ):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
+        response = await self.ask.ask(
+            q=q,
+            message_history=message_history,
+            stream_callback=stream_callback,
+            **kwargs
+        )
         return response
 
     @property
