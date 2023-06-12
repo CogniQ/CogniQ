@@ -99,7 +99,7 @@ class Evaluator(BasePersonality):
             combined_text = "\n".join(buf.text for buf in buffers.values())
             if combined_text:
                 await self.cslack.chat_update(
-                    channel=channel, ts=reply_ts, text=combined_text
+                    channel=channel, ts=reply_ts, text=combined_text, retry_on_rate_limit=False
                 )
             await asyncio.sleep(interval)
 

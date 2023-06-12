@@ -27,6 +27,7 @@ tenacity = "^8.2.2"
 python-dotenv = "^1.0.0"
 uvicorn = "^0.22.0"
 fastapi = "^0.96.0"
+slack-sdk = "^3.21.3"
 
 [tool.poetry.group.localinstall]
 # Only necessary when installing locally.
