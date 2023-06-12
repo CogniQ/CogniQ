@@ -25,10 +25,14 @@ tiktoken = "^0.4.0"
 multiprocess = "0.70.14"
 tenacity = "^8.2.2"
 python-dotenv = "^1.0.0"
+uvicorn = "^0.22.0"
+fastapi = "^0.96.0"
+databases = {extras = ["postgresql"], version = "^0.7.0"}
+psycopg2 = "^2.9.6"
+aiosqlite = "^0.19.0"
 
-
-# Only necessary when installing locally.
 [tool.poetry.group.localinstall]
+# Only necessary when installing locally.
 optional = true
 
 [tool.poetry.group.localinstall.dependencies]
@@ -40,7 +44,7 @@ torchvision = [
   { version = "0.15.2+cu118", source = "pytorch", markers = "sys_platform=='linux'" },
   { version = "0.15.2", markers = "sys_platform=='darwin'" }
 ] 
-farm-haystack = { version = "1.17.0-rc2", extras = [] }
+farm-haystack = { version = "1.17.1", extras = [] }
 
 
 [tool.poetry.group.dev.dependencies]

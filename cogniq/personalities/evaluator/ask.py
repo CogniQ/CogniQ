@@ -53,7 +53,9 @@ class Ask:
         self.bot_id = await self.cslack.openai_history.get_bot_user_id()
         self.bot_name = await self.cslack.openai_history.get_bot_name()
 
-    async def ask(self, *, q, message_history=None, personalities):
+    async def ask(
+        self, *, q, message_history=None, personalities: dict
+    ):
         message_history = message_history or []
 
         # if the history is too long, summarize it
@@ -71,10 +73,15 @@ class Ask:
 
         response_futures = []
         # Run the personalities
-        for personality in personalities:
-            # TODO: detect whether the personality needs message_history or anthropic_history. For now, only limit to message_history
+        for name, info in personalities.items():
+            personality = info["object"]
+            stream_callback = info["stream_callback"]
             response_future = asyncio.create_task(
-                personality.ask_directly(q=short_q, message_history=message_history)
+                personality.ask_directly(
+                    q=short_q,
+                    message_history=message_history,
+                    stream_callback=stream_callback,
+                )
             )
             response_futures.append((personality.description, response_future))
 

@@ -66,9 +66,12 @@ class BingSearch(BasePersonality):
             channel=channel, ts=reply_ts, text=answer
         )
 
-    async def ask_directly(self, *, q, message_history, **kwargs):
+    async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
         _answer, agent_response = await self.ask.ask(
-            q=q, message_history=message_history, **kwargs
+            q=q,
+            message_history=message_history,
+            stream_callback=stream_callback,
+            **kwargs,
         )
         transcript = agent_response["transcript"]
         transcript_summary = await self.copenai.summarizer.ceil_prompt(transcript)
@@ -77,3 +80,7 @@ class BingSearch(BasePersonality):
     @property
     def description(self):
         return "I perform extractive generation of answers from Bing search results."
+
+    @property
+    def name(self):
+        return "Bing Search"

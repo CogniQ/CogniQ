@@ -37,7 +37,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         self.web_retriever = WebRetriever(
             api_key=self.config["BING_SUBSCRIPTION_KEY"],
             search_engine_provider="BingAPI",
-            top_k=3,
+            top_k=5,
             mode="preprocessed_documents",
             preprocessor=PreProcessor(progress_bar=False),
         )
