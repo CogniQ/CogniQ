@@ -66,6 +66,7 @@ class Ask:
 
         search_query = await self.copenai.summarizer.ceil_prompt(q, max_tokens=100)
 
+        # TODO: experiment with function calling from OpenAI in order to get better search results
         slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
 
         # logger.info(f"slack_search_response: {slack_search_response}")

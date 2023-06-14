@@ -100,6 +100,12 @@ class InstallationStore(AsyncInstallationStore):
         *,
         context: Optional[dict],
     ) -> Optional[str]:
+        """
+        Find the user token of the user who installed the app.
+        TODO: replace this with a method that is scoped to the user.
+        Namely, check for a user token for that user, and if it doesn't exist,
+        have the user install the app, then proceed with the request.
+        """
         try:
             enterprise_id = context["authorize_result"]["enterprise_id"]
             team_id = context["team_id"]

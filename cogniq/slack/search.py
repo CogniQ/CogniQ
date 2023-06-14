@@ -21,7 +21,6 @@ class Search:
         """
         self.client = cslack.app.client
         self.installation_store = cslack.installation_store
-        # self.user_token = cslack.config["SLACK_USER_TOKEN"]
 
     async def async_setup(self):
         """
