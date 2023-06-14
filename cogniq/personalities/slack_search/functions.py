@@ -34,22 +34,26 @@ get_search_query_function = {
             },
             "before": {
                 "type": "string",
-                "description": "A YYYY-MM-DD date to search before. Optional, used to narrow search results. Cannot be used with after, during, or on. Today is %s" % date.today(),
+                "description": "A YYYY-MM-DD date to search before. Optional, used to narrow search results. Cannot be used with after, during, or on. Today is %s"
+                % date.today(),
                 "format": "date",
             },
             "after": {
                 "type": "string",
-                "description": "A YYYY-MM-DD date to search after. Optional, used to narrow search results. Cannot be used with before, during, or on. Today is %s" % date.today(),
+                "description": "A YYYY-MM-DD date to search after. Optional, used to narrow search results. Cannot be used with before, during, or on. Today is %s"
+                % date.today(),
                 "format": "date",
             },
             "during": {
                 "type": "string",
-                "description": "A month or year to search during. Optional, used to narrow search results. Cannot be used with before, after, or on. Today is %s" % date.today(),
+                "description": "A month or year to search during. Optional, used to narrow search results. Cannot be used with before, after, or on. Today is %s"
+                % date.today(),
                 "format": "date",
             },
             "on": {
                 "type": "string",
-                "description": "A specific day (YYYY-MM-DD) to search on. Optional, used to narrow search results. Cannot be used with before, after, or during. Today is %s" % date.today(),
+                "description": "A specific day (YYYY-MM-DD) to search on. Optional, used to narrow search results. Cannot be used with before, after, or during. Today is %s"
+                % date.today(),
                 "format": "date",
             },
             "is_thread": {

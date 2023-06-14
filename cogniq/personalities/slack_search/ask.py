@@ -62,11 +62,12 @@ class Ask:
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
         message_history = [
-            system_message("I am an expert at using Slack's keyword and phrase search to search Slack for the relevant context to answer your question. I have the capabilities to access and retrieve historic slack messages."),
+            system_message(
+                "I am an expert at using Slack's keyword and phrase search to search Slack for the relevant context to answer your question. I have the capabilities to access and retrieve historic slack messages."
+            ),
         ] + message_history
 
-
-        search_query_response  = await self.copenai.async_chat_completion_create(
+        search_query_response = await self.copenai.async_chat_completion_create(
             messages=message_history,
             model="gpt-3.5-turbo-0613",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call={"name": "get_search_query"},
@@ -75,16 +76,14 @@ class Ask:
 
         search_query_full_message = search_query_response["choices"][0]
         try:
-            search_query_dict = json.loads(
-                search_query_full_message["message"]["function_call"]["arguments"]
-            )
+            search_query_dict = json.loads(search_query_full_message["message"]["function_call"]["arguments"])
         except Exception as e:
             logger.warning(f"search query generation failed: {search_query_full_message}")
             return search_query_full_message["message"]["content"]
-        
+
         logger.info(f"search_query_dict: {search_query_dict}")
-        
-        time_query = ''
+
+        time_query = ""
         if search_query_dict.get("on"):
             time_query = f'on:{search_query_dict["on"]}'
         elif search_query_dict.get("during"):
@@ -94,27 +93,24 @@ class Ask:
         elif search_query_dict.get("before"):
             time_query = f'before:{search_query_dict["before"]}'
 
-
-
-
         search_query_list = [
-            ' '.join([f'"{phrase}"' for phrase in search_query_dict.get("phrases", [])]),
-            ' '.join([f'-"{word}"' for word in search_query_dict.get("negative_words", [])]),
-            f'in:{search_query_dict["in"]}' if search_query_dict.get("in") else '',
-            f'from:{search_query_dict["from"]}' if search_query_dict.get("from") else '',
-            f'with:{search_query_dict["with"]}' if search_query_dict.get("with") else '',
-            f'has:{search_query_dict["has"]}' if search_query_dict.get("has") else '',
+            " ".join([f'"{phrase}"' for phrase in search_query_dict.get("phrases", [])]),
+            " ".join([f'-"{word}"' for word in search_query_dict.get("negative_words", [])]),
+            f'in:{search_query_dict["in"]}' if search_query_dict.get("in") else "",
+            f'from:{search_query_dict["from"]}' if search_query_dict.get("from") else "",
+            f'with:{search_query_dict["with"]}' if search_query_dict.get("with") else "",
+            f'has:{search_query_dict["has"]}' if search_query_dict.get("has") else "",
             time_query,
-            'is:thread' if search_query_dict.get("is_thread", False) else '',
+            "is:thread" if search_query_dict.get("is_thread", False) else "",
         ]
 
-        search_query = ' '.join(search_query_list)
+        search_query = " ".join(search_query_list)
 
         slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
 
         short_slack_search_response = await self.copenai.summarizer.ceil_prompt(slack_search_response)
 
-        #logger.info(f"slack_search_response: {slack_search_response}")
+        # logger.info(f"slack_search_response: {slack_search_response}")
 
         short_q = await self.copenai.summarizer.ceil_prompt(q)
 

@@ -31,7 +31,7 @@ class Summarizer:
         simple_coerced_string = str(text)
         return len(self.encode(simple_coerced_string))
 
-    def ceil_history(self, message_history: list ):
+    def ceil_history(self, message_history: list):
         simple_coerced_string = str(message_history)
         total_tokens = self.count_tokens(simple_coerced_string)
         max_tokens = self.config["OPENAI_MAX_TOKENS_HISTORY"]
@@ -71,7 +71,7 @@ class Summarizer:
 
         if content_length < max_tokens:
             return content
-        
+
         if remaining_context_window > content_length:
             half = int(len(content) / 2)
             a = await self.summarize_content(content[0:half], max_tokens)
