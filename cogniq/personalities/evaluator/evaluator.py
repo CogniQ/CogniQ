@@ -68,9 +68,16 @@ class Evaluator(BasePersonality):
 
         buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
         buffer_and_post_task = asyncio.create_task(
-            self.buffer_and_post(response_buffers=response_buffers, channel=channel, reply_ts=reply_ts, context=context, interval=1, buffer_post_end=buffer_post_end)
+            self.buffer_and_post(
+                response_buffers=response_buffers,
+                channel=channel,
+                reply_ts=reply_ts,
+                context=context,
+                interval=1,
+                buffer_post_end=buffer_post_end,
+            )
         )
-        message_history = await self.cslack.openai_history.get_history(event=event)
+        message_history = await self.cslack.openai_history.get_history(event=event, context=context)
 
         openai_response = await self.ask.ask(
             q=message,
@@ -80,9 +87,11 @@ class Evaluator(BasePersonality):
         )
         buffer_post_end.set()  # end the buffer_and_post loop
         await buffer_and_post_task  # ensure buffer_and_post task is finished
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, text=openai_response)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, text=openai_response, context=context)
 
-    async def buffer_and_post(self, *, response_buffers: dict, channel: str, reply_ts: int, context: dict, interval: int, buffer_post_end: asyncio.Event):
+    async def buffer_and_post(
+        self, *, response_buffers: dict, channel: str, reply_ts: int, context: dict, interval: int, buffer_post_end: asyncio.Event
+    ):
         while not buffer_post_end.is_set():
             combined_text = "\n".join(buf.text for buf in response_buffers.values())
             if combined_text:

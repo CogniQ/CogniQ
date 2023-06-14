@@ -44,9 +44,10 @@ class SlackSearch(BasePersonality):
         channel = event["channel"]
         message = event["text"]
 
-        message_history = await self.cslack.openai_history.get_history(event=event)
+        message_history = await self.cslack.openai_history.get_history(event=event, context=context)
         openai_response = await self.ask.ask(
             q=message,
+            context=context,
             message_history=message_history,
         )
         # logger.debug(openai_response)

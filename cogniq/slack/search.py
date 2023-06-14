@@ -20,6 +20,7 @@ class Search:
         cslack (CogniqSlack): CogniqSlack instance.
         """
         self.client = cslack.app.client
+        self.installation_store = cslack.installation_store
         # self.user_token = cslack.config["SLACK_USER_TOKEN"]
 
     async def async_setup(self):
@@ -87,12 +88,13 @@ class Search:
 
         # Merge default_parameters and kwargs, with kwargs taking precedence
         search_parameters = {**default_parameters, **kwargs}
+        user_token = context.get("user_token") or await self.installation_store.async_find_user_token(context=context)
 
         try:
             logger.info(f"Searching slack for {q}")
             team_id = context["team_id"]
-            user_token = context["user_token"]
             response = await self.client.search_messages(query=q, team_id=team_id, token=user_token, **search_parameters)
+
         except SlackApiError as e:
             if e.response["error"] == "not_allowed_token_type":
                 error_string = f"""\

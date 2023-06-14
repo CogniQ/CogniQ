@@ -1,4 +1,6 @@
 import logging
+
+logger = logging.getLogger(__name__)
 import os
 import time
 from datetime import datetime
@@ -78,6 +80,7 @@ class InstallationStore(AsyncInstallationStore):
         )
         async with Database(self.database_url) as database:
             result = await database.fetch_one(query)
+            # logger.info("found bot: %s" % result)
             if result:
                 return Bot(
                     app_id=result["app_id"],
@@ -89,5 +92,40 @@ class InstallationStore(AsyncInstallationStore):
                     bot_scopes=result["bot_scopes"],
                     installed_at=result["installed_at"],
                 )
+            else:
+                return None
+
+    async def async_find_user_token(
+        self,
+        *,
+        context: Optional[dict],
+    ) -> Optional[str]:
+        try:
+            enterprise_id = context["authorize_result"]["enterprise_id"]
+            team_id = context["team_id"]
+            is_enterprise_install = context["is_enterprise_install"]
+        except KeyError:
+            logger.error("Unable to find enterprise_id, team_id, or is_enterprise_install in context")
+            # logger.debug(f"context: {context}")
+            return None
+
+        c = self.installations.c
+        query = (
+            self.installations.select()
+            .where(
+                and_(
+                    c.enterprise_id == enterprise_id,
+                    c.team_id == team_id,
+                    c.is_enterprise_install == is_enterprise_install,
+                )
+            )
+            .order_by(desc(c.installed_at))
+            .limit(1)
+        )
+        async with Database(self.database_url) as database:
+            result = await database.fetch_one(query)
+            logger.info("found installation: %s" % result)
+            if result:
+                return result["user_token"]  # return user_token
             else:
                 return None
