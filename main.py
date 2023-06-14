@@ -10,9 +10,7 @@ def setup_root_logger(level=logging.DEBUG):
     root = logging.getLogger()
     root.setLevel(level)
     handler = logging.StreamHandler()
-    handler.setFormatter(
-        logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    )
+    handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
     root.addHandler(handler)
 
 

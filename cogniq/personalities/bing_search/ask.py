@@ -94,9 +94,7 @@ class Ask:
             },
         )
 
-    async def ask(
-        self, *, q: str, message_history: list = None, stream_callback: callable = None
-    ):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
         # bot_id = await self.cslack.openai_history.get_bot_user_id()
         bot_name = await self.cslack.openai_history.get_bot_name()
         message_history = message_history or []
@@ -104,11 +102,7 @@ class Ask:
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
         # Set the system message
-        message_history = [
-            system_message(
-                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
-            )
-        ] + message_history
+        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
 
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)
@@ -135,9 +129,7 @@ class Ask:
         final_answer_text = final_answer.answer
         if not final_answer_text:
             transcript = agent_response["transcript"]
-            summarized_transcript = await self.copenai.summarizer.summarize_content(
-                transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"]
-            )
+            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"])
             final_answer_text = summarized_transcript
         return [final_answer_text, agent_response]
 
@@ -145,9 +137,7 @@ class Ask:
         """
         Returns a prompt augmented with the message history.
         """
-        history = (
-            "\n\n".join([message_to_string(message) for message in message_history]),
-        )
+        history = ("\n\n".join([message_to_string(message) for message in message_history]),)
         prompt = f"""Conversation history: {history}
 
         Query: {q}"""

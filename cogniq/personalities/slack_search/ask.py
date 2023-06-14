@@ -60,27 +60,19 @@ class Ask:
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
         # Set the system message
-        message_history = [
-            system_message(
-                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
-            )
-        ] + message_history
+        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
 
         # if prompt is too long, summarize it
 
         search_query = await self.copenai.summarizer.ceil_prompt(q, max_tokens=100)
 
-        slack_search_response = await self.cslack.search.search_texts(
-            q=search_query, context=context
-        )
+        slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
 
         # logger.info(f"slack_search_response: {slack_search_response}")
 
         short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        prompt = retrieval_augmented_prompt(
-            q=short_q, slack_search_response=slack_search_response
-        )
+        prompt = retrieval_augmented_prompt(q=short_q, slack_search_response=slack_search_response)
 
         # logger.info(f"Retrieval augmented prompt: {prompt}")
 

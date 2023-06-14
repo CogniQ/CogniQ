@@ -28,9 +28,5 @@ config = {**dotenv_config, **os.environ}
 for var, default in defaults.items():
     config.setdefault(var, default)
 
-config["LOG_LEVEL"] = (
-    logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO
-)
-config["MUTED_LOG_LEVEL"] = (
-    logging.INFO if config["APP_ENV"] == "development" else logging.INFO
-)
+config["LOG_LEVEL"] = logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO
+config["MUTED_LOG_LEVEL"] = logging.INFO if config["APP_ENV"] == "development" else logging.INFO

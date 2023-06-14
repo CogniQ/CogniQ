@@ -46,9 +46,7 @@ class Search:
             username = message["username"]
             text = message["text"]
             channel = message["channel"]["name"]
-            str_messages.append(
-                f"channel: {channel}, username: {username}, text: {text}"
-            )
+            str_messages.append(f"channel: {channel}, username: {username}, text: {text}")
 
         return str_messages
 
@@ -94,9 +92,7 @@ class Search:
             logger.info(f"Searching slack for {q}")
             team_id = context["team_id"]
             user_token = context["user_token"]
-            response = await self.client.search_messages(
-                query=q, team_id=team_id, token=user_token, **search_parameters
-            )
+            response = await self.client.search_messages(query=q, team_id=team_id, token=user_token, **search_parameters)
         except SlackApiError as e:
             if e.response["error"] == "not_allowed_token_type":
                 error_string = f"""\

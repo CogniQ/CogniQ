@@ -61,11 +61,7 @@ class Ask:
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
         # Set the system message
-        message_history = [
-            system_message(
-                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
-            )
-        ] + message_history
+        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
 
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)
@@ -76,31 +72,19 @@ class Ask:
             personality = info["object"]
             stream_callback = info["stream_callback"]
             response_future = asyncio.create_task(
-                personality.ask_directly(
-                    q=short_q,
-                    message_history=message_history,
-                    stream_callback=stream_callback,
-                    context=context
-                )
+                personality.ask_directly(q=short_q, message_history=message_history, stream_callback=stream_callback, context=context)
             )
             response_futures.append((personality.description, response_future))
 
         # Wait for the futures to finish
-        responses = await asyncio.gather(
-            *(response_future for _, response_future in response_futures)
-        )
-        responses_with_descriptions = [
-            (description, response)
-            for (description, _), response in zip(response_futures, responses)
-        ]
+        responses = await asyncio.gather(*(response_future for _, response_future in response_futures))
+        responses_with_descriptions = [(description, response) for (description, _), response in zip(response_futures, responses)]
 
         # Log the responses
         for description, response in responses_with_descriptions:
             logger.debug(f"{description}: {response}")
 
-        prompt = evaluator_prompt(
-            q=short_q, responses_with_descriptions=responses_with_descriptions
-        )
+        prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
         # If prompt is too long, summarize it
         short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)

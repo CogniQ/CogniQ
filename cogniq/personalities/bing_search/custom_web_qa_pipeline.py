@@ -43,9 +43,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
         )
 
         self.pipeline = Pipeline()
-        self.pipeline.add_node(
-            component=self.web_retriever, name="Retriever", inputs=["Query"]
-        )
+        self.pipeline.add_node(component=self.web_retriever, name="Retriever", inputs=["Query"])
 
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
@@ -54,15 +52,11 @@ class CustomWebQAPipeline(BaseStandardPipeline):
             default_prompt_template=web_retriever_prompt,
             model_kwargs={"temperature": 0.2},
         )
-        self.pipeline.add_node(
-            component=prompt_node, name="PromptNode", inputs=["Retriever"]
-        )
+        self.pipeline.add_node(component=prompt_node, name="PromptNode", inputs=["Retriever"])
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}
 
-    def run(
-        self, query: str, params: Optional[dict] = None, debug: Optional[bool] = None
-    ):
+    def run(self, query: str, params: Optional[dict] = None, debug: Optional[bool] = None):
         """
         :param query: The search query string.
         :param params: Params for the `Retriever`, `Sampler`, `Shaper`, and ``PromptNode. For instance,

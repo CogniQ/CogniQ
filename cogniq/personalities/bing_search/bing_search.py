@@ -62,9 +62,7 @@ class BingSearch(BasePersonality):
 
         answer, _agent_response = await self.ask.ask(q=message, message_history=history)
         # logger.debug(openai_response)
-        await self.cslack.app.client.chat_update(
-            channel=channel, ts=reply_ts, text=answer
-        )
+        await self.cslack.app.client.chat_update(channel=channel, ts=reply_ts, text=answer)
 
     async def ask_directly(
         self,

@@ -37,19 +37,13 @@ class OpenAIHistory(BaseHistory):
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
-        response = await self._get_conversations_and_convert_to_chat_sequence(
-            channel_id=channel_id, thread_ts=thread_ts
-        )
+        response = await self._get_conversations_and_convert_to_chat_sequence(channel_id=channel_id, thread_ts=thread_ts)
 
         logger.debug(f"History: {response}")
         return response
 
-    async def _get_conversations_and_convert_to_chat_sequence(
-        self, *, channel_id: str, thread_ts=None
-    ):
-        messages = await self._get_conversations(
-            channel_id=channel_id, thread_ts=thread_ts
-        )
+    async def _get_conversations_and_convert_to_chat_sequence(self, *, channel_id: str, thread_ts=None):
+        messages = await self._get_conversations(channel_id=channel_id, thread_ts=thread_ts)
 
         bot_user_id = await self.get_bot_user_id()
 
@@ -58,9 +52,7 @@ class OpenAIHistory(BaseHistory):
         if thread_ts is None:
             messages = reversed(messages)
 
-        return self._convert_to_chat_sequence(
-            messages=messages, bot_user_id=bot_user_id
-        )
+        return self._convert_to_chat_sequence(messages=messages, bot_user_id=bot_user_id)
 
     async def _get_conversations(self, *, channel_id: str, thread_ts=None):
         messages = []
@@ -90,15 +82,11 @@ class OpenAIHistory(BaseHistory):
                     retry_after = int(e.response.headers.get("Retry-After", 1))
                     # logger.info(f"history fetched thus far: {messages}")
                     # logger.info(f"Response: {e.response}")
-                    logger.warning(
-                        f"Rate limit hit. Retrying after {retry_after} seconds."
-                    )
+                    logger.warning(f"Rate limit hit. Retrying after {retry_after} seconds.")
                     await asyncio.sleep(retry_after)
                     continue
                 else:
-                    logger.error(
-                        f"Error fetching conversations due to Slack API Error: {e}"
-                    )
+                    logger.error(f"Error fetching conversations due to Slack API Error: {e}")
                     return messages
 
             # logger.info("History Response: %s", response)
@@ -117,9 +105,7 @@ class OpenAIHistory(BaseHistory):
                 break
             if len(messages) >= max_messages:
                 break
-            logger.info(
-                f"fetching next cursor: {response['response_metadata']['next_cursor']}"
-            )
+            logger.info(f"fetching next cursor: {response['response_metadata']['next_cursor']}")
             cursor = response["response_metadata"]["next_cursor"]
         return messages
 

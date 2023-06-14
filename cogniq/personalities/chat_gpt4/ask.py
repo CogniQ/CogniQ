@@ -45,9 +45,7 @@ class Ask:
         """
         pass
 
-    async def ask(
-        self, *, q: str, message_history: list = None, stream_callback: callable = None
-    ):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
         message_history = message_history or []
         # bot_id = await self.cslack.openai_history.get_bot_user_id()
         bot_name = await self.cslack.openai_history.get_bot_name()
@@ -57,11 +55,7 @@ class Ask:
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
         # Set the system message
-        message_history = [
-            system_message(
-                f"Hello, I am {bot_name}. I am a slack bot that can answer your questions."
-            )
-        ] + message_history
+        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
 
         # if prompt is too long, summarize it
         short_q = await self.copenai.summarizer.ceil_prompt(q)

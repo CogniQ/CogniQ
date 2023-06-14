@@ -141,7 +141,6 @@ class CogniqSlack:
         uvicorn_server = uvicorn.Server(uvicorn_config)
         await uvicorn_server.serve()
 
-
     async def chat_update(self, *, channel, ts, text, retry_on_rate_limit=True):
         """
         Updates the chat message in the given channel and thread with the given text.

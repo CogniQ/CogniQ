@@ -29,13 +29,9 @@ class MultiplePersonalities:
         # Setup the personalities
         self.copenai = CogniqOpenAI(config=config)
 
-        self.bing_search = BingSearch(
-            config=config, cslack=self.cslack, copenai=self.copenai
-        )
+        self.bing_search = BingSearch(config=config, cslack=self.cslack, copenai=self.copenai)
 
-        self.chat_gpt4 = ChatGPT4(
-            config=config, cslack=self.cslack, copenai=self.copenai
-        )
+        self.chat_gpt4 = ChatGPT4(config=config, cslack=self.cslack, copenai=self.copenai)
 
         self.chat_anthropic = ChatAnthropic(
             config=config,
@@ -70,9 +66,7 @@ class MultiplePersonalities:
         await self.cslack.start()
 
     async def dispatch(self, *, event, context, original_ts):
-        reply = await context["say"](
-            f"Let me figure that out...", thread_ts=original_ts
-        )
+        reply = await context["say"](f"Let me figure that out...", thread_ts=original_ts)
         reply_ts = reply["ts"]
 
         # Text from the event
@@ -108,6 +102,4 @@ class MultiplePersonalities:
             channel_type = event["channel_type"]
             if channel_type == "im":
                 original_ts = event["ts"]
-                await self.dispatch(
-                    event=event, context=context, original_ts=original_ts
-                )
+                await self.dispatch(event=event, context=context, original_ts=original_ts)

@@ -61,18 +61,14 @@ class Summarizer:
 
         simple_coerced_string = str(prompt)
         if self.count_tokens(simple_coerced_string) > max_tokens:
-            return await self.summarize_content(
-                simple_coerced_string, self.config["OPENAI_MAX_TOKENS_PROMPT"]
-            )
+            return await self.summarize_content(simple_coerced_string, self.config["OPENAI_MAX_TOKENS_PROMPT"])
         else:
             return prompt
 
     async def summarize_content(self, content, max_tokens):
         response = await self.async_chat_completion_create(
             messages=[
-                system_message(
-                    "Please summarize the following content within the token limit."
-                ),
+                system_message("Please summarize the following content within the token limit."),
                 user_message(content),
             ],
             temperature=0.7,
