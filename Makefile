@@ -15,7 +15,6 @@ TIMESTAMP:=$(shell date --iso-8601=seconds)
 
 .PHONY: deps
 deps: pyproject.toml .venv-activate
-	pip3 install --upgrade poetry
 	poetry lock
 	poetry install --with localinstall
 
