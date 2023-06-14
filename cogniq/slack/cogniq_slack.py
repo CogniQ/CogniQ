@@ -91,8 +91,7 @@ class CogniqSlack:
     async def initialize_db(self):
         try:
             async with Database(self.database_url) as database:
-                d = await database.fetch_one("select * from slack_installations limit 1")
-                logger.info(f"Database already initialized: {d}")
+                await database.fetch_one("select count(*) from slack_installations")
         except Exception as e:
             engine = sqlalchemy.create_engine(self.database_url)
             self.installation_store.metadata.create_all(engine)
