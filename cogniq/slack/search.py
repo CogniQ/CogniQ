@@ -46,7 +46,8 @@ class Search:
             username = message["username"]
             text = message["text"]
             channel = message["channel"]["name"]
-            str_messages.append(f"channel: {channel}, username: {username}, text: {text}")
+            permalink = message["permalink"]
+            str_messages.append(f"<{permalink}|channel: {channel}, username: {username}, text: {text}>")
 
         return str_messages
 
@@ -81,7 +82,7 @@ class Search:
         default_parameters = {
             "sort": "timestamp",
             "sort_dir": "desc",
-            "count": 20,
+            "count": 40,
             "cursor": "*",
         }
 

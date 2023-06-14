@@ -13,6 +13,7 @@ defaults = {
     "OPENAI_MAX_TOKENS_RETRIEVAL": 700,
     "OPENAI_MAX_TOKENS_PROMPT": 1000,
     "OPENAI_MAX_TOKENS_RESPONSE": 800,
+    "OPENAI_TOTAL_MAX_TOKENS": 4097,
 }
 
 # Attempt to load .env values, fallback to empty dict if .env file doesn't exist

@@ -130,7 +130,6 @@ class InstallationStore(AsyncInstallationStore):
         )
         async with Database(self.database_url) as database:
             result = await database.fetch_one(query)
-            logger.info("found installation: %s" % result)
             if result:
                 return result["user_token"]  # return user_token
             else:

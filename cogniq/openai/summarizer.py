@@ -31,7 +31,7 @@ class Summarizer:
         simple_coerced_string = str(text)
         return len(self.encode(simple_coerced_string))
 
-    def ceil_history(self, message_history):
+    def ceil_history(self, message_history: list ):
         simple_coerced_string = str(message_history)
         total_tokens = self.count_tokens(simple_coerced_string)
         max_tokens = self.config["OPENAI_MAX_TOKENS_HISTORY"]
@@ -43,7 +43,7 @@ class Summarizer:
 
         return message_history
 
-    def ceil_retrieval(self, retrieval):
+    def ceil_retrieval(self, retrieval: list):
         simple_coerced_string = str(retrieval)
         total_tokens = self.count_tokens(simple_coerced_string)
         max_tokens = self.config["OPENAI_MAX_TOKENS_RETRIEVAL"]
@@ -55,7 +55,7 @@ class Summarizer:
 
         return retrieval
 
-    async def ceil_prompt(self, prompt, max_tokens=None):
+    async def ceil_prompt(self, prompt: str, max_tokens: int = None):
         if max_tokens is None:
             max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
 
@@ -66,6 +66,18 @@ class Summarizer:
             return prompt
 
     async def summarize_content(self, content, max_tokens):
+        content_length = self.count_tokens(content)
+        remaining_context_window = self.config["OPENAI_TOTAL_MAX_TOKENS"] - max_tokens
+
+        if content_length < max_tokens:
+            return content
+        
+        if remaining_context_window > content_length:
+            half = int(len(content) / 2)
+            a = await self.summarize_content(content[0:half], max_tokens)
+            b = await self.summarize_content(content[half:], max_tokens)
+            return a + b
+
         response = await self.async_chat_completion_create(
             messages=[
                 system_message("Please summarize the following content within the token limit."),
@@ -77,5 +89,5 @@ class Summarizer:
             frequency_penalty=0.5,
             presence_penalty=0,
         )
-        answer = response["choices"][0]["message"]["content"].strip()
-        return answer
+        summary = response["choices"][0]["message"]["content"].strip()
+        return summary
