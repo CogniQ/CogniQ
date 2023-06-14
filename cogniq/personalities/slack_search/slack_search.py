@@ -68,3 +68,7 @@ class SlackSearch(BasePersonality):
     @property
     def description(self):
         return "I search Slack for relevant conversations and respond to the query."
+    
+    @property
+    def name(self):
+        return "Slack Search"   

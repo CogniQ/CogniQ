@@ -79,9 +79,6 @@ class CogniqSlack:
         self.app_handler = AsyncSlackRequestHandler(self.app)
         self.api = FastAPI()
 
-        self.app_handler = AsyncSlackRequestHandler(self.app)
-        self.api = FastAPI()
-
         self.anthropic_history = AnthropicHistory(app=self.app)
         self.openai_history = OpenAIHistory(app=self.app)
 
