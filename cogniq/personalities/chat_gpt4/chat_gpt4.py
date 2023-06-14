@@ -39,7 +39,7 @@ class ChatGPT4(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts):
+    async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
         channel = event["channel"]
         message = event["text"]
 
@@ -48,7 +48,7 @@ class ChatGPT4(BasePersonality):
 
         openai_response = await self.ask.ask(q=message, message_history=history)
         # logger.debug(openai_response)
-        await self.cslack.app.client.chat_update(channel=channel, ts=reply_ts, text=openai_response)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
 
     async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
         """

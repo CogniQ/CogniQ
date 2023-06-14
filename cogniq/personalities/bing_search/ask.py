@@ -94,9 +94,9 @@ class Ask:
             },
         )
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
-        # bot_id = await self.cslack.openai_history.get_bot_user_id()
-        bot_name = await self.cslack.openai_history.get_bot_name()
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
+        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         message_history = message_history or []
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)

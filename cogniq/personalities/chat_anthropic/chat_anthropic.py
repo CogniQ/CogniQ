@@ -39,7 +39,7 @@ class ChatAnthropic(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts):
+    async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
         channel = event["channel"]
         message = event["text"]
 
@@ -47,7 +47,7 @@ class ChatAnthropic(BasePersonality):
         logger.debug(f"history: {history}")
 
         response = await self.ask.ask(q=message, message_history=history)
-        await self.cslack.app.client.chat_update(channel=channel, ts=reply_ts, text=response)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=response)
 
     async def ask_directly(
         self,

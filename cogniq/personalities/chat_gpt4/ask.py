@@ -45,10 +45,10 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
         message_history = message_history or []
-        # bot_id = await self.cslack.openai_history.get_bot_user_id()
-        bot_name = await self.cslack.openai_history.get_bot_name()
+        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         # logger.info(f"Answering: {q}")
 
         # if the history is too long, summarize it

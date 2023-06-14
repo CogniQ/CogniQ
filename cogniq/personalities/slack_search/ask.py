@@ -51,10 +51,10 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q, message_history=None, context: dict, **kwargs):
-        # bot_id = await self.cslack.openai_history.get_bot_user_id()
-        bot_name = await self.cslack.openai_history.get_bot_name()
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
         message_history = message_history or []
+        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
 
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
@@ -89,6 +89,7 @@ class Ask:
 
         answer = await self.copenai.async_chat_completion_create(
             messages=message_history,
+            stream_callback=stream_callback,
             model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )
 

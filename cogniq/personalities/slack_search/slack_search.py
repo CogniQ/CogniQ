@@ -37,7 +37,7 @@ class SlackSearch(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts):
+    async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -50,7 +50,7 @@ class SlackSearch(BasePersonality):
             message_history=message_history,
         )
         # logger.debug(openai_response)
-        await self.cslack.app.client.chat_update(channel=channel, ts=reply_ts, text=openai_response)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
 
     async def ask_directly(self, *, q, message_history, context: dict, **kwargs):
         """

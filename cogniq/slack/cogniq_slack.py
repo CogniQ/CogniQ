@@ -141,7 +141,7 @@ class CogniqSlack:
         uvicorn_server = uvicorn.Server(uvicorn_config)
         await uvicorn_server.serve()
 
-    async def chat_update(self, *, channel, ts, text, retry_on_rate_limit=True):
+    async def chat_update(self, *, channel: str, ts: int, context: dict, text: str, retry_on_rate_limit: bool = True):
         """
         Updates the chat message in the given channel and thread with the given text.
         """
@@ -150,6 +150,7 @@ class CogniqSlack:
                 channel=channel,
                 ts=ts,
                 text=text,
+                token=context["bot_token"],
             )
         except SlackApiError as e:
             if e.response["error"] == "ratelimited":
