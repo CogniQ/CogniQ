@@ -17,7 +17,7 @@ try:
 except FileNotFoundError:
     dotenv_config = {}
 
-## 
+##
 # Azure Web App Service overrides.
 # Should resolve to None if not running on Azure Web App Service.
 overrides = {
