@@ -28,6 +28,9 @@ python-dotenv = "^1.0.0"
 uvicorn = "^0.22.0"
 fastapi = "^0.96.0"
 slack-sdk = "^3.21.3"
+databases = {extras = ["postgresql"], version = "^0.7.0"}
+psycopg2 = "^2.9.6"
+aiosqlite = "^0.19.0"
 
 [tool.poetry.group.localinstall]
 # Only necessary when installing locally.
@@ -52,3 +55,5 @@ black = "^23.3.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.black]
+line-length = 140

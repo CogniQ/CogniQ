@@ -15,7 +15,9 @@ RUN apt-get update && \
     curl \
     vim \
     libfontconfig \
-    git && \
+    git \
+    gcc \
+    libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -d /app -u 1000 -g 0 -s /bin/bash cogniq

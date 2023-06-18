@@ -104,3 +104,97 @@ az role assignment create \
 ```bash
 az provider register --namespace Microsoft.ContainerInstance
 ```
+
+## 20230617 - Add PostgreSQL instance.
+
+1. Create the vnet for the database
+
+```bash
+az network vnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --name cogniq --location eastus --address-prefixes 10.0.0.0/16
+
+az network vnet subnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name cogniq --address-prefixes 10.0.0.0/24 --name cogniq-db
+
+```
+
+
+2. Create the PostgreSQL instance
+
+```bash
+az postgres flexible-server create \
+  --name cogniq-db \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --vnet cogniq \
+  --subnet cogniq-db \
+  --database-name cogniq \
+  --location "eastus" \
+  --storage-size 32 \
+  --tier Burstable \
+  --sku-name Standard_B1ms
+
+```
+
+
+3. Create the container app
+
+```bash
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.OperationalInsights
+az provider register --namespace Microsoft.ContainerService
+
+AZURE_RESOURCE_GROUP_NAME=cogniq-community-main
+LOCATION="eastus"
+CONTAINERAPPS_ENVIRONMENT="cogniq-web"
+VNET_NAME=cogniq
+
+az network vnet subnet create \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --vnet-name $VNET_NAME \
+  --name infrastructure-subnet \
+  --address-prefixes 10.0.4.0/22
+
+INFRASTRUCTURE_SUBNET=`az network vnet subnet show --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name $VNET_NAME --name infrastructure-subnet --query "id" -o tsv | tr -d '[:space:]'`
+
+az containerapp env create \
+  --name $CONTAINERAPPS_ENVIRONMENT \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --infrastructure-subnet-resource-id $INFRASTRUCTURE_SUBNET \
+  --location $LOCATION
+
+az containerapp create \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --environment ${CONTAINERAPPS_ENVIRONMENT} \
+  --yaml 'deployments/cogniq-community-main/containerapp.yml' \
+  --query properties.configuration.ingress.fqdn
+
+az containerapp ingress show \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --query fqdn
+
+
+az containerapp up \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --location ${LOCATION} \
+  --image ghcr.io/cogniq/cogniq:4a
+
+az containerapp show \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME}
+
+# Fetch the customDomainVerificationId and set a TXT record for asuid.main.cogniq.info to it.
+
+az containerapp hostname add \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --hostname main.cogniq.info
+
+az containerapp hostname bind \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --hostname main.cogniq.info \
+  --environment $CONTAINERAPPS_ENVIRONMENT \
+  --validation-method CNAME
+
+```

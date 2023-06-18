@@ -34,8 +34,7 @@ class Ask:
         """
         Call me after initializing this class!
         """
-        self.bot_id = await self.cslack.anthropic_history.get_bot_user_id()
-        self.bot_name = await self.cslack.anthropic_history.get_bot_name()
+        pass
 
     async def ask(self, *, q, message_history=None):
         message_history = message_history or ""

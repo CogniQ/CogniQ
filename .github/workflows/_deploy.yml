@@ -35,24 +35,8 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: 'Deploy to Azure Container Instances'
-      uses: 'azure/aci-deploy@v1'
+      uses: azure/container-apps-deploy-action@v1
       with:
-        resource-group: ${{ inputs.environment }}
-        dns-name-label: ${{ inputs.environment }}
-        image: ghcr.io/cogniq/cogniq:${{ inputs.image_tag }}
-        name: ${{ inputs.environment }}
-        location: 'east us'
-        cpu: 1
-        memory: 1
-        ports: "3000"
-        environment-variables: |
-          PORT=3000
-        secure-environment-variables: |
-          SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}
-          SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_APP_TOKEN=${{ secrets.SLACK_APP_TOKEN }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          BING_SUBSCRIPTION_KEY=${{ secrets.BING_SUBSCRIPTION_KEY }}
-          BING_SEARCH_ENDPOINT=https://api.bing.microsoft.com
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-  
+        resourceGroup: ${{ inputs.environment }}
+        containerAppEnvironment: cogniq-main
+        imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.image_tag }}

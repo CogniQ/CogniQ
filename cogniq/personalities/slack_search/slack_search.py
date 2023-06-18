@@ -2,20 +2,18 @@ from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 
-import re
-
 from .ask import Ask
 
 
-class ChatGPT4(BasePersonality):
+class SlackSearch(BasePersonality):
     def __init__(self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
-        Chat GPT4 personality
+        SlackSearch personality
         Please call async_setup after initializing the personality.
 
         ```
-        chat_gpt4 = ChatGPT4(config=config, cslack=cslack, copenai=copenai)
-        await chat_gpt4.async_setup()
+        slack_search = SlackSearch(config=config, copenai=copenai)
+        await slack_search.async_setup()
         ```
 
         Parameters:
@@ -40,27 +38,32 @@ class ChatGPT4(BasePersonality):
         await self.ask.async_setup()
 
     async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
+        """
+        Executes the ask_task against all the personalities and returns the best or compiled response.
+        """
         channel = event["channel"]
         message = event["text"]
 
-        history = await self.cslack.openai_history.get_history(event=event)
-        # logger.debug(f"history: {history}")
-
-        openai_response = await self.ask.ask(q=message, message_history=history)
+        message_history = await self.cslack.openai_history.get_history(event=event, context=context)
+        openai_response = await self.ask.ask(
+            q=message,
+            context=context,
+            message_history=message_history,
+        )
         # logger.debug(openai_response)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
 
-    async def ask_directly(self, *, q: str, message_history: list, stream_callback: callable = None, **kwargs):
+    async def ask_directly(self, *, q, message_history: list[dict[str, str]], context: dict, **kwargs):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
+        response = await self.ask.ask(q=q, message_history=message_history, context=context, **kwargs)
         return response
 
     @property
     def description(self):
-        return "I do not modify the query, and simply ask the question to ChatGPT 4."
+        return "I search Slack for relevant conversations and respond to the query."
 
     @property
     def name(self):
-        return "ChatGPT4"
+        return "Slack Search"

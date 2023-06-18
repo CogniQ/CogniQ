@@ -1,6 +1,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
+
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
@@ -16,8 +17,15 @@ from tenacity import (
 )
 import asyncio
 
+
+from databases import Database
+import sqlalchemy
+
 from .history.openai_history import OpenAIHistory
 from .history.anthropic_history import AnthropicHistory
+from .search import Search
+from .state_store import StateStore
+from .installation_store import InstallationStore
 
 
 class CogniqSlack:
@@ -27,24 +35,49 @@ class CogniqSlack:
 
         Parameters:
         config (dict): Configuration for the Slack app with the following keys:
-            SLACK_BOT_TOKEN (str): Slack bot token.
             SLACK_SIGNING_SECRET (str): Slack signing secret.
             HOST (str, default='0.0.0.0'): Host on which the app will be started.
             PORT (str or int, default=3000): Port on which the app will be started.
             APP_ENV (str, either 'production' or 'development'): Environment in which the app is running.
-            SLACK_APP_TOKEN (str, optional): Slack app token. Required if APP_ENV is 'development'.
-            HISTORY_CLASS (class, optional): Class to use for storing and retrieving history formatted for LLM consumption. Defaults to OpenAIHistory.
-
 
         """
 
         self.config = config
 
-        self.app = AsyncApp(
-            token=self.config["SLACK_BOT_TOKEN"],
-            signing_secret=self.config["SLACK_SIGNING_SECRET"],
+        self.database_url = config["DATABASE_URL"]
+
+        logger.setLevel(config["MUTED_LOG_LEVEL"])
+        self.installation_store = InstallationStore(
+            client_id=config["SLACK_CLIENT_ID"],
+            database_url=self.database_url,
+            logger=logger,
+            install_path=f"{config['APP_URL']}/slack/install",
+        )
+        self.state_store = StateStore(
+            expiration_seconds=120,
+            database_url=self.database_url,
+            logger=logger,
         )
 
+        self.app = AsyncApp(
+            logger=logger,
+            signing_secret=self.config["SLACK_SIGNING_SECRET"],
+            installation_store=self.installation_store,
+            oauth_settings=AsyncOAuthSettings(
+                client_id=self.config["SLACK_CLIENT_ID"],
+                client_secret=self.config["SLACK_CLIENT_SECRET"],
+                state_store=self.state_store,
+                scopes=[
+                    "app_mentions:read",
+                    "channels:history",
+                    "chat:write",
+                    "groups:history",
+                    "im:history",
+                    "mpim:history",
+                ],
+                user_scopes=["search:read"],
+            ),
+        )
         self.app_handler = AsyncSlackRequestHandler(self.app)
         self.api = FastAPI()
 
@@ -55,14 +88,20 @@ class CogniqSlack:
         self.config.setdefault("HOST", "0.0.0.0")
         self.config.setdefault("PORT", 3000)
         self.config.setdefault("APP_ENV", "production")
-        self.config.setdefault("HISTORY_CLASS", OpenAIHistory)
+        self.search = Search(cslack=self)
 
-        if self.config["APP_ENV"] == "development" and not self.config.get(
-            "SLACK_APP_TOKEN"
-        ):
-            raise ValueError("SLACK_APP_TOKEN is required in development mode")
-
-        self.history = self.config["HISTORY_CLASS"](app=self.app)
+    async def initialize_db(self):
+        """
+        This method initializes the database.
+        TODO: This should be moved to a migrations task.
+        """
+        try:
+            async with Database(self.database_url) as database:
+                await database.fetch_one("select count(*) from slack_installations")
+        except Exception as e:
+            engine = sqlalchemy.create_engine(self.database_url)
+            self.installation_store.metadata.create_all(engine)
+            self.state_store.metadata.create_all(engine)
 
     async def start(self):
         """
@@ -75,40 +114,40 @@ class CogniqSlack:
         4. Logs a message indicating that the Slack app is starting.
         5. If the app environment is set to 'production', the app starts listening on the specified port.
            It awaits the `app.start()` method to start the app server.
-        6. If the app environment is set to 'development', it starts the app using the Socket Mode Handler.
-           It creates an instance of `AsyncSocketModeHandler` with the `app` instance and the Slack app token.
-           It awaits the `handler.start_async()` method to start the app in development mode.
+        6. If the app environment is set to 'development', the app starts listening on the specified port.
+           It will reload the app server if any changes are made to the app code.
 
         Note:
-        - If the app environment is 'development', make sure to provide the `SLACK_APP_TOKEN` in the configuration.
         - The app will keep running until it is manually stopped or encounters an error.
         """
         logger.info("Starting Slack app!!")
-        if self.config["APP_ENV"] == "production":
+        await self.initialize_db()
 
-            @self.api.post("/slack/events")
-            async def slack_events(request: Request):
-                return await self.app_handler.handle(request)
+        @self.api.post("/slack/events")
+        async def slack_events(request: Request):
+            return await self.app_handler.handle(request)
 
-            # Run the FastAPI app using Uvicorn
-            uvicorn_config = uvicorn.Config(
-                self.api,
-                host=self.config["HOST"],
-                port=int(self.config["PORT"]),
-                log_level=self.config["LOG_LEVEL"],
-            )
-            uvicorn_server = uvicorn.Server(uvicorn_config)
-            await uvicorn_server.serve()
+        @self.api.get("/slack/install")
+        async def slack_install(request: Request):
+            return await self.app_handler.handle(request)
 
-        if self.config["APP_ENV"] == "development":
-            from slack_bolt.adapter.socket_mode.aiohttp import (
-                AsyncSocketModeHandler,
-            )
+        @self.api.get("/slack/oauth_redirect")
+        async def slack_oauth_redirect(request: Request):
+            return await self.app_handler.handle(request)
 
-            handler = AsyncSocketModeHandler(self.app, self.config["SLACK_APP_TOKEN"])
-            await handler.start_async()
+        reload = self.config["APP_ENV"] == "development"
+        # Run the FastAPI app using Uvicorn
+        uvicorn_config = uvicorn.Config(
+            self.api,
+            host=self.config["HOST"],
+            port=int(self.config["PORT"]),
+            log_level=self.config["LOG_LEVEL"],
+            reload=reload,
+        )
+        uvicorn_server = uvicorn.Server(uvicorn_config)
+        await uvicorn_server.serve()
 
-    async def chat_update(self, *, channel, ts, text, retry_on_rate_limit=True):
+    async def chat_update(self, *, channel: str, ts: int, context: dict, text: str, retry_on_rate_limit: bool = True):
         """
         Updates the chat message in the given channel and thread with the given text.
         """
@@ -117,6 +156,7 @@ class CogniqSlack:
                 channel=channel,
                 ts=ts,
                 text=text,
+                token=context["bot_token"],
             )
         except SlackApiError as e:
             if e.response["error"] == "ratelimited":
