@@ -1,6 +1,7 @@
 from typing import *
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 from functools import singledispatchmethod
@@ -38,9 +39,8 @@ class Summarizer:
     def count_tokens(self, text: str):
         return len(self.encode(text))
 
-
     @count_tokens.register(list)
-    def _(self, history: Union[list[dict[str,str]], list[str]]):
+    def _(self, history: Union[list[dict[str, str]], list[str]]):
         """
         Count tokens in a list of OpenAI messages or a list of strings
         """
@@ -73,7 +73,7 @@ class Summarizer:
             logger.debug("trimming ceil_history: total_tokens: %s", total_tokens)
             popped_message = message_history_copy.pop(0)
             total_tokens -= self.count_tokens(popped_message)
-    
+
         return message_history_copy
 
     def ceil_retrieval(self, retrieval: list, max_tokens: int = None):

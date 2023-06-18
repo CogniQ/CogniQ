@@ -13,6 +13,7 @@ def setup_root_logger(level=logging.INFO):
     handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
     root.addHandler(handler)
 
+
 def mute_certain_loggers(level=logging.WARN):
     logs = [
         "generalimport.general_importer",
@@ -22,7 +23,6 @@ def mute_certain_loggers(level=logging.WARN):
         "haystack.telemetry",
         "haystack.utils.openai_utils",
         "asyncio",
-
     ]
     for logger_name in logs:
         logger = logging.getLogger(logger_name)

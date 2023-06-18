@@ -2,6 +2,7 @@ from typing import *
 
 from functools import singledispatch
 
+
 @singledispatch
 def formatted_responses(responses: list):
     """
@@ -9,9 +10,11 @@ def formatted_responses(responses: list):
     """
     return "\n\n".join(responses)
 
+
 @formatted_responses.register
 def _(responses: str):
     return f"Slack Search Result Summary: {responses}"
+
 
 def retrieval_augmented_prompt(slack_search_response: Union[list, str], q: str):
     """

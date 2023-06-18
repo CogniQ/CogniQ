@@ -20,6 +20,7 @@ from sqlalchemy import and_, desc, Table, MetaData
 
 from .exceptions.user_token_not_found import UserTokenNotFound
 
+
 class InstallationStore(AsyncInstallationStore):
     database_url: str
     client_id: str
@@ -97,11 +98,7 @@ class InstallationStore(AsyncInstallationStore):
             else:
                 return None
 
-    async def async_find_user_token(
-        self,
-        *,
-        context: Optional[dict]
-    ) -> Optional[str]:
+    async def async_find_user_token(self, *, context: Optional[dict]) -> Optional[str]:
         """
         Find the user token of a specific user or of the user who installed the app.
         If the user token doesn't exist, prompt the user to install the app.
@@ -123,13 +120,8 @@ class InstallationStore(AsyncInstallationStore):
             c.user_id == user_id,
         ]
 
-        query = (
-            self.installations.select()
-            .where(and_(*conditions))
-            .order_by(desc(c.installed_at))
-            .limit(1)
-        )
-        
+        query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at)).limit(1)
+
         async with Database(self.database_url) as database:
             result = await database.fetch_one(query)
             if result:

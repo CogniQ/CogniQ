@@ -14,7 +14,6 @@ from .prompts import retrieval_augmented_prompt
 from .functions import get_search_query_function
 
 
-
 class Ask:
     def __init__(
         self,
@@ -54,7 +53,7 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list[dict[str,str]], stream_callback: callable = None, context: dict):
+    async def ask(self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         # if the history is too long, summarize it
@@ -113,7 +112,6 @@ class Ask:
             user_id = context["user_id"]
             error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
             return error_string
-
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 
