@@ -17,14 +17,21 @@ try:
 except FileNotFoundError:
     dotenv_config = {}
 
+## 
+# Azure Web App Service overrides.
+# Should resolve to None if not running on Azure Web App Service.
+overrides = {
+    "PORT": os.environ.get("SERVER_PORT"),
+    "APP_URL": f"https://{os.environ.get('WEBSITE_HOSTNAME')}" if os.environ.get("WEBSITE_HOSTNAME") else None,
+}
 
 # Check if user has supplied all required environment variables
 for var, default in user_must_supply_these.items():
-    if var not in os.environ and var not in dotenv_config:
+    if var not in os.environ and var not in dotenv_config and var not in overrides:
         raise EnvironmentError(f"Please supply the {var} environment variable in your .env file or as an environment variable.")
 
 # Merge .env values and environment variables
-config = {**dotenv_config, **os.environ}
+config = {**dotenv_config, **os.environ, **overrides}
 
 
 ##

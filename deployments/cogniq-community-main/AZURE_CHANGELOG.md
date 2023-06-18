@@ -104,3 +104,71 @@ az role assignment create \
 ```bash
 az provider register --namespace Microsoft.ContainerInstance
 ```
+
+## 20230617 - Add PostgreSQL instance.
+
+1. Create the vnet for the database
+
+```bash
+az network vnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --name cogniq --location eastus --address-prefixes 10.0.0.0/16
+
+az network vnet subnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name cogniq --address-prefixes 10.0.0.0/24 --name cogniq-db
+
+az network vnet subnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name cogniq --address-prefixes 10.0.1.0/24 --name cogniq-web
+
+```
+
+
+2. Create the PostgreSQL instance
+
+```bash
+az postgres flexible-server create \
+  --name cogniq-db \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --vnet cogniq \
+  --subnet cogniq-db \
+  --database-name cogniq \
+  --location "eastus" \
+  --storage-size 32 \
+  --tier Burstable \
+  --sku-name Standard_B1ms
+
+```
+
+
+3. Create the web app
+
+```bash
+
+az appservice plan create \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --name cogniq-web \
+  --location eastus \
+  --is-linux \
+  --number-of-workers 1 \
+  --sku B1
+
+
+az webapp create \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --plan cogniq-web \
+  --name cogniq-web \
+  --deployment-container-image-name ghcr.io/cogniq/cogniq:main \
+  --https-only \
+  --public-network-access Enabled \
+  --vnet cogniq \
+  --subnet cogniq-web \
+  --role Reader
+
+az webapp config appsettings set --resource-group ${AZURE_RESOURCE_GROUP_NAME} --name cogniq-web --settings '@deployments/cogniq-community-main/app-settings.json'
+
+az webapp vnet-integration add --resource-group ${AZURE_RESOURCE_GROUP_NAME} -n  cogniq-web --vnet cogniq --subnet cogniq-web
+
+az webapp log config \
+  --name cogniq-web \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --docker-container-logging filesystem
+
+az webapp log tail --name cogniq-web --resource-group ${AZURE_RESOURCE_GROUP_NAME}
+
+```

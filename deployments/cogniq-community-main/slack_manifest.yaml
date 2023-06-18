@@ -1,5 +1,5 @@
 display_information:
-  name: CogniQ (main)
+  name: CogniQ
 features:
   app_home:
     home_tab_enabled: false
@@ -21,7 +21,7 @@ oauth_config:
       - mpim:history
 settings:
   event_subscriptions:
-    request_url: http://cogniq-community-main.eastus.azurecontainer.io:3000/slack/events
+    request_url: https://cogniq-web.azurewebsites.net/slack/events
     bot_events:
       - app_mention
       - message.app_home
