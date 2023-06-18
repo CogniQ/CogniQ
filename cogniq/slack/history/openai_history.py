@@ -38,7 +38,7 @@ class OpenAIHistory(BaseHistory):
 
         response = await self._get_conversations_and_convert_to_chat_sequence(channel_id=channel_id, thread_ts=thread_ts, context=context)
 
-        logger.debug(f"History: {response}")
+        logger.debug(f"get_history: {response}")
         return response
 
     async def _get_conversations_and_convert_to_chat_sequence(self, *, channel_id: str, thread_ts=None, context: dict):

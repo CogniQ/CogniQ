@@ -53,11 +53,9 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
-        message_history = message_history or []
+    async def ask(self, *, q: str, message_history: list[dict[str,str]], stream_callback: callable = None, context: dict):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
-
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
@@ -106,11 +104,16 @@ class Ask:
 
         search_query = " ".join(search_query_list)
 
+        logger.info(f"searching slack with search_query: {search_query}")
+
         slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
 
-        short_slack_search_response = await self.copenai.summarizer.ceil_prompt(slack_search_response)
+        logger.debug(f"slack_search_response: {slack_search_response}")
 
-        # logger.info(f"slack_search_response: {slack_search_response}")
+        short_slack_search_response = self.copenai.summarizer.ceil_history(slack_search_response)
+
+        if slack_search_response != short_slack_search_response:
+            logger.debug(f"slack_search_response was shortened: {slack_search_response}")
 
         short_q = await self.copenai.summarizer.ceil_prompt(q)
 

@@ -1,5 +1,8 @@
 import asyncio
 
+import logging
+logger = logging.getLogger(__name__)
+
 from functools import partial
 
 from cogniq.personalities import BasePersonality
