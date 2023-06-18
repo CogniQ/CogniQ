@@ -46,6 +46,7 @@ class CogniqSlack:
 
         self.database_url = config["DATABASE_URL"]
 
+        logger.setLevel(config["MUTED_LOG_LEVEL"])
         self.installation_store = InstallationStore(
             client_id=config["SLACK_CLIENT_ID"],
             database_url=self.database_url,

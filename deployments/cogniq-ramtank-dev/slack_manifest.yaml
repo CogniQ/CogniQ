@@ -10,7 +10,7 @@ features:
     always_online: false
 oauth_config:
   redirect_urls:
-    - https://4edd-104-10-177-38.ngrok-free.app/slack/oauth_redirect
+    - https://cb11-104-10-177-38.ngrok-free.app/slack/oauth_redirect
   scopes:
     user:
       - search:read
@@ -23,7 +23,7 @@ oauth_config:
       - mpim:history
 settings:
   event_subscriptions:
-    request_url: https://4edd-104-10-177-38.ngrok-free.app/slack/events
+    request_url: https://cb11-104-10-177-38.ngrok-free.app/slack/events
     bot_events:
       - app_mention
       - message.app_home

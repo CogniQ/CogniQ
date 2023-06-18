@@ -65,7 +65,9 @@ class Summarizer:
         else:
             return prompt
 
-    async def summarize_content(self, content, max_tokens):
+    async def summarize_content(self, content, max_tokens=None):
+        if max_tokens is None:
+            max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
         content_length = self.count_tokens(content)
         remaining_context_window = self.config["OPENAI_TOTAL_MAX_TOKENS"] - max_tokens
 
