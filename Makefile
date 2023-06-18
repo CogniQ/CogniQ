@@ -25,6 +25,7 @@ poetry.lock: pyproject.toml .venv
 docker-build:
 	docker buildx build \
 		-t $(DOCKER_TAG) \
+		-t $(LOWERCASE_APP):local \
 		--build-arg BUILD_TIME=$(TIMESTAMP) \
 		--build-arg BUILD_VERSION=$(VERSION) \
 		--build-arg BUILD_SHA=$(SHORT_SHA) \
