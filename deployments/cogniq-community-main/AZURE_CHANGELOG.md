@@ -114,8 +114,6 @@ az network vnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --name cogn
 
 az network vnet subnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name cogniq --address-prefixes 10.0.0.0/24 --name cogniq-db
 
-az network vnet subnet create --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name cogniq --address-prefixes 10.0.1.0/24 --name cogniq-web
-
 ```
 
 
@@ -136,39 +134,48 @@ az postgres flexible-server create \
 ```
 
 
-3. Create the web app
+3. Create the container app
 
 ```bash
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.OperationalInsights
+az provider register --namespace Microsoft.ContainerService
 
-az appservice plan create \
+AZURE_RESOURCE_GROUP_NAME=cogniq-community-main
+LOCATION="eastus"
+CONTAINERAPPS_ENVIRONMENT="cogniq-web"
+VNET_NAME=cogniq
+
+az network vnet subnet create \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --vnet-name $VNET_NAME \
+  --name infrastructure-subnet \
+  --address-prefixes 10.0.4.0/22
+
+INFRASTRUCTURE_SUBNET=`az network vnet subnet show --resource-group ${AZURE_RESOURCE_GROUP_NAME} --vnet-name $VNET_NAME --name infrastructure-subnet --query "id" -o tsv | tr -d '[:space:]'`
+
+az containerapp env create \
+  --name $CONTAINERAPPS_ENVIRONMENT \
+  --resource-group $AZURE_RESOURCE_GROUP_NAME \
+  --infrastructure-subnet-resource-id $INFRASTRUCTURE_SUBNET \
+  --location $LOCATION
+
+az containerapp create \
+  --name cogniq \
   --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
-  --name cogniq-web \
-  --location eastus \
-  --is-linux \
-  --number-of-workers 1 \
-  --sku B1
+  --environment ${CONTAINERAPPS_ENVIRONMENT} \
+  --yaml 'deployments/cogniq-community-main/containerapp.yml' \
+  --query properties.configuration.ingress.fqdn
 
-
-az webapp create \
+az containerapp ingress show \
+  --name cogniq \
   --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
-  --plan cogniq-web \
-  --name cogniq-web \
-  --deployment-container-image-name ghcr.io/cogniq/cogniq:main \
-  --https-only \
-  --public-network-access Enabled \
-  --vnet cogniq \
-  --subnet cogniq-web \
-  --role Reader
+  --query fqdn
 
-az webapp config appsettings set --resource-group ${AZURE_RESOURCE_GROUP_NAME} --name cogniq-web --settings '@deployments/cogniq-community-main/app-settings.json'
 
-az webapp vnet-integration add --resource-group ${AZURE_RESOURCE_GROUP_NAME} -n  cogniq-web --vnet cogniq --subnet cogniq-web
-
-az webapp log config \
-  --name cogniq-web \
+az containerapp up \
+  --name cogniq \
   --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
-  --docker-container-logging filesystem
-
-az webapp log tail --name cogniq-web --resource-group ${AZURE_RESOURCE_GROUP_NAME}
-
+  --location ${LOCATION} \
+  --image ghcr.io/cogniq/cogniq:4a
 ```

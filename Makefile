@@ -48,6 +48,7 @@ dc-up: docker-run
 # AZURE_RESOURCE_GROUP_NAME - the name of the Azure resource group
 # It is further presumed that the name of the container is the same as the resource group name, though this is not necessarily the case.
 logs:
-	az webapp log tail \
-		--name cogniq-web \
-		--resource-group cogniq-community-main
+	az containerapp logs show \
+		--name cogniq \
+		--resource-group cogniq-community-main \
+		--follow
