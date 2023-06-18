@@ -38,5 +38,6 @@ jobs:
       uses: azure/container-apps-deploy-action@v1
       with:
         resourceGroup: ${{ inputs.environment }}
-        containerAppEnvironment: cogniq-main
+        containerAppEnvironment: cogniq-web
+        containerAppName: cogniq
         imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.image_tag }}
