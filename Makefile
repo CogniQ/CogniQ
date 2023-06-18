@@ -47,7 +47,7 @@ dc-up: docker-run
 # It is presumed that the Azure CLI is installed and that the following environment variables are set:
 # AZURE_RESOURCE_GROUP_NAME - the name of the Azure resource group
 # It is further presumed that the name of the container is the same as the resource group name, though this is not necessarily the case.
-azure-container-logs:
-	az container attach \
-		--resource-group $${AZURE_RESOURCE_GROUP_NAME:?} \
-		--name $${AZURE_RESOURCE_GROUP_NAME:?}
+logs:
+	az webapp log tail \
+		--name cogniq-web \
+		--resource-group cogniq-community-main
