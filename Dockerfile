@@ -16,6 +16,7 @@ RUN apt-get update && \
     vim \
     libfontconfig \
     git \
+    gcc \
     libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
