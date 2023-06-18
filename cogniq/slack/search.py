@@ -88,7 +88,7 @@ class Search:
 
         # Merge default_parameters and kwargs, with kwargs taking precedence
         search_parameters = {**default_parameters, **kwargs}
-        user_token = context.get("user_token") or await self.installation_store.async_find_user_token(context=context)
+        user_token = context.get("user_token")  # or await self.installation_store.async_find_user_token(context=context)
 
         try:
             logger.info(f"Searching slack for {q}")

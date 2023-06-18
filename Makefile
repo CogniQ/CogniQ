@@ -37,10 +37,11 @@ docker-build-no-cache:
 
 
 .PHONY: docker-run
-docker-run: .envrc
-	docker run \
-		--env-file .env \
-		$(DOCKER_TAG)
+docker-run: .envrc docker-build
+	docker-compose up
+
+.PHONY: dc-up
+dc-up: docker-run
 
 .PHONY: azure-container-logs
 # It is presumed that the Azure CLI is installed and that the following environment variables are set:

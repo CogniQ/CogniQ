@@ -1,3 +1,5 @@
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -65,8 +67,22 @@ class MultiplePersonalities:
         await self.evaluator.async_setup()
         await self.cslack.start()
 
-    async def dispatch(self, *, event, context, original_ts):
-        reply = await context["say"](f"Let me figure that out...", thread_ts=original_ts)
+    async def first_response(self, *, context: dict, original_ts: str) -> Awaitable:
+        """
+        This method is called when the bot is called.
+        """
+        try:
+            response = await context["say"](
+                f"Let me figure that out...",
+                thread_ts=original_ts,
+            )
+            return response
+        except Exception as e:
+            logger.error(e)
+            raise e
+
+    async def dispatch(self, *, event: dict, context: dict, original_ts: str) -> Awaitable:
+        reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
 
         # Text from the event

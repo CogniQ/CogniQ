@@ -51,6 +51,7 @@ class CogniqSlack:
             client_id=config["SLACK_CLIENT_ID"],
             database_url=self.database_url,
             logger=logger,
+            install_path=f"{config['APP_URL']}/slack/install",
         )
         self.state_store = StateStore(
             expiration_seconds=120,
@@ -90,6 +91,10 @@ class CogniqSlack:
         self.search = Search(cslack=self)
 
     async def initialize_db(self):
+        """
+        This method initializes the database.
+        TODO: This should be moved to a migrations task.
+        """
         try:
             async with Database(self.database_url) as database:
                 await database.fetch_one("select count(*) from slack_installations")

@@ -9,7 +9,6 @@ user_must_supply_these = {
     "OPENAI_API_KEY": None,
     "BING_SUBSCRIPTION_KEY": None,
     "APP_URL": None,
-    "DATABASE_URL": None,
 }
 
 # Attempt to load .env values, fallback to empty dict if .env file doesn't exist
@@ -22,15 +21,15 @@ except FileNotFoundError:
 # Check if user has supplied all required environment variables
 for var, default in user_must_supply_these.items():
     if var not in os.environ and var not in dotenv_config:
-        raise EnvironmentError(
-            f"Please supply the {var} environment variable in your .env file or as an environment variable."
-        )
+        raise EnvironmentError(f"Please supply the {var} environment variable in your .env file or as an environment variable.")
 
 # Merge .env values and environment variables
 config = {**dotenv_config, **os.environ}
 
 
+##
 # Define default values
+
 defaults = {
     "HOST": "0.0.0.0",
     "PORT": "3000",
@@ -42,10 +41,21 @@ defaults = {
     "OPENAI_MAX_TOKENS_PROMPT": 1000,
     "OPENAI_MAX_TOKENS_RESPONSE": 800,
     "OPENAI_TOTAL_MAX_TOKENS": 4097,
+    "POSTGRES_HOST": "",
+    "POSTGRES_USER": "",
+    "POSTGRES_PASSWORD": "",
+    "POSTGRES_DB": "",
 }
 for var, default in defaults.items():
     config.setdefault(var, default)
 
+# This is the default database URL.
+# You don't have to use postgres.
+# Use something else by overriding the DATABASE_URL environment variable.
+postgres_database_url = (
+    f"postgresql://{config['POSTGRES_USER']}:{config['POSTGRES_PASSWORD']}@{config['POSTGRES_HOST']}/{config['POSTGRES_DB']}"
+)
+config.setdefault("DATABASE_URL", postgres_database_url)
 
 # Set logging level
 config["LOG_LEVEL"] = logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO

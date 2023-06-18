@@ -33,7 +33,7 @@ class StateStore(AsyncOAuthStateStore):
         self.metadata = MetaData()
         self.oauth_states = SQLAlchemyOAuthStateStore.build_oauth_states_table(
             metadata=self.metadata,
-            table_name=SQLAlchemyOAuthStateStore.default_table_name,
+            table_name="slack_oauth_states",
         )
 
     @property

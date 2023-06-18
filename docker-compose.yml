@@ -20,6 +20,14 @@ services:
       - db
     environment:
       # Define environment variables your app might need
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET}
+      SLACK_CLIENT_ID: ${SLACK_CLIENT_ID}
+      SLACK_CLIENT_SECRET: ${SLACK_CLIENT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      BING_SUBSCRIPTION_KEY: ${BING_SUBSCRIPTION_KEY}
+      APP_ENV: ${APP_ENV:-development}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      POSTGRES_HOST: db
       POSTGRES_USER: ${POSTGRES_USER:-cogniq}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cogniq}
       POSTGRES_DB: ${POSTGRES_DB:-cogniq}
