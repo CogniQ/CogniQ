@@ -36,15 +36,24 @@ class Summarizer:
         return self.encoding.encode(text)
 
     @singledispatchmethod
-    def count_tokens(self, text: str):
-        return len(self.encode(text))
+    def count_tokens(self, text):
+        logger.error("Unsupported type passed to count_tokens: %s (%s)", type(text), text)
+        raise TypeError(f"count_tokens does not support type {type(text)}: {text}")
+
+    @count_tokens.register(str)
+    def _(self, text: str):
+        try:
+            return len(self.encode(text))
+        except TypeError as e:
+            logger.error("ceil_history expects a string. Message: %s", text)
+            raise e
 
     @count_tokens.register(list)
-    def _(self, history: Union[list[dict[str, str]], list[str]]):
+    def _(self, history: Union[List[Dict[str, str]], List[str]]):
         """
         Count tokens in a list of OpenAI messages or a list of strings
         """
-        if history and isinstance(history[0], dict):
+        if history and isinstance(history[0], dict) and "content" in history[0]:
             try:
                 return sum(map(lambda x: self.count_tokens(x["content"]), history))
             except KeyError as e:
@@ -52,7 +61,7 @@ class Summarizer:
                 raise e
         elif history and isinstance(history[0], str):
             return sum(map(self.count_tokens, history))
-        elif history == []:
+        elif not history:
             return 0
         else:
             raise TypeError("count_tokens expects a list of OpenAI messages or a list of strings.")
@@ -72,7 +81,7 @@ class Summarizer:
         while total_tokens > max_tokens:
             logger.debug("trimming ceil_history: total_tokens: %s", total_tokens)
             popped_message = message_history_copy.pop(0)
-            total_tokens -= self.count_tokens(popped_message)
+            total_tokens -= self.count_tokens([popped_message])
 
         return message_history_copy
 

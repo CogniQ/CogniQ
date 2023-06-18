@@ -89,8 +89,8 @@ class MultiplePersonalities:
         text = event.get("text")
         # Dictionary with the module's wake patterns and corresponding ask tasks
         personalities = [
-            # self.chat_gpt4,
-            # self.bing_search,
+            self.chat_gpt4,
+            self.bing_search,
             # self.chat_anthropic,
             self.slack_search,
         ]

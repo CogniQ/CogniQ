@@ -1,7 +1,5 @@
 import logging
-
 import asyncio
-
 from config import config
 from multiple_personalities import MultiplePersonalities
 
@@ -16,17 +14,23 @@ def setup_root_logger(level=logging.INFO):
 
 def mute_certain_loggers(level=logging.WARN):
     logs = [
-        "generalimport.general_importer",
+        "generalimport",
         "aiosqlite",
         "databases",
-        "slack_sdk.web.async_base_client",
-        "haystack.telemetry",
-        "haystack.utils.openai_utils",
+        "slack_sdk",
+        "haystack",
         "asyncio",
+        "sseclient",
+        "urllib3",
     ]
-    for logger_name in logs:
-        logger = logging.getLogger(logger_name)
-        logger.setLevel(level)
+    for log in logs:
+        logging.getLogger(log).setLevel(level)
+    for logger_name in logging.root.manager.loggerDict.keys():
+        for log in logs:
+            if logger_name.startswith(log):
+                logger = logging.getLogger(logger_name)
+                logger.setLevel(level)
+                break
 
 
 if __name__ == "__main__":
@@ -34,4 +38,5 @@ if __name__ == "__main__":
     mute_certain_loggers(level=config["MUTED_LOG_LEVEL"])
 
     mp = MultiplePersonalities(config=config)
+
     asyncio.run(mp.start())
