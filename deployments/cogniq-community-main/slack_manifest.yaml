@@ -9,6 +9,8 @@ features:
     display_name: CogniQ
     always_online: false
 oauth_config:
+  redirect_urls:
+    - https://main.cogniq.info/slack/oauth_redirect
   scopes:
     user:
       - search:read
