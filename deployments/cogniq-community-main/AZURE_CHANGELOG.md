@@ -178,4 +178,23 @@ az containerapp up \
   --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
   --location ${LOCATION} \
   --image ghcr.io/cogniq/cogniq:4a
+
+az containerapp show \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME}
+
+# Fetch the customDomainVerificationId and set a TXT record for asuid.main.cogniq.info to it.
+
+az containerapp hostname add \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --hostname main.cogniq.info
+
+az containerapp hostname bind \
+  --name cogniq \
+  --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
+  --hostname main.cogniq.info \
+  --environment $CONTAINERAPPS_ENVIRONMENT \
+  --validation-method CNAME
+
 ```
