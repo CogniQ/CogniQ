@@ -18,6 +18,8 @@ from slack_sdk.oauth.installation_store.sqlalchemy import SQLAlchemyInstallation
 from sqlalchemy import and_, desc, Table, MetaData
 
 
+from .exceptions.user_token_not_found import UserTokenNotFound
+
 class InstallationStore(AsyncInstallationStore):
     database_url: str
     client_id: str
@@ -98,39 +100,39 @@ class InstallationStore(AsyncInstallationStore):
     async def async_find_user_token(
         self,
         *,
-        context: Optional[dict],
+        context: Optional[dict]
     ) -> Optional[str]:
         """
-        Find the user token of the user who installed the app.
-        TODO: replace this with a method that is scoped to the user.
-        Namely, check for a user token for that user, and if it doesn't exist,
-        have the user install the app, then proceed with the request.
+        Find the user token of a specific user or of the user who installed the app.
+        If the user token doesn't exist, prompt the user to install the app.
         """
         try:
             enterprise_id = context["authorize_result"]["enterprise_id"]
             team_id = context["team_id"]
             is_enterprise_install = context["is_enterprise_install"]
+            user_id = context["user_id"]
         except KeyError:
             logger.error("Unable to find enterprise_id, team_id, or is_enterprise_install in context")
-            # logger.debug(f"context: {context}")
             return None
 
         c = self.installations.c
+        conditions = [
+            c.enterprise_id == enterprise_id,
+            c.team_id == team_id,
+            c.is_enterprise_install == is_enterprise_install,
+            c.user_id == user_id,
+        ]
+
         query = (
             self.installations.select()
-            .where(
-                and_(
-                    c.enterprise_id == enterprise_id,
-                    c.team_id == team_id,
-                    c.is_enterprise_install == is_enterprise_install,
-                )
-            )
+            .where(and_(*conditions))
             .order_by(desc(c.installed_at))
             .limit(1)
         )
+        
         async with Database(self.database_url) as database:
             result = await database.fetch_one(query)
             if result:
-                return result["user_token"]  # return user_token
+                return result["user_token"]
             else:
-                return None
+                raise UserTokenNotFound(user_id=user_id)

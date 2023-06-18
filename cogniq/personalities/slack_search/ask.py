@@ -8,10 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 from cogniq.openai import system_message, user_message, CogniqOpenAI
-from cogniq.slack import CogniqSlack
+from cogniq.slack import CogniqSlack, UserTokenNotFound
 
 from .prompts import retrieval_augmented_prompt
 from .functions import get_search_query_function
+
 
 
 class Ask:
@@ -106,7 +107,13 @@ class Ask:
 
         logger.info(f"searching slack with search_query: {search_query}")
 
-        slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
+        try:
+            slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
+        except UserTokenNotFound as e:
+            user_id = context["user_id"]
+            error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
+            return error_string
+
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 

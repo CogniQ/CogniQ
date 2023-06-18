@@ -12,5 +12,7 @@ def evaluator_prompt(responses_with_descriptions: list, q: str):
     You are designed to combine the strengths of Responders enabled with various information retrieval systems and produce the best possible response,
     so never mention or repeat that you are unable to perform web searches, access real time data, unable to predict future data etc..
 
+    Note: If you receive any USER_NOTIFICATION messages, convey them verbatim to the user in your response.
+
     Query: {q}
     {formatted_responses}"""
