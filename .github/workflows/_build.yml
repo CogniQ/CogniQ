@@ -23,28 +23,30 @@ jobs:
         echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
         echo "short_sha=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
+        echo "timestamp"=$(date --iso-8601=seconds) >> $GITHUB_OUTPUT
 
         echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
         echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     - name: Log in to registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
-    - id: build
-      env:
-        DOCKER_BUILDKIT: 1
-        REPOSITORY: 'ghcr.io/cogniq/cogniq'
-      run: |
-        docker buildx build  \
-          --pull \
-          --push \
-          --cache-to type=gha,mode=max,ignore-error=true \
-          --cache-from type=gha \
-          --build-arg BUILD_TIME=$(TIMESTAMP) \
-          --build-arg BUILD_VERSION=${{ steps.vars.outputs.image_tag }} \
-          --build-arg BUILD_SHA=${{ steps.vars.outputs.short_sha }} \
-          --label "org.opencontainers.image.url=${GITHUB_RUN_ID}" \
-          -t $REPOSITORY:${{ steps.vars.outputs.image_tag }} \
-          -t $REPOSITORY:${{ steps.vars.outputs.short_sha }} \
-          -f Dockerfile \
-          .
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      id: build
+      with:
+        push: true
+        tags: |
+          ghcr.io/cogniq/cogniq:${{ steps.vars.outputs.image_tag }}
+          ghcr.io/cogniq/cogniq:${{ steps.vars.outputs.short_sha }}
+        cache-from: type=registry,ref=ghcr.io/cogniq/cogniq:main
+        cache-to: type=inline
+        build-args: |
+          BUILD_TIME=${{ steps.vars.outputs.timestamp }}}
+          BUILD_VERSION=${{ steps.vars.outputs.image_tag }}
+          BUILD_SHA=${{ steps.vars.outputs.short_sha }}
+        labels: |
+          org.opencontainers.image.url=${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
