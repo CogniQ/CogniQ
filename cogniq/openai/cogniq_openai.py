@@ -65,7 +65,7 @@ class CogniqOpenAI:
             "stream": stream_callback_set,
             "max_tokens": self.config["OPENAI_MAX_TOKENS_RESPONSE"],
         }
-        payload = {**default_payload, **kwargs} # add and override any additional kwargs to payload
+        payload = {**default_payload, **kwargs}  # add and override any additional kwargs to payload
 
         if stream_callback_set:
             return await self.async_openai_stream(url=url, payload=payload, stream_callback=stream_callback, **kwargs)
