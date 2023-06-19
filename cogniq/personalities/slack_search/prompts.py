@@ -24,7 +24,37 @@ def retrieval_augmented_prompt(slack_search_response: Union[list, str], q: str):
     Given the Query, and considering the entirety of the following Slack Search Results, please remove the irrelevant results and return the remainder.
 
     Do not add any additional information to the response.
+
+    If Slack Search Results are missing. Return the following message: "No Slack Search Results"
     
+    Example:
+    Query: <###
+        "How do I do X?"
+    ###>
+
+    Slack Search Results: <###
+    ###>
+
+    Relevant Slack Search Results: <###
+        No Slack Search Results
+    ###>
+
+    Example:
+    Query: <###
+        "How do I do X?"
+    ###>
+
+    Slack Search Results: <###
+        <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @alice, text: How do I do X?>
+        <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @bob, text: You can do X by first asking @charlie.>
+    ###>
+
+    Relevant Slack Search Results: <###
+        <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @alice, text: How do I do X?>
+        <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @bob, text: You can do X by first asking @charlie.>
+    ###>
+
+    Now your turn:
     Query: <###
         {q}
     ###>
