@@ -39,7 +39,6 @@ jobs:
           --pull \
           --push \
           --cache-to type=gha,mode=max,ignore-error=true \
-          --cache-from type=gha,scope=main \
           --cache-from type=gha \
           --build-arg BUILD_TIME=$(TIMESTAMP) \
           --build-arg BUILD_VERSION=${{ steps.vars.outputs.image_tag }} \
