@@ -1,3 +1,5 @@
+from typing import Callable
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -28,12 +30,16 @@ class Search:
         """
         pass
 
-    async def search_texts(self, *, q: str, context: dict, **kwargs) -> list[str]:
+    async def search_texts(self, *, q: str, context: dict, filter: Callable = None, **kwargs) -> list[str]:
         """
         Search slack and format the response.
 
         Parameters:
-        q (str): Query string to search.
+        q: Query string to search.
+        context: Context of the message from slack
+        filter: Filter function to filter the messages.
+                The function should return True if the message should be filtered out.
+                If unset, all messages will be returned.
         kwargs: Additional parameters for the search.
 
         Returns:
@@ -41,8 +47,13 @@ class Search:
         """
         messages = await self.search(q=q, context=context, **kwargs)
 
+        if filter is None:
+            filter = lambda message: True
+
         str_messages = []
         for message in messages:
+            if filter(message):
+                continue
             username = message["username"]
             text = message["text"]
             channel = message["channel"]["name"]
