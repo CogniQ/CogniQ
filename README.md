@@ -8,7 +8,13 @@ In short, the current feature set is that you can have conversations that will b
 
 # Demo
 
-Join the [community slack channel](www.cogniq.info/join-slack) to interact with @CogniQ, the demo bot deployed from the `main` branch of this repository. 
+Join the community slack channel to interact with @CogniQ, the demo bot deployed from this repository's `main` branch. 
+
+To use the Slack History personality (you'll get pestered otherwise), install the app once you've joined. 
+
+The above, but in *checklist format* (🎆):
+- [ ] Join the [community slack channel](https://www.cogniq.info/join-slack)
+- [ ] [Give the app permission](https://main.cogniq.info/slack/install) to perform slack searches as you
 
 # Usage
 
