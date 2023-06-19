@@ -59,12 +59,13 @@ class CogniqOpenAI:
     async def async_chat_completion_create(self, *, messages, stream_callback=None, **kwargs):
         stream_callback_set = stream_callback is not None
         url = f"https://api.openai.com/v1/chat/completions"
-        payload = {
+        default_payload = {
             "model": self.config["OPENAI_CHAT_MODEL"],
             "messages": messages,
             "stream": stream_callback_set,
-            **kwargs,
+            "max_tokens": self.config["OPENAI_MAX_TOKENS_RESPONSE"],
         }
+        payload = {**default_payload, **kwargs} # add and override any additional kwargs to payload
 
         if stream_callback_set:
             return await self.async_openai_stream(url=url, payload=payload, stream_callback=stream_callback, **kwargs)
