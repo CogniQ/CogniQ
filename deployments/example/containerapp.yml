@@ -1,0 +1,89 @@
+# For deployment with with Azure Container App
+location: eastus
+name: cogniq
+resourceGroup: cogniq
+type: Microsoft.App/containerApps
+tags:
+properties:
+  managedEnvironmentId: /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP_NAME>/providers/Microsoft.App/managedEnvironments/<CONTAINERAPP_ENVIRONMENT_NAME>
+  configuration:
+    activeRevisionsMode: Single
+    secrets:
+      - name: slack-signing-secret
+        value: ABC123
+      - name: slack-client-id
+        value: 'ABC123.ABC123'
+      - name: slack-client-secret
+        value: ABC123
+      - name: openai-api-key
+        value: sk-ABC123
+      - name: bing-subscription-key
+        value: ABC123
+      - name: postgres-host
+        value: ABC123
+      - name: postgres-user
+        value: ABC123
+      - name: postgres-password
+        value: ABC123
+      - name: postgres-db
+        value: ABC123
+    ingress:
+      external: true
+      allowInsecure: false
+      targetPort: 3000
+      traffic:
+        - latestRevision: true
+          weight: 100
+      transport: Auto
+  template:
+    containers:
+      - image: ghcr.io/cogniq/cogniq:4a
+        name: cogniq
+        env:
+          - name: APP_URL
+            value: https://example.cogniq.info
+          - name: PORT
+            value: '3000'
+          - name: SLACK_CLIENT_ID
+            secretRef: slack-client-id
+          - name: SLACK_CLIENT_SECRET
+            secretRef: slack-client-secret
+          - name: SLACK_SIGNING_SECRET
+            secretRef: slack-signing-secret
+          - name: OPENAI_API_KEY
+            secretRef: openai-api-key
+          - name: BING_SUBSCRIPTION_KEY
+            secretRef: bing-subscription-key
+          - name: POSTGRES_HOST
+            secretRef: postgres-host
+          - name: POSTGRES_USER
+            secretRef: postgres-user
+          - name: POSTGRES_PASSWORD
+            secretRef: postgres-password
+          - name: POSTGRES_DB
+            secretRef: postgres-db
+        resources:
+          cpu: 1
+          memory: 1Gi
+        # probes:
+        # - type: liveness
+        #   httpGet:
+        #     path: "/slack/install"
+        #     port: 3000
+        #   initialDelaySeconds: 7
+        #   periodSeconds: 3
+        # - type: readiness
+        #   httpGet:
+        #     path: "/slack/install"
+        #     port: 3000
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 3
+        # - type: startup
+        #   httpGet:
+        #     path: "/slack/install"
+        #     port: 3000
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+    scale:
+      minReplicas: 0
+      maxReplicas: 2
