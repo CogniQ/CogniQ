@@ -69,12 +69,8 @@ class Evaluator(BasePersonality):
 
         # Wrap personalities and their callbacks in a dict of dicts
         personalities = {
-            p.name: {
-                "object": p,
-                "stream_callback": partial(stream_callback, p.name),
-                "reply_ts": reply_ts
-                } for p in personalities
-            }
+            p.name: {"object": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts} for p in personalities
+        }
 
         buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
         buffer_and_post_task = asyncio.create_task(

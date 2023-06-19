@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import *
 
+from functools import partial
+
 import json
 import logging
 
@@ -47,13 +49,15 @@ class Ask:
         self.cslack = cslack
         self.copenai = copenai
 
-    async def async_setup(self):
+    async def async_setup(self) -> Awaitable[None]:
         """
         Call me after initialization, please!
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict, reply_ts: float = None):
+    async def ask(
+        self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict, reply_ts: float = None
+    ) -> Awaitable[str]:
         user_id = context.get("user_token")
         if not user_id:
             error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
@@ -111,11 +115,10 @@ class Ask:
 
         logger.info(f"searching slack with search_query: {search_query}")
 
-        slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context)
+        filter = lambda message: self._remove_my_reply_filter(message=message, reply_ts=reply_ts)
+        slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context, filter=filter)
 
         logger.debug(f"slack_search_response: {slack_search_response}")
-
-        slack_search_response = self._remove_my_reply(slack_search_response=slack_search_response, reply_ts=reply_ts)
 
         short_slack_search_response = self.copenai.summarizer.ceil_retrieval(slack_search_response)
 
@@ -149,8 +152,8 @@ class Ask:
         logger.info(f"final_answer: {final_answer}")
         return final_answer
 
-    def _remove_my_reply(self, *, slack_search_response: list[dict[str, str]], reply_ts: float = None) -> list[dict[str, str]]:
+    def _remove_my_reply_filter(self, *, message: dict[str, str], reply_ts: float = None) -> bool:
         if not reply_ts:
-            return slack_search_response
+            return True
 
-        return [message for message in slack_search_response if message["ts"] != reply_ts]
+        return message["ts"] != reply_ts

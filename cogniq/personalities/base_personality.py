@@ -5,7 +5,6 @@ from cogniq.slack import CogniqSlack
 
 
 class BasePersonality(metaclass=abc.ABCMeta):
-
     @abc.abstractmethod
     def __init__(self, cslack: CogniqSlack, **kwargs):
         """
@@ -33,7 +32,9 @@ class BasePersonality(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def ask_directly(self, *, q, message_history: list[dict[str, str]], context: dict, reply_ts: float = None, **kwargs) -> Awaitable[None]:
+    async def ask_directly(
+        self, *, q, message_history: list[dict[str, str]], context: dict, reply_ts: float = None, **kwargs
+    ) -> Awaitable[None]:
         """
         Ask a question of the personality and return the response.
         :param q: The question to ask.
