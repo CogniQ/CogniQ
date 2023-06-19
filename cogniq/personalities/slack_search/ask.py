@@ -53,7 +53,7 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict):
+    async def ask(self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict, reply_ts: float = None):
         user_id = context.get("user_token")
         if not user_id:
             error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
@@ -115,6 +115,8 @@ class Ask:
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 
+        slack_search_response = self._remove_my_reply(slack_search_response=slack_search_response, reply_ts=reply_ts)
+
         short_slack_search_response = self.copenai.summarizer.ceil_retrieval(slack_search_response)
 
         if slack_search_response != short_slack_search_response:
@@ -146,3 +148,9 @@ class Ask:
         final_answer = answer["choices"][0]["message"]["content"]
         logger.info(f"final_answer: {final_answer}")
         return final_answer
+
+    def _remove_my_reply(self, *, slack_search_response: list[dict[str, str]], reply_ts: float = None) -> list[dict[str, str]]:
+        if not reply_ts:
+            return slack_search_response
+
+        return [message for message in slack_search_response if message["ts"] != reply_ts]

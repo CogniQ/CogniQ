@@ -39,7 +39,7 @@ class ChatAnthropic(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
+    async def ask_task(self, *, event: dict, reply_ts: float, context: dict):
         channel = event["channel"]
         message = event["text"]
 
@@ -55,6 +55,7 @@ class ChatAnthropic(BasePersonality):
         q: str,
         message_history: list,
         stream_callback: callable = None,
+        reply_ts: float = None,
         **kwargs,
     ):
         """

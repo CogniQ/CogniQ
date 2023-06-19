@@ -53,7 +53,7 @@ class BingSearch(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: int, context: dict):
+    async def ask_task(self, *, event: dict, reply_ts: float, context: dict, **kwargs):
         channel = event["channel"]
         message = event["text"]
 
@@ -70,6 +70,7 @@ class BingSearch(BasePersonality):
         q: str,
         message_history: list,
         stream_callback: callable = None,
+        reply_ts: float = None,
         **kwargs,
     ):
         _answer, agent_response = await self.ask.ask(
