@@ -115,7 +115,7 @@ class Ask:
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 
-        short_slack_search_response = self.copenai.summarizer.ceil_history(slack_search_response)
+        short_slack_search_response = self.copenai.summarizer.ceil_retrieval(slack_search_response)
 
         if slack_search_response != short_slack_search_response:
             logger.debug(f"slack_search_response was shortened: {slack_search_response}")
