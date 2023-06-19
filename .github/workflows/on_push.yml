@@ -2,7 +2,7 @@ name: on_push
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   packages: write
 
 on:
@@ -30,14 +30,34 @@ jobs:
         echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
         echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
 
+  release:
+    runs-on: ubuntu-latest
+    concurrency: ${{ github.workflow }}
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+      new_release_channel: ${{ steps.semantic.outputs.new_release_channel }}
+    steps:
+    - uses: actions/checkout@v3
+    - id: semantic
+      uses: cycjimmy/semantic-release-action@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        semantic_version: 19
+        extra_plugins: |
+          @semantic-release/changelog@6
+          @semantic-release/git@10
+
   build:
     uses: ./.github/workflows/_build.yml
 
   deploy-cogniq-community-main:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*'
+    if: ${{ needs.release.outputs.new_release_published == 'true' && needs.release.outputs.new_release_channel == null }}
     needs:
       - build
       - vars
+      - release
     uses: ./.github/workflows/_deploy.yml
     with:
       image_tag: ${{ needs.vars.outputs.image_tag }}
