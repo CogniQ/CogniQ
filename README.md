@@ -293,7 +293,7 @@ I was wrong. Haystack is a) rapidly being developed, and b) comprehensive in its
 
 ### Not really a rant
 
-I know I seem like a hypocrite to write what I wrote about langchain, then turn around and use haystack. Indeed, the same problems of using frameworks continue to exist. I have to study both the framework and the API. And stepping outside the limit of the framework has me maintaining a [fork](https://github.com/CogniQ/haystack).
+I know I seem like a hypocrite to write what I wrote about langchain, then turn around and use haystack. Indeed, the same problems of using frameworks continue to exist. I have to study both the framework and the API.
 
 But, [haystack](https://haystack.deepset.ai/) is a solid framework, and I have a day job.
 
