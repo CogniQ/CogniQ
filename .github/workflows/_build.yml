@@ -2,6 +2,12 @@ name: _build
 
 on:
   workflow_call:
+    inputs:
+      image_tag:
+        description: 'Image tag'
+        type: string
+        required: false
+
 
 # Permissions can only be downgraded by the called workflow.
 # Make sure that the calling workflow has at least the following permissions.
@@ -19,11 +25,17 @@ jobs:
       id: vars
       run: |
         # Extract branch or tag from GitHub ref, and remove 'v' prefix for tags
-        IMAGE_TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' -e '/^refs\/tags\//s/^v//')
-        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        DEFAULT_IMAGE_TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' -e '/^refs\/tags\//s/^v//')
+        if [[ -n "${{ inputs.image_tag }}" ]]; then
+          DEFAULT_IMAGE_TAG=${{ inputs.image_tag }}
+          echo "image_tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
+        else
+          echo "image_tag=$DEFAULT_IMAGE_TAG" >> $GITHUB_OUTPUT
+        fi
+
+        echo "timestamp"=$(date --iso-8601=seconds) >> $GITHUB_OUTPUT
 
         echo "short_sha=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
-        echo "timestamp"=$(date --iso-8601=seconds) >> $GITHUB_OUTPUT
 
         echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
         echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
