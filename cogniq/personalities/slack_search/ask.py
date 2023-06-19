@@ -129,23 +129,14 @@ class Ask:
 
         prompt = retrieval_augmented_prompt(q=short_q, slack_search_response=short_slack_search_response)
 
-        # logger.info(f"Retrieval augmented prompt: {prompt}")
-
-        # If prompt is too long, summarize it
-        short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
-
-        if prompt != short_prompt:
-            logger.info(f"Original prompt: {prompt}")
-            logger.info(f"Evaluating shortened prompt: {short_prompt}")
-        else:
-            logger.info(f"Evaluating prompt: {short_prompt}")
-
         message_history.append(user_message(prompt))
 
         answer = await self.copenai.async_chat_completion_create(
             messages=message_history,
             stream_callback=stream_callback,
             model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+            stop=["###>"],
+            temperature=0.2,
         )
 
         final_answer = answer["choices"][0]["message"]["content"]
