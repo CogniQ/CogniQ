@@ -68,7 +68,13 @@ class Evaluator(BasePersonality):
             setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
         # Wrap personalities and their callbacks in a dict of dicts
-        personalities = {p.name: {"object": p, "stream_callback": partial(stream_callback, p.name)} for p in personalities}
+        personalities = {
+            p.name: {
+                "object": p,
+                "stream_callback": partial(stream_callback, p.name),
+                "reply_ts": reply_ts
+                } for p in personalities
+            }
 
         buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
         buffer_and_post_task = asyncio.create_task(
@@ -94,7 +100,7 @@ class Evaluator(BasePersonality):
         await self.cslack.chat_update(channel=channel, ts=reply_ts, text=openai_response, context=context)
 
     async def buffer_and_post(
-        self, *, response_buffers: dict, channel: str, reply_ts: int, context: dict, interval: int, buffer_post_end: asyncio.Event
+        self, *, response_buffers: dict, channel: str, reply_ts: float, context: dict, interval: int, buffer_post_end: asyncio.Event
     ):
         while not buffer_post_end.is_set():
             combined_text = "\n".join(buf.text for buf in response_buffers.values())
