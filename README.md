@@ -297,4 +297,4 @@ I know I seem like a hypocrite to write what I wrote about langchain, then turn 
 
 But, [haystack](https://haystack.deepset.ai/) is a solid framework, and I have a day job.
 
-I still think a serious at scale deployment will likely demand a purpose-built rewrite, but for me and right now there's more reason than not to use this framework.
+I still think a serious at-scale deployment will likely demand a purpose-built rewrite, but for me and right now there's more reason than not to use this framework.
