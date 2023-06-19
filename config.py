@@ -40,10 +40,10 @@ defaults = {
     "OPENAI_MAX_TOKENS_PROMPT": 1000,
     "OPENAI_MAX_TOKENS_RESPONSE": 800,
     "OPENAI_TOTAL_MAX_TOKENS": 4097,
-    "POSTGRES_HOST": "",
-    "POSTGRES_USER": "",
-    "POSTGRES_PASSWORD": "",
-    "POSTGRES_DB": "",
+    "POSTGRES_HOST": "localhost",
+    "POSTGRES_USER": "cogniq",
+    "POSTGRES_PASSWORD": "cogniq",
+    "POSTGRES_DB": "cogniq",
 }
 for var, default in defaults.items():
     config.setdefault(var, default)
