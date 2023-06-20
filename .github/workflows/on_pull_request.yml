@@ -8,5 +8,5 @@ on:
   push:
 
 jobs:
-  build:
+  lint:
     uses: ./.github/workflows/_auto_lint.yml
