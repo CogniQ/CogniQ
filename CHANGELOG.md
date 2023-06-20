@@ -1,3 +1,11 @@
+## [0.4.3](https://github.com/CogniQ/CogniQ/compare/v0.4.2...v0.4.3) (2023-06-20)
+
+
+### Bug Fixes
+
+* feed semver to build step ([aeb389a](https://github.com/CogniQ/CogniQ/commit/aeb389a2c1e0f7ecdcf8f4256dd2adb772377412))
+* ignore .github directory when building ([6554ac0](https://github.com/CogniQ/CogniQ/commit/6554ac0691a5cf7020cedc6178c01b4900952cd9))
+
 ## [0.4.2](https://github.com/CogniQ/CogniQ/compare/v0.4.1...v0.4.2) (2023-06-20)
 
 
