@@ -102,7 +102,6 @@ class Ask:
 
         answer = await self.copenai.async_chat_completion_create(
             messages=message_history,
-            stream_callback=stream_callback,
             model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )
 
