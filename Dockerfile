@@ -5,7 +5,8 @@ LABEL org.opencontainers.image.base.name="docker.io/deepset/haystack:base-gpu-v1
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.title="CogniQ" \
       org.opencontainers.image.vendor="CogniQ" \
-      org.opencontainers.image.source="https://github.com/CogniQ/CogniQ"
+      org.opencontainers.image.source="https://github.com/CogniQ/CogniQ" \
+      org.opencontainers.image.url="https://cogniq.info"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -41,13 +42,5 @@ COPY . ./
 EXPOSE 3000
 
 USER 1000
-
-ARG BUILD_TIME="2023-00-00T00:00:00Z"
-ARG BUILD_VERSION="0.0.0+unversioned"
-ARG BUILD_SHA="00000000"
-
-LABEL org.opencontainers.image.created=${BUILD_TIME} \
-      org.opencontainers.image.revision=${BUILD_SHA} \
-      org.opencontainers.image.version=${BUILD_VERSION}
 
 CMD python main.py
