@@ -1,3 +1,10 @@
+## [0.4.5](https://github.com/CogniQ/CogniQ/compare/v0.4.4...v0.4.5) (2023-06-20)
+
+
+### Bug Fixes
+
+* do not stream the final response, as it bleeds into the first round of results ([64bd197](https://github.com/CogniQ/CogniQ/commit/64bd197dc714465eedd968be1bf45f01c08ba30c))
+
 ## [0.4.4](https://github.com/CogniQ/CogniQ/compare/v0.4.3...v0.4.4) (2023-06-20)
 
 
