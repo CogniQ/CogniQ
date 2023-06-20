@@ -50,6 +50,7 @@ farm-haystack = { version = "1.17.2", extras = [] }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
+mypy = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -57,3 +58,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 140
+
+[tool.mypy]
+warn_return_any = false
+warn_unused_configs = true
+plugins = [
+  "pydantic.mypy",
+]
