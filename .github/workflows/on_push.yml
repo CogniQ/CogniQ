@@ -57,6 +57,7 @@ jobs:
       - release
     with:
       force: ${{ needs.release.outputs.new_release_published == 'true' && needs.release.outputs.new_release_channel == null }}
+      semver: ${{ needs.release.outputs.new_release_version }}
 
   deploy-cogniq-community-main:
     if: ${{ needs.release.outputs.new_release_published == 'true' && needs.release.outputs.new_release_channel == null }}
