@@ -1,3 +1,10 @@
+## [0.4.4](https://github.com/CogniQ/CogniQ/compare/v0.4.3...v0.4.4) (2023-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update haystack to 1.17.2 ([8d0e526](https://github.com/CogniQ/CogniQ/commit/8d0e526caf4b8f56858249e9cb0e72c30c6ae4dc))
+
 ## [0.4.3](https://github.com/CogniQ/CogniQ/compare/v0.4.2...v0.4.3) (2023-06-20)
 
 
