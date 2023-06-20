@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/CogniQ/CogniQ/compare/v0.4.1...v0.4.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* fix docker image tagging ([5b2e50c](https://github.com/CogniQ/CogniQ/commit/5b2e50c3fc7a29250969aa04932a0a7c1b23ce7c))
+
 ## [0.4.1](https://github.com/CogniQ/CogniQ/compare/v0.4.0...v0.4.1) (2023-06-20)
 
 
