@@ -3,8 +3,8 @@ name: _build
 on:
   workflow_call:
     inputs:
-      image_tag:
-        description: 'Image tag'
+      semver:
+        description: 'semantic version to tag with'
         type: string
         required: false
       force:
@@ -85,9 +85,9 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern=v{{major}}
+          type=semver,pattern={{version}},value=${{ inputs.semver }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ inputs.semver }}
+          type=semver,pattern=v{{major}},value=${{ inputs.semver }}
           type=sha,prefix=,format=short
 
 
