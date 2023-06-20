@@ -28,35 +28,18 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Set outputs
-      id: vars
-      run: |
-        # Extract branch or tag from GitHub ref, and remove 'v' prefix for tags
-        DEFAULT_IMAGE_TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' -e '/^refs\/tags\//s/^v//')
-        if [[ -n "${{ inputs.image_tag }}" ]]; then
-          DEFAULT_IMAGE_TAG=${{ inputs.image_tag }}
-          echo "image_tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
-        else
-          echo "image_tag=$DEFAULT_IMAGE_TAG" >> $GITHUB_OUTPUT
-        fi
 
-        echo "timestamp"=$(date --iso-8601=seconds) >> $GITHUB_OUTPUT
-
-        echo "short_sha=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
-
-        echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
-        echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
-
-    - id: should_build
+    - name: Should Build?
+      id: should_build
       env:
         BASE_REF: ${{ inputs.base_ref }}
         FORCE_BUILD: ${{ inputs.force }}
       run: |
-        set -ex
         # If force build is set to true, we set SHOULD_BUILD to true and exit.
         if [[ $FORCE_BUILD == "true" ]]; then
           echo "should_build=true" >> $GITHUB_OUTPUT
@@ -67,11 +50,6 @@ jobs:
         git fetch origin $BASE_REF
         MERGE_BASE=$(git merge-base origin/$BASE_REF HEAD)
 
-        # Prepare ignored patterns from .dockerignore file.
-        mapfile -t IGNORED_PATTERNS < <(awk 'NF && $1!~/^#/' .dockerignore)
-        IGNORED_PATTERNS_GREP=$(printf "|%s" "${IGNORED_PATTERNS[@]}")
-        IGNORED_PATTERNS_GREP=${IGNORED_PATTERNS_GREP:1}  # remove the leading |
-
         # Get the changed files.
         CHANGED_FILES=$(git diff --name-only $MERGE_BASE HEAD)
 
@@ -80,37 +58,46 @@ jobs:
 
         # If there are changed files, we check them against ignore patterns.
         if [[ -n "$CHANGED_FILES" ]]; then
-          while IFS= read -r FILE; do
-            if ! echo "$FILE" | grep -Eq "$IGNORED_PATTERNS_GREP"; then
-              SHOULD_BUILD=true
-              break
-            fi
-          done <<< "$CHANGED_FILES"
+          FILES_TO_BUILD=$(echo "$CHANGED_FILES" | tr ' ' '\n' | rsync --list-only --files-from=- --exclude-from=.dockerignore . /dev/shm )
+          CHANGE_COUNT=$(echo $FILES_TO_BUILD | wc -l)
+          echo $FILES_TO_BUILD
+          if [[ $CHANGE_COUNT -gt 0 ]]; then
+            SHOULD_BUILD=true
+          fi
         fi
 
         # Output the value of SHOULD_BUILD.
         echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
 
     - name: Set up Docker Buildx
+      if: steps.should_build.outputs.should_build == 'true'
       uses: docker/setup-buildx-action@v2
 
     - name: Log in to registry
+      if: steps.should_build.outputs.should_build == 'true'
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
+    - id: meta
+      if: steps.should_build.outputs.should_build == 'true'
+      uses: docker/metadata-action@v4
+      with:
+        images: ghcr.io/cogniq/cogniq
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern=v{{major}}
+          type=sha,prefix=,format=short
+
+
     - name: Build and push
+      if: steps.should_build.outputs.should_build == 'true'
       uses: docker/build-push-action@v4
       id: build
-      if: steps.should_build.outputs.should_build == 'true'
       with:
         push: true
-        tags: |
-          ghcr.io/cogniq/cogniq:${{ steps.vars.outputs.image_tag }}
-          ghcr.io/cogniq/cogniq:${{ steps.vars.outputs.short_sha }}
+        tags: ${{ steps.meta.outputs.tags }}
         cache-from: type=registry,ref=ghcr.io/cogniq/cogniq:buildcache
         cache-to: type=registry,ref=ghcr.io/cogniq/cogniq:buildcache,mode=max,compression=zstd,compression-level=2,ignore-error=true
-        build-args: |
-          BUILD_TIME=${{ steps.vars.outputs.timestamp }}
-          BUILD_VERSION=${{ steps.vars.outputs.image_tag }}
-          BUILD_SHA=${{ steps.vars.outputs.short_sha }}
-        labels: |
-          org.opencontainers.image.url=${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
+        labels: ${{ steps.meta.outputs.labels }}
