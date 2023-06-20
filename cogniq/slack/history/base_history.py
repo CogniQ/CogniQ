@@ -10,13 +10,13 @@ class BaseHistory(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def get_bot_user_id(self, *, context: dict) -> str:
+    async def get_bot_user_id(self, *, context: Dict) -> str:
         pass
 
     @abc.abstractmethod
-    async def get_bot_name(self, *, context: dict) -> str:
+    async def get_bot_name(self, *, context: Dict) -> str:
         pass
 
     @abc.abstractmethod
-    def get_history(self, *, event: dict, context: dict, **kwargs):
+    def get_history(self, *, event: Dict, context: Dict, **kwargs):
         pass

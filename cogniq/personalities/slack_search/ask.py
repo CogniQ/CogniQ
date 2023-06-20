@@ -20,7 +20,7 @@ class Ask:
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -56,7 +56,7 @@ class Ask:
         pass
 
     async def ask(
-        self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict, reply_ts: float = None
+        self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: Dict, reply_ts: float = None
     ) -> Awaitable[str]:
         user_id = context.get("user_token")
         if not user_id:
@@ -143,7 +143,7 @@ class Ask:
         logger.info(f"final_answer: {final_answer}")
         return final_answer
 
-    def _remove_my_reply_filter(self, *, message: dict[str, str], reply_ts: float = None) -> bool:
+    def _remove_my_reply_filter(self, *, message: Dict[str, str], reply_ts: float = None) -> bool:
         if not reply_ts:
             return True
 

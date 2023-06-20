@@ -19,7 +19,7 @@ class Buffer:
 
 
 class Evaluator(BasePersonality):
-    def __init__(self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, config: Dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         Evaluator personality
         Please call async_setup after initializing the personality.
@@ -96,7 +96,7 @@ class Evaluator(BasePersonality):
         await self.cslack.chat_update(channel=channel, ts=reply_ts, text=openai_response, context=context)
 
     async def buffer_and_post(
-        self, *, response_buffers: dict, channel: str, reply_ts: float, context: dict, interval: int, buffer_post_end: asyncio.Event
+        self, *, response_buffers: Dict, channel: str, reply_ts: float, context: Dict, interval: int, buffer_post_end: asyncio.Event
     ):
         while not buffer_post_end.is_set():
             combined_text = "\n".join(buf.text for buf in response_buffers.values())

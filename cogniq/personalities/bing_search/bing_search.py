@@ -16,7 +16,7 @@ class BingSearch(BasePersonality):
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
     ):
@@ -53,7 +53,7 @@ class BingSearch(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: float, context: dict, **kwargs):
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, **kwargs):
         channel = event["channel"]
         message = event["text"]
 

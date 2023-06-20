@@ -10,7 +10,7 @@ from .ask import Ask
 
 
 class ChatAnthropic(BasePersonality):
-    def __init__(self, *, config: dict, cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, config: Dict, cslack: CogniqSlack, **kwargs):
         """
         Chat Anthropic personality
         Please call async_setup after initializing the personality.
@@ -39,7 +39,7 @@ class ChatAnthropic(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: float, context: dict):
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict):
         channel = event["channel"]
         message = event["text"]
 

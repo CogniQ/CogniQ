@@ -22,7 +22,7 @@ class BasePersonality(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def ask_task(self, *, event: dict, reply_ts: float, context: dict) -> Awaitable[None]:
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> Awaitable[None]:
         """
         Ask a question of the personality and have it reply to the given channel and thread.
         :param event: The event data.
@@ -33,7 +33,7 @@ class BasePersonality(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def ask_directly(
-        self, *, q, message_history: list[dict[str, str]], context: dict, reply_ts: float = None, **kwargs
+        self, *, q, message_history: list[dict[str, str]], context: Dict, reply_ts: float = None, **kwargs
     ) -> Awaitable[None]:
         """
         Ask a question of the personality and return the response.

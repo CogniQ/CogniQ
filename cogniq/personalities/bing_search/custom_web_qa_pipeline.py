@@ -22,7 +22,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
     Pipeline for Generative Question Answering performed based on Documents returned from a web search engine.
     """
 
-    def __init__(self, *, config: dict):
+    def __init__(self, *, config: Dict):
         """
         CustomWebQAPipeline constructor.
 

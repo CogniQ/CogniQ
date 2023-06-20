@@ -6,7 +6,7 @@ from .ask import Ask
 
 
 class SlackSearch(BasePersonality):
-    def __init__(self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, config: Dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         SlackSearch personality
         Please call async_setup after initializing the personality.
@@ -37,7 +37,7 @@ class SlackSearch(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: float, context: dict):
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict):
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -53,7 +53,7 @@ class SlackSearch(BasePersonality):
         # logger.debug(openai_response)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
 
-    async def ask_directly(self, *, q, message_history: list[dict[str, str]], context: dict, reply_ts: float = None, **kwargs):
+    async def ask_directly(self, *, q, message_history: list[dict[str, str]], context: Dict, reply_ts: float = None, **kwargs):
         """
         Ask directly to the personality.
         """

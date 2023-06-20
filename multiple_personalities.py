@@ -56,7 +56,7 @@ class MultiplePersonalities:
         self.register_app_mention()
         self.register_message()
 
-    async def start(self):
+    async def start(self) -> None:
         """
         Starts one Slack bot instance, and multiple personalities.
         """
@@ -67,7 +67,7 @@ class MultiplePersonalities:
         await self.evaluator.async_setup()
         await self.cslack.start()
 
-    async def first_response(self, *, context: dict, original_ts: str) -> Awaitable:
+    async def first_response(self, *, context: Dict, original_ts: str) -> Dict[str,str]:
         """
         This method is called when the bot is called.
         """
@@ -81,7 +81,7 @@ class MultiplePersonalities:
             logger.error(e)
             raise e
 
-    async def dispatch(self, *, event: dict, context: dict, original_ts: str) -> Awaitable:
+    async def dispatch(self, *, event: Dict, context: Dict, original_ts: str) -> None:
         reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
 
@@ -104,16 +104,16 @@ class MultiplePersonalities:
             )
         )
 
-    def register_app_mention(self):
+    def register_app_mention(self) -> None:
         @self.cslack.app.event("app_mention")
-        async def handle_app_mention(event, context):
+        async def handle_app_mention(event: Dict, context: Dict) -> None:
             logger.info(f"app_mention: {event.get('text')}")
             original_ts = event["ts"]
             await self.dispatch(event=event, context=context, original_ts=original_ts)
 
-    def register_message(self):
+    def register_message(self) -> None:
         @self.cslack.app.event("message")
-        async def handle_message_events(event, context):
+        async def handle_message_events(event: Dict, context: Dict) -> None:
             logger.info(f"message: {event.get('text')}")
             channel_type = event["channel_type"]
             if channel_type == "im":

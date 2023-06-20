@@ -10,7 +10,7 @@ from .summarizer import Summarizer
 
 
 class CogniqOpenAI:
-    def __init__(self, *, config: dict):
+    def __init__(self, *, config: Dict):
         """
         OpenAI model
 

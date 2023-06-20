@@ -8,7 +8,7 @@ from .ask import Ask
 
 
 class ChatGPT4(BasePersonality):
-    def __init__(self, *, config: dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, config: Dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         Chat GPT4 personality
         Please call async_setup after initializing the personality.
@@ -39,7 +39,7 @@ class ChatGPT4(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: dict, reply_ts: float, context: dict):
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict):
         channel = event["channel"]
         message = event["text"]
 

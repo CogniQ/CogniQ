@@ -30,7 +30,7 @@ class Ask:
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -94,7 +94,7 @@ class Ask:
             },
         )
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
+    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: Dict):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         message_history = message_history or []

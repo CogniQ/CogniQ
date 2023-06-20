@@ -8,7 +8,7 @@ from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLaye
 
 
 class Ask:
-    def __init__(self, *, config: dict, cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, config: Dict, cslack: CogniqSlack, **kwargs):
         """
         Ask subclass of ChatAnthropic personality
         Please call async_setup before using this class, please!
