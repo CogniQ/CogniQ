@@ -107,7 +107,7 @@ jobs:
         cache-from: type=registry,ref=ghcr.io/cogniq/cogniq:buildcache
         cache-to: type=registry,ref=ghcr.io/cogniq/cogniq:buildcache,mode=max,compression=zstd,compression-level=2,ignore-error=true
         build-args: |
-          BUILD_TIME=${{ steps.vars.outputs.timestamp }}}
+          BUILD_TIME=${{ steps.vars.outputs.timestamp }}
           BUILD_VERSION=${{ steps.vars.outputs.image_tag }}
           BUILD_SHA=${{ steps.vars.outputs.short_sha }}
         labels: |
