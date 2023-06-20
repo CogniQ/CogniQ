@@ -1,3 +1,10 @@
+## [0.4.6](https://github.com/CogniQ/CogniQ/compare/v0.4.5...v0.4.6) (2023-06-20)
+
+
+### Bug Fixes
+
+* downgrade the docker image to the cpu version ([f70c619](https://github.com/CogniQ/CogniQ/commit/f70c619de942e8287282dde6cfc549b501d30099)), closes [#63](https://github.com/CogniQ/CogniQ/issues/63)
+
 ## [0.4.5](https://github.com/CogniQ/CogniQ/compare/v0.4.4...v0.4.5) (2023-06-20)
 
 
