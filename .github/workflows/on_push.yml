@@ -51,6 +51,10 @@ jobs:
 
   build:
     uses: ./.github/workflows/_build.yml
+    needs:
+      - release
+    with:
+      force: ${{ needs.release.outputs.new_release_published == 'true' && needs.release.outputs.new_release_channel == null }}
 
   deploy-cogniq-community-main:
     if: ${{ needs.release.outputs.new_release_published == 'true' && needs.release.outputs.new_release_channel == null }}
