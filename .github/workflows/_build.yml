@@ -56,37 +56,39 @@ jobs:
         BASE_REF: ${{ inputs.base_ref }}
         FORCE_BUILD: ${{ inputs.force }}
       run: |
-        set -x
+        set -ex
+        # If force build is set to true, we set SHOULD_BUILD to true and exit.
         if [[ $FORCE_BUILD == "true" ]]; then
-          SHOULD_BUILD=true
-          echo "::set-output name=should_build::$SHOULD_BUILD"
+          echo "should_build=true" >> $GITHUB_OUTPUT
           exit 0
         fi
 
+        # Fetch the BASE_REF from origin.
         git fetch origin $BASE_REF
         MERGE_BASE=$(git merge-base origin/$BASE_REF HEAD)
-    
-        # Read .dockerignore into an array, ignoring lines that start with # (comments) or are empty
-        mapfile -t IGNORED_PATTERNS < <(awk 'NF && $1!~/^#/' .dockerignore)
 
-        # Prepare the patterns for grep
+        # Prepare ignored patterns from .dockerignore file.
+        mapfile -t IGNORED_PATTERNS < <(awk 'NF && $1!~/^#/' .dockerignore)
         IGNORED_PATTERNS_GREP=$(printf "|%s" "${IGNORED_PATTERNS[@]}")
         IGNORED_PATTERNS_GREP=${IGNORED_PATTERNS_GREP:1}  # remove the leading |
 
-        # Get the changed files
+        # Get the changed files.
         CHANGED_FILES=$(git diff --name-only $MERGE_BASE HEAD)
 
+        # By default, we assume no need to build.
         SHOULD_BUILD=false
 
-        # Check each changed file against the ignore patterns
-        while IFS= read -r FILE; do
-          # If the file does not match any ignore pattern, set SHOULD_BUILD to true and break
-          if ! echo "$FILE" | grep -Eq "$IGNORED_PATTERNS_GREP"; then
-            SHOULD_BUILD=true
-            break
-          fi
-        done <<< "$CHANGED_FILES"
+        # If there are changed files, we check them against ignore patterns.
+        if [[ -n "$CHANGED_FILES" ]]; then
+          while IFS= read -r FILE; do
+            if ! echo "$FILE" | grep -Eq "$IGNORED_PATTERNS_GREP"; then
+              SHOULD_BUILD=true
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+        fi
 
+        # Output the value of SHOULD_BUILD.
         echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
 
     - name: Set up Docker Buildx
