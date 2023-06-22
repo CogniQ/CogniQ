@@ -13,7 +13,7 @@ from .ask import Ask
 
 
 class ChatAnthropic(BasePersonality):
-    def __init__(self, *, config: Dict, cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, **kwargs):
         """
         Chat Anthropic personality
         Please call async_setup after initializing the personality.
@@ -57,7 +57,7 @@ class ChatAnthropic(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
-        stream_callback: Callable | None = None,
+        stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
         **kwargs,
     ) -> str:

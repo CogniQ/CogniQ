@@ -22,7 +22,7 @@ class Buffer:
 
 
 class Evaluator(BasePersonality):
-    def __init__(self, *, config: Dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         Evaluator personality
         Please call async_setup after initializing the personality.
@@ -67,7 +67,7 @@ class Evaluator(BasePersonality):
 
         buffer_post_end = asyncio.Event()
 
-        def stream_callback(name, token, **kwargs):
+        def stream_callback(name: str, token: str, **kwargs) -> None:
             setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
         # Wrap personalities and their callbacks in a dict of dicts

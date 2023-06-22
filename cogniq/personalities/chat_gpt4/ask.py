@@ -14,7 +14,7 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -50,7 +50,7 @@ class Ask(BaseAsk):
         pass
 
     async def ask(
-        self, *, q: str, message_history: List[Dict[str, str]] | None = None, stream_callback: Callable | None = None, context: Dict
+        self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
     ) -> str:
         message_history = message_history or []
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)

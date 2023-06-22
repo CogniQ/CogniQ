@@ -19,7 +19,7 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -59,7 +59,7 @@ class Ask(BaseAsk):
         *,
         q: str,
         message_history: List[dict[str, str]],
-        stream_callback: Callable | None = None,
+        stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,
     ) -> str:

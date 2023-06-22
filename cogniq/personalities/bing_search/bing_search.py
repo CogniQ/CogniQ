@@ -17,7 +17,7 @@ class BingSearch(BasePersonality):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
     ):
@@ -70,7 +70,7 @@ class BingSearch(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
-        stream_callback: Callable | None = None,
+        stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
         **kwargs,
     ) -> str:

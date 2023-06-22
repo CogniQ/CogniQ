@@ -18,7 +18,7 @@ class BaseAsk(metaclass=abc.ABCMeta):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -54,7 +54,13 @@ class BaseAsk(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def ask(
-        self, *, q, message_history: List[dict[str, str]], personalities: Dict, context: Dict, stream_callback: Callable | None = None
+        self,
+        *,
+        q,
+        message_history: List[dict[str, str]],
+        personalities: Dict,
+        context: Dict,
+        stream_callback: Callable[..., None] | None = None,
     ) -> str:
         """
         Ask a question to the personality.

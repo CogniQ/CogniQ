@@ -34,7 +34,7 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -82,7 +82,7 @@ class Ask(BaseAsk):
         """
         pass
 
-    def agent_run(self, query: str, stream_callback: Callable | None = None) -> Dict[str, Any]:
+    def agent_run(self, query: str, stream_callback: Callable[..., None] | None = None) -> Dict[str, Any]:
         agent = Agent(
             prompt_node=self.agent_prompt_node,
             prompt_template=agent_prompt,
@@ -99,8 +99,8 @@ class Ask(BaseAsk):
         )
 
     async def ask(
-        self, *, q: str, message_history: List[Dict[str, str]] | None = None, stream_callback: Callable | None = None, context: Dict
-    ) -> List[str]:
+        self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
+    ) -> List[str | Dict[str, Any]]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         if message_history == None:

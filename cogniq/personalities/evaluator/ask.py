@@ -16,7 +16,7 @@ from .prompts import evaluator_prompt
 
 class AskPersonality(TypedDict):
     personality: BasePersonality
-    stream_callback: Callable | None
+    stream_callback: Callable[..., None] | None
     reply_ts: str | None
 
 
@@ -24,7 +24,7 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -66,7 +66,7 @@ class Ask(BaseAsk):
         message_history: List[dict[str, str]],
         ask_personalities: Dict[str, AskPersonality],
         context: Dict,
-        stream_callback: Callable | None = None,
+        stream_callback: Callable[..., None] | None = None,
     ) -> str:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 

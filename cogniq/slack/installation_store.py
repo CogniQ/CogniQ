@@ -107,6 +107,7 @@ class InstallationStore(AsyncInstallationStore):
             else:
                 return None
 
+    @typing.no_type_check
     async def async_find_installation(
         self,
         *,

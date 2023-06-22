@@ -13,7 +13,7 @@ from .ask import Ask
 
 
 class SlackSearch(BasePersonality):
-    def __init__(self, *, config: Dict, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         SlackSearch personality
         Please call async_setup after initializing the personality.

@@ -33,7 +33,7 @@ from .installation_store import InstallationStore
 
 
 class CogniqSlack:
-    def __init__(self, *, config: Dict):
+    def __init__(self, *, config: Dict[str, str]):
         """
         Slack bot with given configuration, app, and logger.
 

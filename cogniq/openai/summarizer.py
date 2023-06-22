@@ -13,7 +13,7 @@ import tiktoken
 
 
 class Summarizer:
-    def __init__(self, *, config: Dict, async_chat_completion_create: callable):
+    def __init__(self, *, config: Dict[str, str], async_chat_completion_create: Callable):
         """
         Summarizer is intended as a subclass of CogniqOpenAI and is responsible for managing context window.
 
