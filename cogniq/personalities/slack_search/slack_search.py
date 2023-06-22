@@ -1,3 +1,10 @@
+from __future__ import annotations
+from typing import *
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI

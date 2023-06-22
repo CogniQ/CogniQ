@@ -1,9 +1,12 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 import asyncio
-from typing import List
+
 from slack_bolt.async_app import AsyncApp
 from slack_sdk.errors import SlackApiError
 

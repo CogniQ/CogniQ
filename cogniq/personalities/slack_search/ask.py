@@ -1,12 +1,11 @@
 from __future__ import annotations
 from typing import *
 
-from functools import partial
-
-import json
 import logging
 
 logger = logging.getLogger(__name__)
+
+import json
 
 
 from cogniq.openai import system_message, user_message, CogniqOpenAI

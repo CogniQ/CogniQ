@@ -1,11 +1,14 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
+
 import os
 import time
 from datetime import datetime
 from logging import Logger
-from typing import *
 from uuid import uuid4
 
 import sqlalchemy

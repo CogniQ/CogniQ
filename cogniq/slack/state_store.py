@@ -1,9 +1,14 @@
+from __future__ import annotations
+from typing import *
+
 import logging
+
+logger = logging.getLogger(__name__)
+
 import time
 
 from datetime import datetime
 from logging import Logger
-from typing import Optional
 from uuid import uuid4
 
 from databases import Database

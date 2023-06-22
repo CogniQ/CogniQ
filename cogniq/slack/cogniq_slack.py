@@ -1,11 +1,11 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-from slack_bolt.async_app import AsyncApp
-from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
-from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
-from slack_sdk.errors import SlackApiError
+
 from fastapi import FastAPI, Request, Response
 import uvicorn
 
@@ -17,6 +17,10 @@ from tenacity import (
 )
 import asyncio
 
+from slack_bolt.async_app import AsyncApp
+from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
+from slack_sdk.errors import SlackApiError
 
 from databases import Database
 import sqlalchemy

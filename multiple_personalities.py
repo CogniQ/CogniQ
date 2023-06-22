@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import *
 
 import logging
@@ -67,7 +68,7 @@ class MultiplePersonalities:
         await self.evaluator.async_setup()
         await self.cslack.start()
 
-    async def first_response(self, *, context: Dict, original_ts: str) -> Dict[str,str]:
+    async def first_response(self, *, context: Dict, original_ts: str) -> Dict[str, str]:
         """
         This method is called when the bot is called.
         """
