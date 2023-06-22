@@ -58,10 +58,10 @@ class BingSearch(BasePersonality):
         channel = event["channel"]
         message = event["text"]
 
-        history = await self.cslack.openai_history.get_history(event=event)
+        history = await self.cslack.openai_history.get_history(event=event, context=context)
         # logger.debug(f"history: {history}")
 
-        answer, _agent_response = await self.ask.ask(q=message, message_history=history)
+        answer, _agent_response = await self.ask.ask(q=message, message_history=history, context=context)
         # logger.debug(openai_response)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=answer)
 
@@ -69,9 +69,9 @@ class BingSearch(BasePersonality):
         self,
         *,
         q: str,
-        message_history: list,
-        stream_callback: callable = None,
-        reply_ts: float = None,
+        message_history: List,
+        stream_callback: Callable | None = None,
+        reply_ts: float | None = None,
         **kwargs,
     ):
         _answer, agent_response = await self.ask.ask(

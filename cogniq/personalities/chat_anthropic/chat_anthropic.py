@@ -56,9 +56,9 @@ class ChatAnthropic(BasePersonality):
         self,
         *,
         q: str,
-        message_history: list,
-        stream_callback: callable = None,
-        reply_ts: float = None,
+        message_history: List,
+        stream_callback: Callable | None = None,
+        reply_ts: float | None = None,
         **kwargs,
     ):
         """

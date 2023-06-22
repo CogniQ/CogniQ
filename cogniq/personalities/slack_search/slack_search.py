@@ -60,7 +60,7 @@ class SlackSearch(BasePersonality):
         # logger.debug(openai_response)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
 
-    async def ask_directly(self, *, q, message_history: list[dict[str, str]], context: Dict, reply_ts: float = None, **kwargs):
+    async def ask_directly(self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs):
         """
         Ask directly to the personality.
         """

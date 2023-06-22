@@ -31,7 +31,7 @@ class Search:
         """
         pass
 
-    async def search_texts(self, *, q: str, context: Dict, filter: Callable = None, **kwargs) -> list[str]:
+    async def search_texts(self, *, q: str, context: Dict, filter: Callable | None = None, **kwargs) -> list[str]:
         """
         Search slack and format the response.
 

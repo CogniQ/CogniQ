@@ -50,7 +50,7 @@ class Summarizer:
             raise e
 
     @count_tokens.register(list)
-    def _(self, history: Union[List[Dict[str, str]], List[str]]):
+    def _(self, history: List[Dict[str, str]] | List[str]):
         """
         Count tokens in a list of OpenAI messages or a list of strings
         """
@@ -67,7 +67,7 @@ class Summarizer:
         else:
             raise TypeError("count_tokens expects a list of OpenAI messages or a list of strings.")
 
-    def ceil_history(self, message_history: list, max_tokens: int = None):
+    def ceil_history(self, message_history: List[Dict[str, str]], max_tokens: int | None = None):
         """
         Ceil the history to a maximum number of tokens.
         Removes entries from the BEGINNING of the history until the total number of tokens is less than max_tokens.
@@ -86,7 +86,7 @@ class Summarizer:
 
         return message_history_copy
 
-    def ceil_retrieval(self, retrieval: list, max_tokens: int = None):
+    def ceil_retrieval(self, retrieval: List[str], max_tokens: int | None = None):
         """
         Ceil the retrieval to a maximum number of tokens.
         Removes entries from the END of the retrieval until the total number of tokens is less than max_tokens.
@@ -104,7 +104,7 @@ class Summarizer:
 
         return retrieval_copy
 
-    async def ceil_prompt(self, prompt: str, max_tokens: int = None):
+    async def ceil_prompt(self, prompt: str, max_tokens: int | None = None):
         if max_tokens is None:
             max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
 

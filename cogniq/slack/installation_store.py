@@ -33,7 +33,7 @@ class InstallationStore(AsyncInstallationStore):
         client_id: str,
         database_url: str,
         logger: Logger = logging.getLogger(__name__),
-        install_path: Optional[str] = None,
+        install_path: str | None = None,
     ):
         self.client_id = client_id
         self.database_url = database_url
@@ -73,10 +73,10 @@ class InstallationStore(AsyncInstallationStore):
     async def async_find_bot(
         self,
         *,
-        enterprise_id: Optional[str],
-        team_id: Optional[str],
-        is_enterprise_install: Optional[bool],
-    ) -> Optional[Bot]:
+        enterprise_id: str | None,
+        team_id: str | None,
+        is_enterprise_install: bool | None,
+    ) -> Bot | None:
         c = self.bots.c
         query = (
             self.bots.select()
@@ -110,11 +110,11 @@ class InstallationStore(AsyncInstallationStore):
     async def async_find_installation(
         self,
         *,
-        enterprise_id: Optional[str],
-        team_id: Optional[str],
-        user_id: Optional[str] = None,
-        is_enterprise_install: Optional[bool] = False,
-    ) -> Optional[Installation]:
+        enterprise_id: str | None,
+        team_id: str | None,
+        user_id: str | None = None,
+        is_enterprise_install: bool | None = False,
+    ) -> Installation | None:
         """Finds a relevant installation for the given IDs."""
         c = self.installations.c
         conditions = [
@@ -174,8 +174,8 @@ class InstallationStore(AsyncInstallationStore):
     async def async_delete_bot(
         self,
         *,
-        enterprise_id: Optional[str],
-        team_id: Optional[str],
+        enterprise_id: str | None,
+        team_id: str | None,
     ) -> None:
         """Deletes a bot scope installation per workspace / org"""
         c = self.bots.c
@@ -191,9 +191,9 @@ class InstallationStore(AsyncInstallationStore):
     async def async_delete_installation(
         self,
         *,
-        enterprise_id: Optional[str],
-        team_id: Optional[str],
-        user_id: Optional[str] = None,
+        enterprise_id: str | None,
+        team_id: str | None,
+        user_id: str | None = None,
     ) -> None:
         """Deletes an installation that matches the given IDs"""
         c = self.installations.c
@@ -212,8 +212,8 @@ class InstallationStore(AsyncInstallationStore):
     async def async_delete_all(
         self,
         *,
-        enterprise_id: Optional[str],
-        team_id: Optional[str],
+        enterprise_id: str | None,
+        team_id: str | None,
     ):
         """Deletes all installation data for the given workspace / org"""
         await self.async_delete_bot(enterprise_id=enterprise_id, team_id=team_id)

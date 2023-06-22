@@ -9,7 +9,7 @@ from functools import singledispatch
 
 
 @singledispatch
-def formatted_responses(responses: list):
+def formatted_responses(responses: List):
     """
     Format responses for the evaluator.
     """
@@ -21,7 +21,7 @@ def _(responses: str):
     return f"Slack Search Result Summary: {responses}"
 
 
-def retrieval_augmented_prompt(slack_search_response: Union[list, str], q: str):
+def retrieval_augmented_prompt(slack_search_response: list| str, q: str):
     """
     The prompt
     """

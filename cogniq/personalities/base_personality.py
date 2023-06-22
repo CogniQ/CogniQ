@@ -39,7 +39,7 @@ class BasePersonality(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def ask_directly(
-        self, *, q, message_history: list[dict[str, str]], context: Dict, reply_ts: float = None, **kwargs
+        self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs
     ) -> Awaitable[None]:
         """
         Ask a question of the personality and return the response.

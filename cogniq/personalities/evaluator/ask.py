@@ -52,7 +52,7 @@ class Ask:
         """
         pass
 
-    async def ask(self, *, q, message_history: list[dict[str, str]], personalities: Dict, context: Dict, stream_callback: callable = None):
+    async def ask(self, *, q, message_history: List[dict[str, str]], personalities: Dict, context: Dict, stream_callback: Callable | None = None):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
