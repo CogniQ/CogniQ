@@ -84,9 +84,9 @@ class Ask(BaseAsk):
         response_futures = []
         # Run the personalities
         for name, info in ask_personalities.items():
-            personality = info.personality
-            stream_callback = info.stream_callback
-            reply_ts = info.reply_ts
+            personality = info['personality']
+            stream_callback = info['stream_callback']
+            reply_ts = info['reply_ts']
             response_future = asyncio.create_task(
                 personality.ask_directly(
                     q=short_q, message_history=message_history, stream_callback=stream_callback, context=context, reply_ts=reply_ts

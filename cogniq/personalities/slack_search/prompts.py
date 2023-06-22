@@ -17,7 +17,7 @@ def formatted_responses(responses: Any) -> str:
 
 
 @formatted_responses.register
-def _(responses: List[str]) -> str:
+def _(responses: list) -> str:
     """
     Format responses for the evaluator.
     """
