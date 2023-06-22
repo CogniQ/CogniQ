@@ -47,13 +47,13 @@ class Evaluator(BasePersonality):
 
         self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Please call after initializing the personality.
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event, reply_ts, personalities, context):
+    async def ask_task(self, *, event: Dict, reply_ts: float, personalities: List[BasePersonality], context: Dict) -> None:
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -71,8 +71,8 @@ class Evaluator(BasePersonality):
             setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
         # Wrap personalities and their callbacks in a dict of dicts
-        personalities = {
-            p.name: {"object": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts} for p in personalities
+        ask_personalities = {
+            p.name: {personality: p, stream_callback: partial(stream_callback, p.name), reply_ts: reply_ts} for p in personalities
         }
 
         buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
@@ -91,7 +91,7 @@ class Evaluator(BasePersonality):
         openai_response = await self.ask.ask(
             q=message,
             message_history=message_history,
-            personalities=personalities,
+            ask_personalities=ask_personalities,
             context=context,
         )
         buffer_post_end.set()  # end the buffer_and_post loop
@@ -100,7 +100,7 @@ class Evaluator(BasePersonality):
 
     async def buffer_and_post(
         self, *, response_buffers: Dict, channel: str, reply_ts: float, context: Dict, interval: int, buffer_post_end: asyncio.Event
-    ):
+    ) -> None:
         while not buffer_post_end.is_set():
             combined_text = "\n".join(buf.text for buf in response_buffers.values())
             if combined_text:
@@ -113,7 +113,9 @@ class Evaluator(BasePersonality):
                 )
             await asyncio.sleep(interval)
 
-    async def ask_directly(self, *, q, message_history, personalities, context, **kwargs):
+    async def ask_directly(
+        self, *, q: str, message_history: List[Dict[str, str]], personalities: List[BasePersonality], context: Dict, **kwargs
+    ) -> str:
         """
         Ask directly to the personality.
         """
@@ -121,9 +123,9 @@ class Evaluator(BasePersonality):
         return response
 
     @property
-    def description(self):
+    def description(self) -> str:
         return "I evaluate the responses from the other personalities and return the best one."
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Evaluator"

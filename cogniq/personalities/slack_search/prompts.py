@@ -9,7 +9,15 @@ from functools import singledispatch
 
 
 @singledispatch
-def formatted_responses(responses: List):
+def formatted_responses(responses: Any) -> str:
+    """
+    Format responses for the evaluator.
+    """
+    raise NotImplementedError
+
+
+@formatted_responses.register
+def _(responses: List[str]) -> str:
     """
     Format responses for the evaluator.
     """
@@ -17,11 +25,11 @@ def formatted_responses(responses: List):
 
 
 @formatted_responses.register
-def _(responses: str):
+def _(responses: str) -> str:
     return f"Slack Search Result Summary: {responses}"
 
 
-def retrieval_augmented_prompt(slack_search_response: list| str, q: str):
+def retrieval_augmented_prompt(slack_search_response: list | str, q: str) -> str:
     """
     The prompt
     """

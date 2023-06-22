@@ -48,13 +48,13 @@ class BingSearch(BasePersonality):
 
         self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Please call after initializing the personality.
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, **kwargs):
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, **kwargs) -> None:
         channel = event["channel"]
         message = event["text"]
 
@@ -69,11 +69,11 @@ class BingSearch(BasePersonality):
         self,
         *,
         q: str,
-        message_history: List,
+        message_history: List[Dict[str, str]],
         stream_callback: Callable | None = None,
         reply_ts: float | None = None,
         **kwargs,
-    ):
+    ) -> str:
         _answer, agent_response = await self.ask.ask(
             q=q,
             message_history=message_history,
@@ -85,9 +85,9 @@ class BingSearch(BasePersonality):
         return transcript_summary
 
     @property
-    def description(self):
+    def description(self) -> str:
         return "I perform extractive generation of answers from Bing search results."
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Bing Search"

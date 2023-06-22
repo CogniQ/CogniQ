@@ -59,7 +59,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}
 
-    def run(self, query: str, params: Dict | None = None, debug: bool | None = None):
+    def run(self, query: str, params: Dict | None = None, debug: bool | None = None) -> Dict:
         """
         :param query: The search query string.
         :param params: Params for the `Retriever`, `Sampler`, `Shaper`, and ``PromptNode. For instance,

@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 import asyncio
 from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
+from cogniq.personalities import BaseAsk
 from cogniq.openai import (
     system_message,
     user_message,
@@ -29,7 +30,7 @@ from haystack.agents.base import ToolsManager
 from haystack.nodes import PromptNode
 
 
-class Ask:
+class Ask(BaseAsk):
     def __init__(
         self,
         *,
@@ -75,13 +76,13 @@ class Ask:
             stop_words=["Observation:"],
         )
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Call me after initialization, please!
         """
         pass
 
-    def agent_run(self, query: str, stream_callback: Callable | None = None):
+    def agent_run(self, query: str, stream_callback: Callable | None = None) -> Dict[str, Any]:
         agent = Agent(
             prompt_node=self.agent_prompt_node,
             prompt_template=agent_prompt,
@@ -97,10 +98,13 @@ class Ask:
             },
         )
 
-    async def ask(self, *, q: str, message_history: List | None = None, stream_callback: Callable | None = None, context: Dict):
+    async def ask(
+        self, *, q: str, message_history: List[Dict[str, str]] | None = None, stream_callback: Callable | None = None, context: Dict
+    ) -> List[str]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
-        message_history = message_history or []
+        if message_history == None:
+            message_history = []
         # if the history is too long, summarize it
         message_history = self.copenai.summarizer.ceil_history(message_history)
 
@@ -136,7 +140,7 @@ class Ask:
             final_answer_text = summarized_transcript
         return [final_answer_text, agent_response]
 
-    async def get_history_augmented_prompt(self, *, q, message_history):
+    async def get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]]) -> str:
         """
         Returns a prompt augmented with the message history.
         """
