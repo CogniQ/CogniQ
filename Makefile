@@ -21,6 +21,11 @@ deps: pyproject.toml .venv-activate
 poetry.lock: pyproject.toml .venv
 	poetry update
 
+.PHONY: lint
+lint:
+	black .
+	python -m mypy .
+
 .PHONY: docker-build
 docker-build:
 	docker buildx build \

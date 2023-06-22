@@ -1,9 +1,12 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 import asyncio
-from typing import List
+
 from slack_bolt.async_app import AsyncApp
 from slack_sdk.errors import SlackApiError
 
@@ -25,14 +28,14 @@ class OpenAIHistory(BaseHistory):
         """
         self.app = app
 
-    async def get_bot_user_id(self, *, context: dict) -> str:
+    async def get_bot_user_id(self, *, context: Dict) -> str:
         return context["bot_user_id"]
 
-    async def get_bot_name(self, *, context: dict) -> str:
+    async def get_bot_name(self, *, context: Dict) -> str:
         auth_test = await self.app.client.auth_test(token=context["bot_token"])
         return auth_test["user"]
 
-    async def get_history(self, *, event: dict, context: dict):
+    async def get_history(self, *, event: Dict, context: Dict):
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
@@ -41,7 +44,7 @@ class OpenAIHistory(BaseHistory):
         logger.debug(f"get_history: {response}")
         return response
 
-    async def _get_conversations_and_convert_to_chat_sequence(self, *, channel_id: str, thread_ts=None, context: dict):
+    async def _get_conversations_and_convert_to_chat_sequence(self, *, channel_id: str, thread_ts=None, context: Dict):
         messages = await self._get_conversations(channel_id=channel_id, thread_ts=thread_ts, context=context)
 
         bot_user_id = await self.get_bot_user_id(context=context)
@@ -53,7 +56,7 @@ class OpenAIHistory(BaseHistory):
 
         return self._convert_to_chat_sequence(messages=messages, bot_user_id=bot_user_id)
 
-    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: dict):
+    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: Dict):
         messages = []
         cursor = None
         messages_per_page = 20

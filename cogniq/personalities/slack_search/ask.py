@@ -1,14 +1,13 @@
 from __future__ import annotations
 from typing import *
 
-from functools import partial
-
-import json
 import logging
 
 logger = logging.getLogger(__name__)
 
+import json
 
+from cogniq.personalities import BaseAsk
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
@@ -16,11 +15,11 @@ from .prompts import retrieval_augmented_prompt
 from .functions import get_search_query_function
 
 
-class Ask:
+class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -49,15 +48,21 @@ class Ask:
         self.cslack = cslack
         self.copenai = copenai
 
-    async def async_setup(self) -> Awaitable[None]:
+    async def async_setup(self) -> None:
         """
         Call me after initialization, please!
         """
         pass
 
     async def ask(
-        self, *, q: str, message_history: list[dict[str, str]], stream_callback: callable = None, context: dict, reply_ts: float = None
-    ) -> Awaitable[str]:
+        self,
+        *,
+        q: str,
+        message_history: List[dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+    ) -> str:
         user_id = context.get("user_token")
         if not user_id:
             error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
@@ -143,7 +148,7 @@ class Ask:
         logger.info(f"final_answer: {final_answer}")
         return final_answer
 
-    def _remove_my_reply_filter(self, *, message: dict[str, str], reply_ts: float = None) -> bool:
+    def _remove_my_reply_filter(self, *, message: Dict[str, str], reply_ts: float | None = None) -> bool:
         if not reply_ts:
             return True
 

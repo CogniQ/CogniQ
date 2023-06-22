@@ -1,4 +1,5 @@
-from typing import Callable
+from __future__ import annotations
+from typing import *
 
 import logging
 
@@ -30,7 +31,7 @@ class Search:
         """
         pass
 
-    async def search_texts(self, *, q: str, context: dict, filter: Callable = None, **kwargs) -> list[str]:
+    async def search_texts(self, *, q: str, context: Dict, filter: Callable | None = None, **kwargs) -> list[str]:
         """
         Search slack and format the response.
 
@@ -62,7 +63,7 @@ class Search:
 
         return str_messages
 
-    async def search(self, *, q: str, context: dict, **kwargs) -> list[dict]:
+    async def search(self, *, q: str, context: Dict, **kwargs) -> list[dict]:
         """
         Search slack and return the messages.
 
@@ -76,7 +77,7 @@ class Search:
         response = await self._search(q=q, context=context, **kwargs)
         return response["messages"]["matches"]
 
-    async def _search(self, *, q: str, context: dict, **kwargs) -> dict:
+    async def _search(self, *, q: str, context: Dict, **kwargs) -> dict:
         """
         Private method to perform the actual slack search.
 

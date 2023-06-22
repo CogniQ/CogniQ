@@ -1,10 +1,23 @@
+from __future__ import annotations
 from typing import *
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 from functools import singledispatch
 
 
 @singledispatch
-def formatted_responses(responses: list):
+def formatted_responses(responses: Any) -> str:
+    """
+    Format responses for the evaluator.
+    """
+    raise NotImplementedError
+
+
+@formatted_responses.register
+def _(responses: list) -> str:
     """
     Format responses for the evaluator.
     """
@@ -12,11 +25,11 @@ def formatted_responses(responses: list):
 
 
 @formatted_responses.register
-def _(responses: str):
+def _(responses: str) -> str:
     return f"Slack Search Result Summary: {responses}"
 
 
-def retrieval_augmented_prompt(slack_search_response: Union[list, str], q: str):
+def retrieval_augmented_prompt(slack_search_response: list | str, q: str) -> str:
     """
     The prompt
     """

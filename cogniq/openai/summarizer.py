@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import *
 
 import logging
@@ -12,7 +13,7 @@ import tiktoken
 
 
 class Summarizer:
-    def __init__(self, *, config: dict, async_chat_completion_create: callable):
+    def __init__(self, *, config: Dict[str, str], async_chat_completion_create: Callable):
         """
         Summarizer is intended as a subclass of CogniqOpenAI and is responsible for managing context window.
 
@@ -32,16 +33,16 @@ class Summarizer:
 
         self.encoding = tiktoken.encoding_for_model(self.config["OPENAI_CHAT_MODEL"])
 
-    def encode(self, text: str):
+    def encode(self, text: str) -> List[int]:
         return self.encoding.encode(text)
 
     @singledispatchmethod
-    def count_tokens(self, text):
+    def count_tokens(self, text: Any) -> int:
         logger.error("Unsupported type passed to count_tokens: %s (%s)", type(text), text)
         raise TypeError(f"count_tokens does not support type {type(text)}: {text}")
 
     @count_tokens.register(str)
-    def _(self, text: str):
+    def _(self, text: str) -> int:
         try:
             return len(self.encode(text))
         except TypeError as e:
@@ -49,7 +50,7 @@ class Summarizer:
             raise e
 
     @count_tokens.register(list)
-    def _(self, history: Union[List[Dict[str, str]], List[str]]):
+    def _(self, history: List[Dict[str, str]] | List[str]) -> int:
         """
         Count tokens in a list of OpenAI messages or a list of strings
         """
@@ -66,7 +67,7 @@ class Summarizer:
         else:
             raise TypeError("count_tokens expects a list of OpenAI messages or a list of strings.")
 
-    def ceil_history(self, message_history: list, max_tokens: int = None):
+    def ceil_history(self, message_history: List[Dict[str, str]], max_tokens: int | None = None) -> List[Dict[str, str]]:
         """
         Ceil the history to a maximum number of tokens.
         Removes entries from the BEGINNING of the history until the total number of tokens is less than max_tokens.
@@ -85,7 +86,7 @@ class Summarizer:
 
         return message_history_copy
 
-    def ceil_retrieval(self, retrieval: list, max_tokens: int = None):
+    def ceil_retrieval(self, retrieval: List[str], max_tokens: int | None = None) -> List[str]:
         """
         Ceil the retrieval to a maximum number of tokens.
         Removes entries from the END of the retrieval until the total number of tokens is less than max_tokens.
@@ -103,7 +104,7 @@ class Summarizer:
 
         return retrieval_copy
 
-    async def ceil_prompt(self, prompt: str, max_tokens: int = None):
+    async def ceil_prompt(self, prompt: str, max_tokens: int | None = None) -> str:
         if max_tokens is None:
             max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
 
@@ -113,7 +114,7 @@ class Summarizer:
         else:
             return prompt
 
-    async def summarize_content(self, content: str, max_tokens=None):
+    async def summarize_content(self, content: str, max_tokens=None) -> str:
         if max_tokens is None:
             max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
         content_length = self.count_tokens(content)

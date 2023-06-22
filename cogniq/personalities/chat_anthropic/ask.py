@@ -1,14 +1,18 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
+from cogniq.personalities import BaseAsk
 from cogniq.slack import CogniqSlack
 
 from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLayer
 
 
-class Ask:
-    def __init__(self, *, config: dict, cslack: CogniqSlack, **kwargs):
+class Ask(BaseAsk):
+    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, **kwargs):
         """
         Ask subclass of ChatAnthropic personality
         Please call async_setup before using this class, please!
@@ -30,13 +34,13 @@ class Ask:
         self.config = config
         self.cslack = cslack
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Call me after initializing this class!
         """
         pass
 
-    async def ask(self, *, q, message_history=None):
+    async def ask(self, *, q: str, message_history: str | None = None) -> str:
         message_history = message_history or ""
         kwargs = {
             "model": "claude-instant-v1-100k",

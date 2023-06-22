@@ -1,16 +1,20 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
+from cogniq.personalities import BaseAsk
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
 
-class Ask:
+class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -39,13 +43,15 @@ class Ask:
         self.cslack = cslack
         self.copenai = copenai
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Call me after initialization, please!
         """
         pass
 
-    async def ask(self, *, q: str, message_history: list = None, stream_callback: callable = None, context: dict):
+    async def ask(
+        self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
+    ) -> str:
         message_history = message_history or []
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)

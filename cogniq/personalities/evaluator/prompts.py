@@ -1,4 +1,12 @@
-def evaluator_prompt(responses_with_descriptions: list, q: str):
+from __future__ import annotations
+from typing import *
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def evaluator_prompt(responses_with_descriptions: List[List[str]], q: str) -> str:
     """
     The evaluator prompt.
     """

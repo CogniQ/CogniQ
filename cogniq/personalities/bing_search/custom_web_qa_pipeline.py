@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,7 +25,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
     Pipeline for Generative Question Answering performed based on Documents returned from a web search engine.
     """
 
-    def __init__(self, *, config: dict):
+    def __init__(self, *, config: Dict[str, str]):
         """
         CustomWebQAPipeline constructor.
 
@@ -56,7 +59,7 @@ class CustomWebQAPipeline(BaseStandardPipeline):
 
         self.metrics_filter = {"Retriever": ["recall_single_hit"]}
 
-    def run(self, query: str, params: Optional[dict] = None, debug: Optional[bool] = None):
+    def run(self, query: str, params: Dict | None = None, debug: bool | None = None) -> Dict:
         """
         :param query: The search query string.
         :param params: Params for the `Retriever`, `Sampler`, `Shaper`, and ``PromptNode. For instance,

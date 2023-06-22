@@ -1,6 +1,10 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
+
 import json
 
 import aiohttp
@@ -10,7 +14,7 @@ from .summarizer import Summarizer
 
 
 class CogniqOpenAI:
-    def __init__(self, *, config: dict):
+    def __init__(self, *, config: Dict[str, str]):
         """
         OpenAI model
 
@@ -56,7 +60,9 @@ class CogniqOpenAI:
             async_chat_completion_create=self.async_chat_completion_create,
         )
 
-    async def async_chat_completion_create(self, *, messages, stream_callback=None, **kwargs):
+    async def async_chat_completion_create(
+        self, *, messages: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, **kwargs
+    ) -> Dict[str, Any]:
         stream_callback_set = stream_callback is not None
         url = f"https://api.openai.com/v1/chat/completions"
         default_payload = {
@@ -72,14 +78,14 @@ class CogniqOpenAI:
         else:
             return await self.async_openai(url=url, payload=payload, **kwargs)
 
-    async def async_completion_create(self, *, prompt, **kwargs):
+    async def async_completion_create(self, *, prompt: str, **kwargs) -> Dict[str, Any]:
         url = f"https://api.openai.com/v1/completions"
         payload = {"prompt": prompt, **kwargs}
 
         return await self.async_openai(url=url, payload=payload, **kwargs)
 
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=60))
-    async def async_openai(self, *, url, payload, **kwargs):
+    async def async_openai(self, *, url: str, payload: Dict[str, Any], **kwargs) -> Dict[str, Any]:
         headers = {
             "Content-Type": "application/json",
             "Authorization": f'Bearer {self.config["OPENAI_API_KEY"]}',
@@ -95,7 +101,9 @@ class CogniqOpenAI:
                     raise Exception(f"Error {response.status}: {await response.text()}")
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=2, max=60))
-    async def async_openai_stream(self, *, url, payload, stream_callback, **kwargs):
+    async def async_openai_stream(
+        self, *, url: str, payload: Dict[str, Any], stream_callback: Callable[..., None], **kwargs
+    ) -> Dict[str, Any]:
         headers = {
             "Content-Type": "application/json",
             "Authorization": f'Bearer {self.config["OPENAI_API_KEY"]}',

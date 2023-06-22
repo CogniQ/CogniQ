@@ -1,11 +1,11 @@
+from __future__ import annotations
+from typing import *
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-from slack_bolt.async_app import AsyncApp
-from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
-from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
-from slack_sdk.errors import SlackApiError
+
 from fastapi import FastAPI, Request, Response
 import uvicorn
 
@@ -17,6 +17,10 @@ from tenacity import (
 )
 import asyncio
 
+from slack_bolt.async_app import AsyncApp
+from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
+from slack_sdk.errors import SlackApiError
 
 from databases import Database
 import sqlalchemy
@@ -29,7 +33,7 @@ from .installation_store import InstallationStore
 
 
 class CogniqSlack:
-    def __init__(self, *, config: dict):
+    def __init__(self, *, config: Dict[str, str]):
         """
         Slack bot with given configuration, app, and logger.
 
@@ -147,7 +151,7 @@ class CogniqSlack:
         uvicorn_server = uvicorn.Server(uvicorn_config)
         await uvicorn_server.serve()
 
-    async def chat_update(self, *, channel: str, ts: int, context: dict, text: str, retry_on_rate_limit: bool = True):
+    async def chat_update(self, *, channel: str, ts: float, context: Dict, text: str, retry_on_rate_limit: bool = True):
         """
         Updates the chat message in the given channel and thread with the given text.
         """

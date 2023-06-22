@@ -7,17 +7,24 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 
+from cogniq.personalities import BaseAsk, BasePersonality
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
 
 from .prompts import evaluator_prompt
 
 
-class Ask:
+class AskPersonality(TypedDict):
+    personality: BasePersonality
+    stream_callback: Callable[..., None] | None
+    reply_ts: str | None
+
+
+class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: dict,
+        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -46,13 +53,21 @@ class Ask:
         self.cslack = cslack
         self.copenai = copenai
 
-    async def async_setup(self):
+    async def async_setup(self) -> None:
         """
         Call me after initialization, please!
         """
         pass
 
-    async def ask(self, *, q, message_history: list[dict[str, str]], personalities: dict, context: dict, stream_callback: callable = None):
+    async def ask(
+        self,
+        *,
+        q,
+        message_history: List[dict[str, str]],
+        ask_personalities: Dict[str, AskPersonality],
+        context: Dict,
+        stream_callback: Callable[..., None] | None = None,
+    ) -> str:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
@@ -68,8 +83,8 @@ class Ask:
 
         response_futures = []
         # Run the personalities
-        for name, info in personalities.items():
-            personality = info["object"]
+        for name, info in ask_personalities.items():
+            personality = info["personality"]
             stream_callback = info["stream_callback"]
             reply_ts = info["reply_ts"]
             response_future = asyncio.create_task(
