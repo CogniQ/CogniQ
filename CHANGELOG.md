@@ -1,3 +1,10 @@
+## [0.4.10](https://github.com/CogniQ/CogniQ/compare/v0.4.9...v0.4.10) (2023-06-26)
+
+
+### Bug Fixes
+
+* distinguish between sha for container and tag for the DD_VERSION ([59c79da](https://github.com/CogniQ/CogniQ/commit/59c79da27dd132334cb31570d2b9d0eb11fec8f6))
+
 ## [0.4.9](https://github.com/CogniQ/CogniQ/compare/v0.4.8...v0.4.9) (2023-06-26)
 
 
