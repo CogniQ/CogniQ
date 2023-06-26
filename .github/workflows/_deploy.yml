@@ -41,3 +41,5 @@ jobs:
         containerAppEnvironment: cogniq-web
         containerAppName: cogniq
         imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.image_tag }}
+        environmentVariables: |
+          DD_VERSION=${{ inputs.image_tag }}

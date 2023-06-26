@@ -27,6 +27,8 @@ properties:
         value: ABC123
       - name: postgres-db
         value: ABC123
+      - name: dd-api-key
+        value: ABC123
     ingress:
       external: true
       allowInsecure: false
@@ -37,13 +39,27 @@ properties:
       transport: Auto
   template:
     containers:
-      - image: ghcr.io/cogniq/cogniq:4a
+      - image: ghcr.io/cogniq/cogniq:main
         name: cogniq
         env:
           - name: APP_URL
             value: https://example.cogniq.info
           - name: PORT
             value: '3000'
+          - name: DD_SERVICE
+            value: cogniq
+          - name: DD_ENV
+            value: example.cogniq.info
+          - name: DD_VERSION
+            value: 'main'
+          - name: DD_TRACE_ENABLED
+            value: 'true'
+          - name: DD_REMOTE_CONFIGURATION_ENABLED
+            value: 'false'
+          - name: DD_SITE
+            value: datadoghq.com
+          - name: DD_API_KEY
+            secretRef: dd-api-key
           - name: SLACK_CLIENT_ID
             secretRef: slack-client-id
           - name: SLACK_CLIENT_SECRET
