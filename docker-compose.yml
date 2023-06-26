@@ -31,5 +31,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-cogniq}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cogniq}
       POSTGRES_DB: ${POSTGRES_DB:-cogniq}
+      DD_API_KEY: ${DD_API_KEY}
+      DD_SITE: datadoghq.com
+      DD_ENV: ${APP_ENV:-development}
+      DD_SERVICE: cogniq
+      DD_TRACE_ENABLED: "true"
+      DD_VERSION: local-development
+      DD_REMOTE_CONFIGURATION_ENABLED: "false"
 volumes:
   pgdata:

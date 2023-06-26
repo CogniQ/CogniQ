@@ -25,6 +25,9 @@ RUN useradd -m -d /app -u 1000 -g 0 -s /bin/bash cogniq
 
 RUN chown -R cogniq /app /tmp
 
+# copy the Datadog `serverless-init` into your Docker image
+COPY --from=datadog/serverless-init /datadog-init /app/datadog-init
+
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml poetry.lock ./
@@ -43,4 +46,8 @@ EXPOSE 3000
 
 USER 1000
 
-CMD python main.py
+# change the entrypoint to wrap your application into the Datadog serverless-init process
+ENTRYPOINT ["/app/datadog-init"]
+
+# execute your binary application wrapped in the entrypoint, launched by the Datadog trace library. Adapt this line to your needs
+CMD ["ddtrace-run", "python", "main.py"]
