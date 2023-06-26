@@ -138,7 +138,7 @@ class Ask(BaseAsk):
             transcript = agent_response["transcript"]
             summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"])
             final_answer_text = summarized_transcript
-        return { "answer": final_answer_text, "response": agent_response }
+        return {"answer": final_answer_text, "response": agent_response}
 
     async def get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]]) -> str:
         """
