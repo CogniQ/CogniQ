@@ -1,3 +1,10 @@
+## [0.4.12](https://github.com/CogniQ/CogniQ/compare/v0.4.11...v0.4.12) (2023-06-26)
+
+
+### Bug Fixes
+
+* the action needs space delimited to define env vars ([58e4406](https://github.com/CogniQ/CogniQ/commit/58e4406ff12ac7110dde30f126dedaa3fde1b4cb))
+
 ## [0.4.11](https://github.com/CogniQ/CogniQ/compare/v0.4.10...v0.4.11) (2023-06-26)
 
 
