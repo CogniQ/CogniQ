@@ -1,3 +1,11 @@
+## [0.4.7](https://github.com/CogniQ/CogniQ/compare/v0.4.6...v0.4.7) (2023-06-26)
+
+
+### Bug Fixes
+
+* remove GPU dependency for devcontainer and poetry.lock ([b6778b4](https://github.com/CogniQ/CogniQ/commit/b6778b48a3da5814ad9c8687c8d0e2db169b6924))
+* when deploying to cogniq-community-main, always specify short sha of container image ([24ca540](https://github.com/CogniQ/CogniQ/commit/24ca5402752348e29ceafad3c52bb9a91106d45c))
+
 ## [0.4.6](https://github.com/CogniQ/CogniQ/compare/v0.4.5...v0.4.6) (2023-06-20)
 
 
