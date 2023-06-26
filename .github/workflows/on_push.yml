@@ -67,6 +67,6 @@ jobs:
       - release
     uses: ./.github/workflows/_deploy.yml
     with:
-      image_tag: ${{ needs.vars.outputs.image_tag }}
+      image_tag: ${{ needs.vars.outputs.short_sha }}
       environment: cogniq-community-main
     secrets: inherit

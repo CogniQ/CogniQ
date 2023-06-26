@@ -6,7 +6,7 @@ on:
       image_tag:
         description: 'The tag to use for the image'
         type: string
-        required: false
+        required: true
         default: 'main'
       environment:
         description: 'The environment to deploy to'
