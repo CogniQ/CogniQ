@@ -46,3 +46,21 @@ jobs:
         imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.short_sha }}
         environmentVariables: |
           DD_VERSION=${{ inputs.image_tag }}
+          APP_URL=https://main.cogniq.info
+          PORT=3000
+          DD_SERVICE=cogniq
+          DD_ENV=cogniq-community-main
+          DD_VERSION=main
+          DD_TRACE_ENABLED=true
+          DD_REMOTE_CONFIGURATION_ENABLED=false
+          DD_SITE=datadoghq.com
+          DD_API_KEY=secretref:dd-api-key
+          SLACK_CLIENT_ID=secretref:slack-client-id
+          SLACK_CLIENT_SECRET=secretref:slack-client-secret
+          SLACK_SIGNING_SECRET=secretref:slack-signing-secret
+          OPENAI_API_KEY=secretref:openai-api-key
+          BING_SUBSCRIPTION_KEY=secretref:bing-subscription-key
+          POSTGRES_HOST=secretref:postgres-host
+          POSTGRES_USER=secretref:postgres-user
+          POSTGRES_PASSWORD=secretref:postgres-password
+          POSTGRES_DB=secretref:postgres-db
