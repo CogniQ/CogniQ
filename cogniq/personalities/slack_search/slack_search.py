@@ -52,13 +52,13 @@ class SlackSearch(BasePersonality):
         message = event["text"]
 
         message_history = await self.cslack.openai_history.get_history(event=event, context=context)
-        openai_response = await self.ask.ask(
+        ask_response = await self.ask.ask(
             q=message,
             context=context,
             message_history=message_history,
         )
         # logger.debug(openai_response)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
         self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs
@@ -66,8 +66,8 @@ class SlackSearch(BasePersonality):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts, **kwargs)
-        return response
+        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts, **kwargs)
+        return ask_response["answer"]
 
     @property
     def description(self) -> str:

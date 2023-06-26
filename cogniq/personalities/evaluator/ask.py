@@ -67,7 +67,7 @@ class Ask(BaseAsk):
         ask_personalities: Dict[str, AskPersonality],
         context: Dict,
         stream_callback: Callable[..., None] | None = None,
-    ) -> str:
+    ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
@@ -115,11 +115,11 @@ class Ask(BaseAsk):
 
         message_history.append(user_message(short_prompt))
 
-        answer = await self.copenai.async_chat_completion_create(
+        response = await self.copenai.async_chat_completion_create(
             messages=message_history,
             model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )
 
-        final_answer = answer["choices"][0]["message"]["content"]
-        logger.info(f"final_answer: {final_answer}")
-        return final_answer
+        answer = response["choices"][0]["message"]["content"]
+        logger.info(f"answer: {answer}")
+        return {"answer": answer, "response": response}

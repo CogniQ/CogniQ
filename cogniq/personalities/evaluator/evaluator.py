@@ -90,7 +90,7 @@ class Evaluator(BasePersonality):
             )
             message_history = await self.cslack.openai_history.get_history(event=event, context=context)
 
-            openai_response = await asyncio.wait_for(
+            ask_response = await asyncio.wait_for(
                 self.ask.ask(
                     q=message,
                     message_history=message_history,
@@ -102,7 +102,7 @@ class Evaluator(BasePersonality):
         finally:
             buffer_post_end.set()  # end the buffer_and_post loop
             await buffer_and_post_task  # ensure buffer_and_post task is finished
-            await self.cslack.chat_update(channel=channel, ts=reply_ts, text=openai_response, context=context)
+            await self.cslack.chat_update(channel=channel, ts=reply_ts, text=ask_response["answer"], context=context)
 
     async def buffer_and_post(
         self, *, response_buffers: Dict, channel: str, reply_ts: float, context: Dict, interval: int, buffer_post_end: asyncio.Event
@@ -125,8 +125,8 @@ class Evaluator(BasePersonality):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, personalities=personalities, context=context, **kwargs)
-        return response
+        ask_response = await self.ask.ask(q=q, message_history=message_history, personalities=personalities, context=context, **kwargs)
+        return ask_response["answer"]
 
     @property
     def description(self) -> str:

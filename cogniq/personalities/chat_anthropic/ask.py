@@ -40,7 +40,7 @@ class Ask(BaseAsk):
         """
         pass
 
-    async def ask(self, *, q: str, message_history: str | None = None) -> str:
+    async def ask(self, *, q: str, message_history: str | None = None) -> Dict[str, Any]:
         message_history = message_history or ""
         kwargs = {
             "model": "claude-instant-v1-100k",
@@ -58,4 +58,5 @@ class Ask(BaseAsk):
         res = layer.invoke(prompt=newprompt)
 
         logger.info(f"res: {res}")
-        return "".join(res)
+        answer = "".join(res)
+        return {"answer": answer, "response": res}

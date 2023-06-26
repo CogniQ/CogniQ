@@ -100,7 +100,7 @@ class Ask(BaseAsk):
 
     async def ask(
         self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
-    ) -> List[str | Dict[str, Any]]:
+    ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         if message_history == None:
@@ -138,7 +138,7 @@ class Ask(BaseAsk):
             transcript = agent_response["transcript"]
             summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"])
             final_answer_text = summarized_transcript
-        return [final_answer_text, agent_response]
+        return { "answer": final_answer_text, "response": agent_response }
 
     async def get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]]) -> str:
         """

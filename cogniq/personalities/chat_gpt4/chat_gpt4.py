@@ -53,9 +53,8 @@ class ChatGPT4(BasePersonality):
         history = await self.cslack.openai_history.get_history(event=event, context=context)
         # logger.debug(f"history: {history}")
 
-        openai_response = await self.ask.ask(q=message, message_history=history, context=context)
-        # logger.debug(openai_response)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=openai_response)
+        ask_response = await self.ask.ask(q=message, message_history=history, context=context)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
         self,
@@ -69,8 +68,8 @@ class ChatGPT4(BasePersonality):
         """
         Ask directly to the personality.
         """
-        response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
-        return response
+        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
+        return ask_response["answer"]
 
     @property
     def description(self) -> str:

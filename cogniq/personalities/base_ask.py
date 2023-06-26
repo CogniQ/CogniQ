@@ -61,7 +61,7 @@ class BaseAsk(metaclass=abc.ABCMeta):
         personalities: Dict,
         context: Dict,
         stream_callback: Callable[..., None] | None = None,
-    ) -> str:
+    ) -> Dict[str, Any]:
         """
         Ask a question to the personality.
         """

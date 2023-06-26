@@ -49,8 +49,8 @@ class ChatAnthropic(BasePersonality):
         history = await self.cslack.anthropic_history.get_history(event=event, context=context)
         logger.debug(f"history: {history}")
 
-        response = await self.ask.ask(q=message, message_history=history)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=response)
+        ask_response = await self.ask.ask(q=message, message_history=history)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
         self,
@@ -66,8 +66,8 @@ class ChatAnthropic(BasePersonality):
         """
         # Convert the message history from OpenAI to Anthropic format
         message_history = self.cslack.anthropic_history.openai_to_anthropic(message_history=message_history)
-        response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
-        return response
+        ask_response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        return ask_response["answer"]
 
     @property
     def description(self) -> str:

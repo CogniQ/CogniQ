@@ -62,7 +62,7 @@ class Ask(BaseAsk):
         stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,
-    ) -> str:
+    ) -> Dict[str, Any]:
         user_id = context.get("user_token")
         if not user_id:
             error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
@@ -136,7 +136,7 @@ class Ask(BaseAsk):
 
         message_history.append(user_message(prompt))
 
-        answer = await self.copenai.async_chat_completion_create(
+        response = await self.copenai.async_chat_completion_create(
             messages=message_history,
             stream_callback=stream_callback,
             model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
@@ -144,9 +144,9 @@ class Ask(BaseAsk):
             temperature=0.2,
         )
 
-        final_answer = answer["choices"][0]["message"]["content"]
-        logger.info(f"final_answer: {final_answer}")
-        return final_answer
+        answer = response["choices"][0]["message"]["content"]
+        logger.info(f"answer: {answer}")
+        return {"answer": answer, "response": response}
 
     def _remove_my_reply_filter(self, *, message: Dict[str, str], reply_ts: float | None = None) -> bool:
         if not reply_ts:
