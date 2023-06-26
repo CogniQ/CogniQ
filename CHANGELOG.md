@@ -1,3 +1,10 @@
+## [0.4.8](https://github.com/CogniQ/CogniQ/compare/v0.4.7...v0.4.8) (2023-06-26)
+
+
+### Bug Fixes
+
+* docker metadata outputs 7 chars for short sha ([acc72bd](https://github.com/CogniQ/CogniQ/commit/acc72bd611b17cf44ceead100aaa649176255e21))
+
 ## [0.4.7](https://github.com/CogniQ/CogniQ/compare/v0.4.6...v0.4.7) (2023-06-26)
 
 
