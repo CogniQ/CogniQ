@@ -1,13 +1,16 @@
-name: _build
+name: _deploy
 
 on:
   workflow_call:
     inputs:
       image_tag:
-        description: 'The tag to use for the image'
+        description: 'The tag of the release'
         type: string
         required: true
-        default: 'main'
+      short_sha:
+        description: 'The short sha of the git ref'
+        type: string
+        required: true
       environment:
         description: 'The environment to deploy to'
         type: string
@@ -40,6 +43,6 @@ jobs:
         resourceGroup: ${{ inputs.environment }}
         containerAppEnvironment: cogniq-web
         containerAppName: cogniq
-        imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.image_tag }}
+        imageToDeploy: ghcr.io/cogniq/cogniq:${{ inputs.short_sha }}
         environmentVariables: |
           DD_VERSION=${{ inputs.image_tag }}
