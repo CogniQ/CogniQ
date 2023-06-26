@@ -1,3 +1,11 @@
+## [0.4.9](https://github.com/CogniQ/CogniQ/compare/v0.4.8...v0.4.9) (2023-06-26)
+
+
+### Bug Fixes
+
+* add ddtrace agent ([#73](https://github.com/CogniQ/CogniQ/issues/73)) ([7ad86e1](https://github.com/CogniQ/CogniQ/commit/7ad86e1fdedbaa57d140638fd40e2e5af88146d3))
+* set a generous timeout in case a personality crashes ([1f4012d](https://github.com/CogniQ/CogniQ/commit/1f4012d3f1fdd5e11821373fd222a22761d681ae))
+
 ## [0.4.8](https://github.com/CogniQ/CogniQ/compare/v0.4.7...v0.4.8) (2023-06-26)
 
 
