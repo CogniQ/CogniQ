@@ -27,7 +27,7 @@ jobs:
         IMAGE_TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' -e '/^refs\/tags\//s/^v//')
         echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-        echo "short_sha=$(git rev-parse --short=8 HEAD)" >> $GITHUB_OUTPUT
+        echo "short_sha=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
 
         echo "short_commit_message=$(git show --no-patch --format=%s)" >> $GITHUB_OUTPUT
         echo "author_email=$(git show --no-patch --format=%ae)" >> $GITHUB_OUTPUT
