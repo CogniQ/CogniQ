@@ -52,6 +52,8 @@ properties:
             value: example.cogniq.info
           - name: DD_VERSION
             value: 'main'
+          - name: DD_LOGS_ENABLED
+            value: 'true'
           - name: DD_TRACE_ENABLED
             value: 'true'
           - name: DD_REMOTE_CONFIGURATION_ENABLED

@@ -35,6 +35,7 @@ services:
       DD_SITE: datadoghq.com
       DD_ENV: ${APP_ENV:-development}
       DD_SERVICE: cogniq
+      DD_LOGS_ENABLED: "true"
       DD_TRACE_ENABLED: "true"
       DD_VERSION: local-development
       DD_REMOTE_CONFIGURATION_ENABLED: "false"

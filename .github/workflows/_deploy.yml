@@ -50,6 +50,7 @@ jobs:
           PORT=3000 \
           DD_SERVICE=cogniq \
           DD_ENV=cogniq-community-main \
+          DD_LOGS_ENABLED=true \
           DD_TRACE_ENABLED=true \
           DD_REMOTE_CONFIGURATION_ENABLED=false \
           DD_SITE=datadoghq.com \
