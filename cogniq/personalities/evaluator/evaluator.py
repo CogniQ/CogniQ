@@ -57,7 +57,7 @@ class Evaluator(BasePersonality):
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
-        buffer_post_timeout = 300 # seconds
+        buffer_post_timeout = 300  # seconds
         try:
             channel = event["channel"]
             message = event["text"]
@@ -97,7 +97,7 @@ class Evaluator(BasePersonality):
                     ask_personalities=ask_personalities,
                     context=context,
                 ),
-                buffer_post_timeout
+                buffer_post_timeout,
             )
         finally:
             buffer_post_end.set()  # end the buffer_and_post loop
