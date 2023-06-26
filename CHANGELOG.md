@@ -1,3 +1,10 @@
+## [0.4.11](https://github.com/CogniQ/CogniQ/compare/v0.4.10...v0.4.11) (2023-06-26)
+
+
+### Bug Fixes
+
+* the troubles i go to to have DD_VERSION working ([a31828a](https://github.com/CogniQ/CogniQ/commit/a31828afbd4ffb4329d9080464faeae984e40b64))
+
 ## [0.4.10](https://github.com/CogniQ/CogniQ/compare/v0.4.9...v0.4.10) (2023-06-26)
 
 
