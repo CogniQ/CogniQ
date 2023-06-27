@@ -90,6 +90,7 @@ class Evaluator(BasePersonality):
             )
             message_history = await self.cslack.openai_history.get_history(event=event, context=context)
 
+            ask_response = {"answer": ""}
             ask_response = await asyncio.wait_for(
                 self.ask.ask(
                     q=message,

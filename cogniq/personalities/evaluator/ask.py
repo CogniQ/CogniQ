@@ -64,8 +64,8 @@ class Ask(BaseAsk):
         *,
         q,
         message_history: List[dict[str, str]],
-        ask_personalities: Dict[str, AskPersonality],
-        context: Dict,
+        ask_personalities: Dict[str, Dict[str, Any]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
