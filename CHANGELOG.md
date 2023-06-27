@@ -1,3 +1,12 @@
+## [0.4.14](https://github.com/CogniQ/CogniQ/compare/v0.4.13...v0.4.14) (2023-06-27)
+
+
+### Bug Fixes
+
+* handle the case where the personality has an unhandled error ([eba7bcc](https://github.com/CogniQ/CogniQ/commit/eba7bcce3412827821762bef61f9d7b4d7519ebf))
+* lol maybe the workflow named `on_pull_request` should fire on pull_request ([4af8404](https://github.com/CogniQ/CogniQ/commit/4af84044a932399e404f54433061a6dd29bb811e))
+* return error when personality fails ([2b5dd0b](https://github.com/CogniQ/CogniQ/commit/2b5dd0baf6c422031a628b97ab5203215c2b14af))
+
 ## [0.4.13](https://github.com/CogniQ/CogniQ/compare/v0.4.12...v0.4.13) (2023-06-27)
 
 
