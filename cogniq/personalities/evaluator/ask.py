@@ -95,8 +95,8 @@ class Ask(BaseAsk):
             response_futures.append((personality.description, response_future))
 
         # Wait for the futures to finish
-        responses = await asyncio.gather(*(response_future for _, response_future in response_futures))
-        responses_with_descriptions = [(description, response) for (description, _), response in zip(response_futures, responses)]
+        responses = await asyncio.gather(*(response_future for _, response_future in response_futures), return_exceptions=True)
+        responses_with_descriptions = [(description, (response if not isinstance(response, Exception) else ".")) for (description, _), response in zip(response_futures, responses)]
 
         # Log the responses
         for description, response in responses_with_descriptions:
