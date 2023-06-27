@@ -19,6 +19,7 @@ import asyncio
 
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
+from slack_bolt.oauth.async_oauth_flow import AsyncOAuthFlow
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from slack_sdk.errors import SlackApiError
 
@@ -30,6 +31,8 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
+from .authorize import AsyncInstallationStoreAuthorize
+from .errors import BotTokenNoneError
 
 
 class CogniqSlack:
@@ -62,29 +65,46 @@ class CogniqSlack:
             database_url=self.database_url,
             logger=logger,
         )
+        oauth_settings = AsyncOAuthSettings(
+            client_id=self.config["SLACK_CLIENT_ID"],
+            client_secret=self.config["SLACK_CLIENT_SECRET"],
+            scopes=[
+                "app_mentions:read",
+                "channels:history",
+                "chat:write",
+                "groups:history",
+                "im:history",
+                "mpim:history",
+            ],
+            user_scopes=["search:read"],
+            installation_store=self.installation_store,
+            installation_store_bot_only=False,
+            token_rotation_expiration_minutes=60 * 24,
+            user_token_resolution="actor",
+            state_store=self.state_store,
+            logger=logger,
+        )
 
+        authorize = AsyncInstallationStoreAuthorize(
+            logger=logger,
+            installation_store=self.installation_store,
+            client_id=self.config["SLACK_CLIENT_ID"],
+            client_secret=self.config["SLACK_CLIENT_SECRET"],
+            token_rotation_expiration_minutes=60 * 24,
+            bot_only=False,
+            cache_enabled=False,
+            user_token_resolution="actor",
+        )
+        oauth_settings.authorize = authorize
         self.app = AsyncApp(
             logger=logger,
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
             installation_store=self.installation_store,
-            oauth_settings=AsyncOAuthSettings(
-                client_id=self.config["SLACK_CLIENT_ID"],
-                client_secret=self.config["SLACK_CLIENT_SECRET"],
-                scopes=[
-                    "app_mentions:read",
-                    "channels:history",
-                    "chat:write",
-                    "groups:history",
-                    "im:history",
-                    "mpim:history",
-                ],
-                user_scopes=["search:read"],
-                installation_store=self.installation_store,
-                token_rotation_expiration_minutes=60 * 9,
-                state_store=self.state_store,
-                logger=logger,
-            ),
+            oauth_settings=oauth_settings,
         )
+        # Per https://github.com/slackapi/bolt-python/releases/tag/v1.5.0
+        self.app.enable_token_revocation_listeners()
+
         self.app_handler = AsyncSlackRequestHandler(self.app)
         self.api = FastAPI()
 
@@ -158,6 +178,10 @@ class CogniqSlack:
         """
         Updates the chat message in the given channel and thread with the given text.
         """
+        bot_token = context.get("bot_token")
+        if bot_token is None:
+            logger.debug("bot_token is not set. Context: %s", context)
+            raise BotTokenNoneError(context=context)
         try:
             await self.app.client.chat_update(
                 channel=channel,
@@ -176,10 +200,19 @@ class CogniqSlack:
                         channel=channel,
                         ts=ts,
                         text=text,
+                        context=context,
                         retry_on_rate_limit=retry_on_rate_limit,
                     )
                 else:
                     # Log the rate limit error and move on
                     logger.error("Rate limit hit, not retrying: %s", e)
+            if e.response["error"] == "invalid_refresh_token":
+                logger.error("Invalid refresh token, not retrying: %s", e)
+                logger.debug("Context: %s", context)
+                raise e  # TODO fix this
+            if e.response["error"] == "token_revoked":
+                logger.warn("I must have tried to use a revoked token. I'll try to fetch a newer one.")
+                logger.debug("Context: %s", context)
+                raise e  # TODO: Fix this
             else:
                 raise e

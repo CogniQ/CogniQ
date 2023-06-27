@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 from slack_sdk.errors import SlackApiError
 
+from .errors import UserTokenNoneError
+
 
 class Search:
     def __init__(self, *, cslack):
@@ -101,7 +103,9 @@ class Search:
         # Merge default_parameters and kwargs, with kwargs taking precedence
         search_parameters = {**default_parameters, **kwargs}
         user_token = context.get("user_token")  # or await self.installation_store.async_find_user_token(context=context)
-
+        if user_token is None:
+            logger.debug("user_token is not set. Context: %s", context)
+            raise UserTokenNoneError(context=context)
         try:
             logger.info(f"Searching slack for {q}")
             team_id = context["team_id"]

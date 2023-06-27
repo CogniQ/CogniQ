@@ -129,8 +129,11 @@ class InstallationStore(AsyncInstallationStore):
 
         query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at)).limit(1)
 
+        logger.debug("searching for installation: %s" % conditions)
+
         async with Database(self.database_url) as database:
             i = await database.fetch_one(query)
+            # logger.debug("found installation: %s" % i)
             if i:
                 return Installation(
                     app_id=i.app_id,

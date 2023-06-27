@@ -9,7 +9,7 @@ import json
 
 from cogniq.personalities import BaseAsk
 from cogniq.openai import system_message, user_message, CogniqOpenAI
-from cogniq.slack import CogniqSlack
+from cogniq.slack import CogniqSlack, UserTokenNoneError
 
 from .prompts import retrieval_augmented_prompt
 from .functions import get_search_query_function
@@ -63,11 +63,6 @@ class Ask(BaseAsk):
         context: Dict,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
-        user_id = context.get("user_token")
-        if not user_id:
-            error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
-            return error_string
-
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         # if the history is too long, summarize it
@@ -121,7 +116,13 @@ class Ask(BaseAsk):
         logger.info(f"searching slack with search_query: {search_query}")
 
         filter = lambda message: self._remove_my_reply_filter(message=message, reply_ts=reply_ts)
-        slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context, filter=filter)
+        try:
+            slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context, filter=filter)
+        except UserTokenNoneError as e:
+            error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
+            answer = error_string
+            response = {"choices": [{"message": {"content": error_string}}]}
+            return {"answer": answer, "response": response}
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 
@@ -140,7 +141,7 @@ class Ask(BaseAsk):
             messages=message_history,
             stream_callback=stream_callback,
             model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
-            stop=["###>"],
+            stop=["\n\n"],
             temperature=0.2,
         )
 

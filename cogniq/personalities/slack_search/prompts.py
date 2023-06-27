@@ -41,39 +41,31 @@ def retrieval_augmented_prompt(slack_search_response: list | str, q: str) -> str
     If Slack Search Results are missing. Return the following message: "No Slack Search Results"
     
     Example:
-    Query: <###
+    Query: 
         "How do I do X?"
-    ###>
 
-    Slack Search Results: <###
-    ###>
+    Slack Search Results: 
 
-    Relevant Slack Search Results: <###
+    Relevant Slack Search Results: 
         No Slack Search Results
-    ###>
 
     Example:
-    Query: <###
+    Query: 
         "How do I do X?"
-    ###>
 
-    Slack Search Results: <###
+    Slack Search Results: 
         <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @alice, text: How do I do X?>
         <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @bob, text: You can do X by first asking @charlie.>
-    ###>
 
-    Relevant Slack Search Results: <###
+    Relevant Slack Search Results: 
         <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @alice, text: How do I do X?>
         <https://cogniq.slack.com/archives/C01UZABCDEF/p1629788054000100|channel: general, username: @bob, text: You can do X by first asking @charlie.>
-    ###>
 
     Now your turn:
-    Query: <###
+    Query: 
         {q}
-    ###>
 
-    Slack Search Results: <###
+    Slack Search Results: 
     {formatted_responses(slack_search_response)}
-    ###>
 
-    Relevant Slack Search Results: <###"""
+    Relevant Slack Search Results: """

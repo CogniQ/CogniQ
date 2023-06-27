@@ -82,7 +82,7 @@ class MultiplePersonalities:
             logger.error(e)
             raise e
 
-    async def dispatch(self, *, event: Dict, context: Dict, original_ts: str) -> None:
+    async def _dispatch(self, *, event: Dict, context: Dict, original_ts: str) -> None:
         reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
 
@@ -105,12 +105,28 @@ class MultiplePersonalities:
             )
         )
 
+    async def dispatch(self, *, event: Dict, context: Dict) -> None:
+        original_ts = event["ts"]
+        bot_token = context.get("bot_token")
+        if bot_token is not None:
+            try:
+                await self._dispatch(event=event, context=context, original_ts=original_ts)
+            except Exception as e:
+                logger.error(e)
+                raise e
+        else:
+            # logger.debug(f"Bot token not found in context: {context}")
+            app_url = config["APP_URL"]
+            await context["say"](
+                f"Sorry, I don't think I'm installed in this workspace. Please install me using <{app_url}/slack/install|this link>.",
+                thread_ts=original_ts,
+            )
+
     def register_app_mention(self) -> None:
         @self.cslack.app.event("app_mention")
         async def handle_app_mention(event: Dict, context: Dict) -> None:
             logger.info(f"app_mention: {event.get('text')}")
-            original_ts = event["ts"]
-            await self.dispatch(event=event, context=context, original_ts=original_ts)
+            await self.dispatch(event=event, context=context)
 
     def register_message(self) -> None:
         @self.cslack.app.event("message")
@@ -118,5 +134,4 @@ class MultiplePersonalities:
             logger.info(f"message: {event.get('text')}")
             channel_type = event["channel_type"]
             if channel_type == "im":
-                original_ts = event["ts"]
-                await self.dispatch(event=event, context=context, original_ts=original_ts)
+                await self.dispatch(event=event, context=context)
