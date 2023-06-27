@@ -1,3 +1,13 @@
+## [0.4.13](https://github.com/CogniQ/CogniQ/compare/v0.4.12...v0.4.13) (2023-06-27)
+
+
+### Bug Fixes
+
+* enable log collection ([96de6fd](https://github.com/CogniQ/CogniQ/commit/96de6fd81cbbeb12a030a04a4ac7aac6c498c111))
+* remove a syntax error in the deployment manifest ([ac29555](https://github.com/CogniQ/CogniQ/commit/ac295559f0357bf98edc07b1aedaa062b59f5b1e))
+* rotate tokens upon expiry ([#74](https://github.com/CogniQ/CogniQ/issues/74)) ([3a31697](https://github.com/CogniQ/CogniQ/commit/3a31697651e5e76fe1371d188706e3165599bc7f)), closes [#72](https://github.com/CogniQ/CogniQ/issues/72)
+* trigger deploy since i mistakenly had a skip token in the previous commit ([4606f38](https://github.com/CogniQ/CogniQ/commit/4606f38c8126254ad3feda91f0112837dfb19474))
+
 ## [0.4.12](https://github.com/CogniQ/CogniQ/compare/v0.4.11...v0.4.12) (2023-06-26)
 
 
