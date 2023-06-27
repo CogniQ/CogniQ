@@ -70,7 +70,6 @@ class CogniqSlack:
             oauth_settings=AsyncOAuthSettings(
                 client_id=self.config["SLACK_CLIENT_ID"],
                 client_secret=self.config["SLACK_CLIENT_SECRET"],
-                state_store=self.state_store,
                 scopes=[
                     "app_mentions:read",
                     "channels:history",
@@ -80,6 +79,10 @@ class CogniqSlack:
                     "mpim:history",
                 ],
                 user_scopes=["search:read"],
+                installation_store=self.installation_store,
+                token_rotation_expiration_minutes=60*9,
+                state_store=self.state_store,
+                logger=logger,
             ),
         )
         self.app_handler = AsyncSlackRequestHandler(self.app)
