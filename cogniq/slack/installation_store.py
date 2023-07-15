@@ -18,6 +18,7 @@ from slack_sdk.oauth.installation_store import Bot, Installation
 from slack_sdk.oauth.installation_store.async_installation_store import (
     AsyncInstallationStore,
 )
+from slack_sdk.oauth.token_rotation.async_rotator import AsyncTokenRotator
 from slack_sdk.oauth.installation_store.sqlalchemy import SQLAlchemyInstallationStore
 from sqlalchemy import and_, desc, Table, MetaData
 
@@ -32,14 +33,18 @@ class InstallationStore(AsyncInstallationStore):
     def __init__(
         self,
         client_id: str,
+        client_secret: str,
         database_url: str,
         logger: Logger = logging.getLogger(__name__),
         install_path: str | None = None,
+        token_rotation_expiration_minutes: int = 60 * 9, # with 9 hours remaining, that's roughly every 3 hours at maximum.
     ):
         self.client_id = client_id
+        self.client_secret = client_secret
         self.database_url = database_url
         self._logger = logger
         self.install_path = install_path
+        self.token_rotation_expiration_minutes = token_rotation_expiration_minutes
         self.metadata = MetaData()
         self.installations = SQLAlchemyInstallationStore.build_installations_table(
             metadata=self.metadata,
@@ -125,17 +130,17 @@ class InstallationStore(AsyncInstallationStore):
             c.is_enterprise_install == is_enterprise_install,
         ]
         if user_id:
+            logger.debug("searching for installation with user_id: %s" % user_id)
             conditions.append(c.user_id == user_id)
+        else:
+            logger.debug("searching for installation with team_id: %s" % team_id)
 
         query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at)).limit(1)
 
-        logger.debug("searching for installation: %s" % conditions)
-
         async with Database(self.database_url) as database:
             i = await database.fetch_one(query)
-            # logger.debug("found installation: %s" % i)
             if i:
-                return Installation(
+                installation=Installation(
                     app_id=i.app_id,
                     # org / workspace
                     enterprise_id=i.enterprise_id,
@@ -173,6 +178,7 @@ class InstallationStore(AsyncInstallationStore):
                     # custom values
                     # custom_values=i.custom_values,
                 )
+                return installation
             else:
                 return None
 

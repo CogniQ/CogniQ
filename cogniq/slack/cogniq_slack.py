@@ -19,7 +19,6 @@ import asyncio
 
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
-from slack_bolt.oauth.async_oauth_flow import AsyncOAuthFlow
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from slack_sdk.errors import SlackApiError
 
@@ -31,8 +30,7 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
-from .authorize import AsyncInstallationStoreAuthorize
-from .errors import BotTokenNoneError
+from .errors import TokenNoneError, BotTokenNoneError
 
 
 class CogniqSlack:
@@ -56,6 +54,8 @@ class CogniqSlack:
         logger.setLevel(config["MUTED_LOG_LEVEL"])
         self.installation_store = InstallationStore(
             client_id=config["SLACK_CLIENT_ID"],
+            client_secret=config["SLACK_CLIENT_SECRET"],
+            token_rotation_expiration_minutes=60 * 24,
             database_url=self.database_url,
             logger=logger,
             install_path=f"{config['APP_URL']}/slack/install",
@@ -78,30 +78,19 @@ class CogniqSlack:
             ],
             user_scopes=["search:read"],
             installation_store=self.installation_store,
-            installation_store_bot_only=False,
-            token_rotation_expiration_minutes=60 * 24,
+            token_rotation_expiration_minutes=60 * 24, # refresh every time for debug
             user_token_resolution="actor",
             state_store=self.state_store,
             logger=logger,
         )
 
-        authorize = AsyncInstallationStoreAuthorize(
-            logger=logger,
-            installation_store=self.installation_store,
-            client_id=self.config["SLACK_CLIENT_ID"],
-            client_secret=self.config["SLACK_CLIENT_SECRET"],
-            token_rotation_expiration_minutes=60 * 24,
-            bot_only=False,
-            cache_enabled=False,
-            user_token_resolution="actor",
-        )
-        oauth_settings.authorize = authorize
         self.app = AsyncApp(
             logger=logger,
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
             installation_store=self.installation_store,
             oauth_settings=oauth_settings,
         )
+
         # Per https://github.com/slackapi/bolt-python/releases/tag/v1.5.0
         self.app.enable_token_revocation_listeners()
 
@@ -213,6 +202,6 @@ class CogniqSlack:
             if e.response["error"] == "token_revoked":
                 logger.warn("I must have tried to use a revoked token. I'll try to fetch a newer one.")
                 logger.debug("Context: %s", context)
-                raise e  # TODO: Fix this
+                raise TokenNoneError  # TODO: Fix this
             else:
                 raise e
