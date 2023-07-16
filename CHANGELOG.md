@@ -1,3 +1,10 @@
+## [0.4.16](https://github.com/CogniQ/CogniQ/compare/v0.4.15...v0.4.16) (2023-07-16)
+
+
+### Bug Fixes
+
+* adds psql utility command to image ([47c3bb5](https://github.com/CogniQ/CogniQ/commit/47c3bb5c0c2eeda2096d2775339f69b93507338b))
+
 ## [0.4.15](https://github.com/CogniQ/CogniQ/compare/v0.4.14...v0.4.15) (2023-07-16)
 
 
