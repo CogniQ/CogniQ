@@ -92,7 +92,7 @@ class MultiplePersonalities:
         personalities = [
             self.chat_gpt4,
             self.bing_search,
-            self.chat_anthropic,
+            # self.chat_anthropic,
             self.slack_search,
         ]
 
