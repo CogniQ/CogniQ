@@ -102,7 +102,7 @@ class Search:
 
         # Merge default_parameters and kwargs, with kwargs taking precedence
         search_parameters = {**default_parameters, **kwargs}
-        user_token = context.get("user_token")  # or await self.installation_store.async_find_user_token(context=context)
+        user_token = await self.installation_store.async_find_user_token(context=context)
         if user_token is None:
             logger.debug("user_token is not set. Context: %s", context)
             raise UserTokenNoneError(context=context)

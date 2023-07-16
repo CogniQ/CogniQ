@@ -30,7 +30,7 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
-from .errors import TokenNoneError, BotTokenNoneError
+from .errors import BotTokenNoneError, BotTokenRevokedError, TokenRevokedError
 
 
 class CogniqSlack:
@@ -51,13 +51,10 @@ class CogniqSlack:
 
         self.database_url = config["DATABASE_URL"]
 
-        logger.setLevel(config["MUTED_LOG_LEVEL"])
         self.installation_store = InstallationStore(
             client_id=config["SLACK_CLIENT_ID"],
             client_secret=config["SLACK_CLIENT_SECRET"],
-            token_rotation_expiration_minutes=60 * 24,
             database_url=self.database_url,
-            logger=logger,
             install_path=f"{config['APP_URL']}/slack/install",
         )
         self.state_store = StateStore(
@@ -78,14 +75,16 @@ class CogniqSlack:
             ],
             user_scopes=["search:read"],
             installation_store=self.installation_store,
-            token_rotation_expiration_minutes=60 * 24, # refresh every time for debug
+            token_rotation_expiration_minutes=60 * 24,  # refresh every time for debug
             user_token_resolution="actor",
             state_store=self.state_store,
             logger=logger,
         )
 
+        app_logger = logging.getLogger(f"{__name__}.slack_bolt")
+        app_logger.setLevel(self.config["MUTED_LOG_LEVEL"])
         self.app = AsyncApp(
-            logger=logger,
+            logger=app_logger,
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
             installation_store=self.installation_store,
             oauth_settings=oauth_settings,
@@ -163,7 +162,9 @@ class CogniqSlack:
         uvicorn_server = uvicorn.Server(uvicorn_config)
         await uvicorn_server.serve()
 
-    async def chat_update(self, *, channel: str, ts: float, context: Dict, text: str, retry_on_rate_limit: bool = True):
+    async def chat_update(
+        self, *, channel: str, ts: float, context: Dict, text: str, retry_on_rate_limit: bool = True, retry_on_revoked_token: bool = True
+    ):
         """
         Updates the chat message in the given channel and thread with the given text.
         """
@@ -176,7 +177,7 @@ class CogniqSlack:
                 channel=channel,
                 ts=ts,
                 text=text,
-                token=context["bot_token"],
+                token=bot_token,
             )
         except SlackApiError as e:
             if e.response["error"] == "ratelimited":
@@ -197,11 +198,22 @@ class CogniqSlack:
                     logger.error("Rate limit hit, not retrying: %s", e)
             if e.response["error"] == "invalid_refresh_token":
                 logger.error("Invalid refresh token, not retrying: %s", e)
-                logger.debug("Context: %s", context)
-                raise e  # TODO fix this
+                raise TokenRevokedError(message="Invalid refresh token", context=context)
             if e.response["error"] == "token_revoked":
-                logger.warn("I must have tried to use a revoked token. I'll try to fetch a newer one.")
-                logger.debug("Context: %s", context)
-                raise TokenNoneError  # TODO: Fix this
+                if retry_on_revoked_token:
+                    logger.warn("I must have tried to use a revoked token. I'll try to fetch a newer one.")
+                    bot_token = await self.installation_store.async_find_bot_token(context=context)
+                    new_context = context.copy()
+                    new_context["bot_token"] = bot_token
+                    await self.chat_update(
+                        channel=channel,
+                        ts=ts,
+                        text=text,
+                        context=new_context,
+                        retry_on_rate_limit=retry_on_rate_limit,
+                        retry_on_revoked_token=False,  # Try once, but don't retry again
+                    )
+                else:
+                    raise BotTokenRevokedError(message=e, context=context)
             else:
                 raise e
