@@ -18,7 +18,6 @@ from slack_sdk.oauth.installation_store import Bot, Installation
 from slack_sdk.oauth.installation_store.async_installation_store import (
     AsyncInstallationStore,
 )
-from slack_sdk.oauth.token_rotation.async_rotator import AsyncTokenRotator
 from slack_sdk.oauth.installation_store.sqlalchemy import SQLAlchemyInstallationStore
 from sqlalchemy import and_, desc, Table, MetaData
 
@@ -42,7 +41,7 @@ class InstallationStore(AsyncInstallationStore):
         self.database_url = database_url
         self._logger = logger
         self.install_path = install_path
-        self.token_rotation_expiration_minutes = (60 * 9,)  # with 9 hours remaining, that's roughly every 3 hours at maximum.
+        self.token_rotation_expiration_minutes = 60 * 9  # with 9 hours remaining, that's roughly every 3 hours at maximum.
         self.metadata = MetaData()
         self.installations = SQLAlchemyInstallationStore.build_installations_table(
             metadata=self.metadata,

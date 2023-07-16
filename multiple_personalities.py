@@ -108,7 +108,6 @@ class MultiplePersonalities:
     async def dispatch(self, *, event: Dict, context: Dict) -> None:
         original_ts = event["ts"]
         bot_token = context.get("bot_token")
-        user_token = context.get("user_token")
         app_url = config["APP_URL"]
 
         if bot_token is not None:
@@ -117,14 +116,7 @@ class MultiplePersonalities:
             except Exception as e:
                 logger.error(e)
                 raise e
-        # if bot_token is not None and user_token is None:
-        #     # logger.debug(f"User token not found in context: {context}")
-        #     await context["say"](
-        #         f"Hi! I am installed for the workspace, but I also need for your approval to run search queries! Please permit me to do so at <{app_url}/slack/install|this link>.",
-        #         thread_ts=original_ts,
-        #     )
         else:
-            # logger.debug(f"Bot token not found in context: {context}")
             await context["say"](
                 f"Sorry, I don't think I'm installed in this workspace. Please install me using <{app_url}/slack/install|this link>.",
                 thread_ts=original_ts,

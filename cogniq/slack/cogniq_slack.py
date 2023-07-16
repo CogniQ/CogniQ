@@ -75,7 +75,6 @@ class CogniqSlack:
             ],
             user_scopes=["search:read"],
             installation_store=self.installation_store,
-            token_rotation_expiration_minutes=60 * 24,  # refresh every time for debug
             user_token_resolution="actor",
             state_store=self.state_store,
             logger=logger,
