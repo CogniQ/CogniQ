@@ -1,3 +1,10 @@
+## [0.4.15](https://github.com/CogniQ/CogniQ/compare/v0.4.14...v0.4.15) (2023-07-16)
+
+
+### Bug Fixes
+
+* InstallationStore was not correctly finding the installation with the user's token. ([#76](https://github.com/CogniQ/CogniQ/issues/76)) ([a9ba383](https://github.com/CogniQ/CogniQ/commit/a9ba38357b37b096cf6454abd588c35fc3fc2e13))
+
 ## [0.4.14](https://github.com/CogniQ/CogniQ/compare/v0.4.13...v0.4.14) (2023-06-27)
 
 
