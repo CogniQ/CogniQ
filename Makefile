@@ -55,10 +55,14 @@ update-containerapp:
 		--resource-group cogniq-community-main \
 		--yaml 'deployments/cogniq-community-main/containerapp.yml'
 
+.PHONY: exec
+exec:
+	az containerapp exec \
+		--name cogniq \
+		--resource-group cogniq-community-main \
+		--command "/bin/bash"
+
 .PHONY: logs
-# It is presumed that the Azure CLI is installed and that the following environment variables are set:
-# AZURE_RESOURCE_GROUP_NAME - the name of the Azure resource group
-# It is further presumed that the name of the container is the same as the resource group name, though this is not necessarily the case.
 logs:
 	az containerapp logs show \
 		--name cogniq \
