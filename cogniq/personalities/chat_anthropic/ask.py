@@ -43,7 +43,7 @@ class Ask(BaseAsk):
     async def ask(self, *, q: str, message_history: str | None = None) -> Dict[str, Any]:
         message_history = message_history or ""
         kwargs = {
-            "model": "claude-instant-v1-100k",
+            "model": "claude-2",
             "max_tokens_to_sample": 100000,
             "temperature": 1,
             "top_p": -1,  # disabled
