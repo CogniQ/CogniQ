@@ -32,14 +32,16 @@ class InstallationStore(AsyncInstallationStore):
     def __init__(
         self,
         client_id: str,
+        client_secret: str,
         database_url: str,
-        logger: Logger = logging.getLogger(__name__),
         install_path: str | None = None,
     ):
         self.client_id = client_id
+        self.client_secret = client_secret
         self.database_url = database_url
         self._logger = logger
         self.install_path = install_path
+        self.token_rotation_expiration_minutes = 60 * 9  # with 9 hours remaining, that's roughly every 3 hours at maximum.
         self.metadata = MetaData()
         self.installations = SQLAlchemyInstallationStore.build_installations_table(
             metadata=self.metadata,
@@ -116,6 +118,7 @@ class InstallationStore(AsyncInstallationStore):
         team_id: str | None,
         user_id: str | None = None,
         is_enterprise_install: bool | None = False,
+        needs_user_token: bool = False,
     ) -> Installation | None:
         """Finds a relevant installation for the given IDs."""
         c = self.installations.c
@@ -125,14 +128,19 @@ class InstallationStore(AsyncInstallationStore):
             c.is_enterprise_install == is_enterprise_install,
         ]
         if user_id:
+            logger.debug("searching for installation with user_id: %s" % user_id)
             conditions.append(c.user_id == user_id)
+            if needs_user_token:
+                conditions.append(c.user_token != None)
+        else:
+            logger.debug("searching for installation with team_id: %s" % team_id)
 
         query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at)).limit(1)
 
         async with Database(self.database_url) as database:
             i = await database.fetch_one(query)
             if i:
-                return Installation(
+                installation = Installation(
                     app_id=i.app_id,
                     # org / workspace
                     enterprise_id=i.enterprise_id,
@@ -170,6 +178,7 @@ class InstallationStore(AsyncInstallationStore):
                     # custom values
                     # custom_values=i.custom_values,
                 )
+                return installation
             else:
                 return None
 
@@ -220,3 +229,41 @@ class InstallationStore(AsyncInstallationStore):
         """Deletes all installation data for the given workspace / org"""
         await self.async_delete_bot(enterprise_id=enterprise_id, team_id=team_id)
         await self.async_delete_installation(enterprise_id=enterprise_id, team_id=team_id)
+
+    async def async_find_from_context(
+        self,
+        *,
+        context: Dict[str, Any],
+        needs_user_token: bool = False,
+    ):
+        enterprise_id = context["enterprise_id"] if "enterprise_id" in context else None
+        team_id = context["team_id"] if "team_id" in context else None
+        user_id = context["actor_user_id"] if "actor_user_id" in context else None
+        is_enterprise_install = context["is_enterprise_install"] if "is_enterprise_install" in context else False
+        installation = await self.async_find_installation(
+            enterprise_id=enterprise_id,
+            team_id=team_id,
+            user_id=user_id,
+            is_enterprise_install=is_enterprise_install,
+            needs_user_token=needs_user_token,
+        )
+        if installation:
+            return installation
+        else:
+            return None
+
+    async def async_find_user_token(
+        self,
+        *,
+        context: Dict[str, Any],
+    ):
+        installation = await self.async_find_from_context(context=context, needs_user_token=True)
+        return installation.user_token
+
+    async def async_find_bot_token(
+        self,
+        *,
+        context: Dict[str, Any],
+    ):
+        installation = await self.async_find_from_context(context=context)
+        return installation.bot_token

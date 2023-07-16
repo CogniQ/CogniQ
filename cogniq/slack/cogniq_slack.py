@@ -30,6 +30,7 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
+from .errors import BotTokenNoneError, BotTokenRevokedError, TokenRevokedError
 
 
 class CogniqSlack:
@@ -50,11 +51,10 @@ class CogniqSlack:
 
         self.database_url = config["DATABASE_URL"]
 
-        logger.setLevel(config["MUTED_LOG_LEVEL"])
         self.installation_store = InstallationStore(
             client_id=config["SLACK_CLIENT_ID"],
+            client_secret=config["SLACK_CLIENT_SECRET"],
             database_url=self.database_url,
-            logger=logger,
             install_path=f"{config['APP_URL']}/slack/install",
         )
         self.state_store = StateStore(
@@ -62,29 +62,36 @@ class CogniqSlack:
             database_url=self.database_url,
             logger=logger,
         )
-
-        self.app = AsyncApp(
+        oauth_settings = AsyncOAuthSettings(
+            client_id=self.config["SLACK_CLIENT_ID"],
+            client_secret=self.config["SLACK_CLIENT_SECRET"],
+            scopes=[
+                "app_mentions:read",
+                "channels:history",
+                "chat:write",
+                "groups:history",
+                "im:history",
+                "mpim:history",
+            ],
+            user_scopes=["search:read"],
+            installation_store=self.installation_store,
+            user_token_resolution="actor",
+            state_store=self.state_store,
             logger=logger,
+        )
+
+        app_logger = logging.getLogger(f"{__name__}.slack_bolt")
+        app_logger.setLevel(self.config["MUTED_LOG_LEVEL"])
+        self.app = AsyncApp(
+            logger=app_logger,
             signing_secret=self.config["SLACK_SIGNING_SECRET"],
             installation_store=self.installation_store,
-            oauth_settings=AsyncOAuthSettings(
-                client_id=self.config["SLACK_CLIENT_ID"],
-                client_secret=self.config["SLACK_CLIENT_SECRET"],
-                scopes=[
-                    "app_mentions:read",
-                    "channels:history",
-                    "chat:write",
-                    "groups:history",
-                    "im:history",
-                    "mpim:history",
-                ],
-                user_scopes=["search:read"],
-                installation_store=self.installation_store,
-                token_rotation_expiration_minutes=60 * 9,
-                state_store=self.state_store,
-                logger=logger,
-            ),
+            oauth_settings=oauth_settings,
         )
+
+        # Per https://github.com/slackapi/bolt-python/releases/tag/v1.5.0
+        self.app.enable_token_revocation_listeners()
+
         self.app_handler = AsyncSlackRequestHandler(self.app)
         self.api = FastAPI()
 
@@ -154,16 +161,22 @@ class CogniqSlack:
         uvicorn_server = uvicorn.Server(uvicorn_config)
         await uvicorn_server.serve()
 
-    async def chat_update(self, *, channel: str, ts: float, context: Dict, text: str, retry_on_rate_limit: bool = True):
+    async def chat_update(
+        self, *, channel: str, ts: float, context: Dict, text: str, retry_on_rate_limit: bool = True, retry_on_revoked_token: bool = True
+    ):
         """
         Updates the chat message in the given channel and thread with the given text.
         """
+        bot_token = context.get("bot_token")
+        if bot_token is None:
+            logger.debug("bot_token is not set. Context: %s", context)
+            raise BotTokenNoneError(context=context)
         try:
             await self.app.client.chat_update(
                 channel=channel,
                 ts=ts,
                 text=text,
-                token=context["bot_token"],
+                token=bot_token,
             )
         except SlackApiError as e:
             if e.response["error"] == "ratelimited":
@@ -176,10 +189,30 @@ class CogniqSlack:
                         channel=channel,
                         ts=ts,
                         text=text,
+                        context=context,
                         retry_on_rate_limit=retry_on_rate_limit,
                     )
                 else:
                     # Log the rate limit error and move on
                     logger.error("Rate limit hit, not retrying: %s", e)
+            if e.response["error"] == "invalid_refresh_token":
+                logger.error("Invalid refresh token, not retrying: %s", e)
+                raise TokenRevokedError(message="Invalid refresh token", context=context)
+            if e.response["error"] == "token_revoked":
+                if retry_on_revoked_token:
+                    logger.warn("I must have tried to use a revoked token. I'll try to fetch a newer one.")
+                    bot_token = await self.installation_store.async_find_bot_token(context=context)
+                    new_context = context.copy()
+                    new_context["bot_token"] = bot_token
+                    await self.chat_update(
+                        channel=channel,
+                        ts=ts,
+                        text=text,
+                        context=new_context,
+                        retry_on_rate_limit=retry_on_rate_limit,
+                        retry_on_revoked_token=False,  # Try once, but don't retry again
+                    )
+                else:
+                    raise BotTokenRevokedError(message=e, context=context)
             else:
                 raise e
