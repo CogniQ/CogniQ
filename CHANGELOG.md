@@ -1,3 +1,10 @@
+## [0.4.17](https://github.com/CogniQ/CogniQ/compare/v0.4.16...v0.4.17) (2023-07-16)
+
+
+### Bug Fixes
+
+* The 'warn' method is deprecated, use 'warning' instead ([7ced2ea](https://github.com/CogniQ/CogniQ/commit/7ced2ea9032ba7e49209ad55e7747e2c4dcc7c82))
+
 ## [0.4.16](https://github.com/CogniQ/CogniQ/compare/v0.4.15...v0.4.16) (2023-07-16)
 
 
