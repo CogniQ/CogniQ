@@ -18,6 +18,7 @@ RUN apt-get update && \
     libfontconfig \
     git \
     gcc \
+    postgresql-client \
     libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
