@@ -30,7 +30,7 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
-from .errors import BotTokenNoneError, BotTokenRevokedError, TokenRevokedError
+from .errors import BotTokenNoneError, BotTokenRevokedError, RefreshTokenInvalidError
 
 
 class CogniqSlack:
@@ -197,7 +197,7 @@ class CogniqSlack:
                     logger.error("Rate limit hit, not retrying: %s", e)
             if e.response["error"] == "invalid_refresh_token":
                 logger.error("Invalid refresh token, not retrying: %s", e)
-                raise TokenRevokedError(message="Invalid refresh token", context=context)
+                raise RefreshTokenInvalidError(message="Invalid refresh token", context=context)
             if e.response["error"] == "token_revoked":
                 if retry_on_revoked_token:
                     logger.warning("I must have tried to use a revoked token. I'll try to fetch a newer one.")
