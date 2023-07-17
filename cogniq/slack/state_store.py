@@ -17,6 +17,7 @@ from slack_sdk.oauth.state_store.async_state_store import AsyncOAuthStateStore
 from slack_sdk.oauth.state_store.sqlalchemy import SQLAlchemyOAuthStateStore
 
 from sqlalchemy import and_, desc, Table, MetaData
+import sqlalchemy
 
 
 class StateStore(AsyncOAuthStateStore):
@@ -40,7 +41,14 @@ class StateStore(AsyncOAuthStateStore):
             metadata=self.metadata,
             table_name="slack_oauth_states",
         )
+        self.engine = sqlalchemy.create_engine(self.database_url)
 
+    async def async_setup(self) -> None:
+        try:
+            async with Database(self.database_url) as database:
+                await database.fetch_one("select count(*) from slack_installations")
+        except Exception as e:
+            self.metadata.create_all(self.engine)
     @property
     def logger(self) -> Logger:
         return self._logger

@@ -104,18 +104,7 @@ class CogniqSlack:
         self.config.setdefault("APP_ENV", "production")
         self.search = Search(cslack=self)
 
-    async def initialize_db(self):
-        """
-        This method initializes the database.
-        TODO: This should be moved to a migrations task.
-        """
-        try:
-            async with Database(self.database_url) as database:
-                await database.fetch_one("select count(*) from slack_installations")
-        except Exception as e:
-            engine = sqlalchemy.create_engine(self.database_url)
-            self.installation_store.metadata.create_all(engine)
-            self.state_store.metadata.create_all(engine)
+
 
     async def start(self):
         """
@@ -135,7 +124,8 @@ class CogniqSlack:
         - The app will keep running until it is manually stopped or encounters an error.
         """
         logger.info("Starting Slack app!!")
-        await self.initialize_db()
+        await self.installation_store.async_setup()
+        await self.state_store.async_setup()
 
         @self.api.post("/slack/events")
         async def slack_events(request: Request):

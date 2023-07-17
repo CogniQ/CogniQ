@@ -52,6 +52,15 @@ class InstallationStore(AsyncInstallationStore):
             table_name="slack_bots",
         )
 
+        self.engine = sqlalchemy.create_engine(self.database_url)
+
+    async def async_setup(self) -> None:
+        try:
+            async with Database(self.database_url) as database:
+                await database.fetch_one("select count(*) from slack_installations")
+        except Exception as e:
+            self.metadata.create_all(self.engine)
+            
     @property
     def logger(self) -> Logger:
         return self._logger
