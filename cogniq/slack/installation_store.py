@@ -62,7 +62,7 @@ class InstallationStore(AsyncInstallationStore):
                 await database.fetch_one("select count(*) from slack_installations")
         except Exception as e:
             self.metadata.create_all(self.engine)
-            
+
     @property
     def logger(self) -> Logger:
         return self._logger

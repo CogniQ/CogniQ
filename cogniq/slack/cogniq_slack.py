@@ -104,8 +104,6 @@ class CogniqSlack:
         self.config.setdefault("APP_ENV", "production")
         self.search = Search(cslack=self)
 
-
-
     async def start(self):
         """
         This method starts the app.
