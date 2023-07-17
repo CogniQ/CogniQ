@@ -56,22 +56,69 @@ class InstallationStore(AsyncInstallationStore):
     def logger(self) -> Logger:
         return self._logger
 
-    async def async_save(self, installation: Installation):
+    async def async_save(self, installation: Installation) -> None:
         async with Database(self.database_url) as database:
-            async with database.transaction():
-                i = installation.to_dict()
-                i["client_id"] = self.client_id
-                await database.execute(self.installations.insert(), i)
-            b = installation.to_bot()
-            await self.async_save_bot(b)
+            i = installation.to_dict()
+            i["client_id"] = self.client_id
+            i_column = self.installations.c
 
-    async def async_save_bot(self, bot: Bot):
+            # check if an installation with these attributes already exists
+            installations_row_id: Optional[str] = None
+            installations_rows = await database.fetch_all(
+                sqlalchemy.select(i_column.id)
+                .where(
+                    and_(
+                        i_column.client_id == self.client_id,
+                        i_column.enterprise_id == installation.enterprise_id,
+                        i_column.team_id == installation.team_id,
+                        i_column.installed_at == i.get("installed_at"),
+                    )
+                )
+                .limit(1)
+            )
+            for row in installations_rows:
+                installations_row_id = row["id"]
+
+            async with database.transaction():
+                if installations_row_id is None:
+                    await database.execute(self.installations.insert(), i)
+                else:
+                    update_statement = self.installations.update().where(i_column.id == installations_row_id).values(**i)
+                    await database.execute(update_statement)
+
+            # bots
+            await self.async_save_bot(installation.to_bot())
+
+    async def async_save_bot(self, bot: Bot) -> None:
         """Saves a bot installation data"""
         async with Database(self.database_url) as database:
+            b = bot.to_dict()
+            b["client_id"] = self.client_id
+            b_column = self.bots.c
+
+            # check if a bot with these attributes already exists
+            bots_row_id: Optional[str] = None
+            bots_rows = await database.fetch_all(
+                sqlalchemy.select(b_column.id)
+                .where(
+                    and_(
+                        b_column.client_id == self.client_id,
+                        b_column.enterprise_id == bot.enterprise_id,
+                        b_column.team_id == bot.team_id,
+                        b_column.installed_at == b.get("installed_at"),
+                    )
+                )
+                .limit(1)
+            )
+            for row in bots_rows:
+                bots_row_id = row["id"]
+
             async with database.transaction():
-                b = bot.to_dict()
-                b["client_id"] = self.client_id
-                await database.execute(self.bots.insert(), b)
+                if bots_row_id is None:
+                    await database.execute(self.bots.insert(), b)
+                else:
+                    update_statement = self.bots.update().where(b_column.id == bots_row_id).values(**b)
+                    await database.execute(update_statement)
 
     async def async_find_bot(
         self,
