@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import *
+from slack_bolt import BoltContext
+from slack_sdk.oauth.installation_store import Installation, Bot
 
 import logging
 
@@ -51,6 +53,15 @@ class InstallationStore(AsyncInstallationStore):
             metadata=self.metadata,
             table_name="slack_bots",
         )
+
+        self.engine = sqlalchemy.create_engine(self.database_url)
+
+    async def async_setup(self) -> None:
+        try:
+            async with Database(self.database_url) as database:
+                await database.fetch_one("select count(*) from slack_installations")
+        except Exception as e:
+            self.metadata.create_all(self.engine)
 
     @property
     def logger(self) -> Logger:
@@ -137,7 +148,7 @@ class InstallationStore(AsyncInstallationStore):
                     c.is_enterprise_install == is_enterprise_install,
                 )
             )
-            .order_by(desc(c.installed_at))
+            .order_by(desc(c.installed_at), desc(c.id))
             .limit(1)
         )
         async with Database(self.database_url) as database:
@@ -182,7 +193,7 @@ class InstallationStore(AsyncInstallationStore):
         else:
             logger.debug("searching for installation with team_id: %s" % team_id)
 
-        query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at)).limit(1)
+        query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at), desc(c.id)).limit(1)
 
         async with Database(self.database_url) as database:
             i = await database.fetch_one(query)
@@ -282,7 +293,7 @@ class InstallationStore(AsyncInstallationStore):
         *,
         context: Dict[str, Any],
         needs_user_token: bool = False,
-    ):
+    ) -> Installation:
         enterprise_id = context["enterprise_id"] if "enterprise_id" in context else None
         team_id = context["team_id"] if "team_id" in context else None
         user_id = context["actor_user_id"] if "actor_user_id" in context else None

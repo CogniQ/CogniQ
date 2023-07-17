@@ -50,3 +50,10 @@ class BotTokenRevokedError(TokenRevokedError):
 
     def __init__(self, message: str = "Bot Token is Revoked.", context: Dict[str, Any] | None = None) -> None:
         super().__init__(message, context)
+
+
+class RefreshTokenInvalidError(TokenNoneError):
+    """Raised when the either a bot or user refresh token is invalid."""
+
+    def __init__(self, message: str = "Refresh Token is Invalid.", context: Dict[str, Any] | None = None) -> None:
+        super().__init__(message, context)

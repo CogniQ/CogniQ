@@ -30,7 +30,7 @@ from .history.anthropic_history import AnthropicHistory
 from .search import Search
 from .state_store import StateStore
 from .installation_store import InstallationStore
-from .errors import BotTokenNoneError, BotTokenRevokedError, TokenRevokedError
+from .errors import BotTokenNoneError, BotTokenRevokedError, RefreshTokenInvalidError
 
 
 class CogniqSlack:
@@ -104,19 +104,6 @@ class CogniqSlack:
         self.config.setdefault("APP_ENV", "production")
         self.search = Search(cslack=self)
 
-    async def initialize_db(self):
-        """
-        This method initializes the database.
-        TODO: This should be moved to a migrations task.
-        """
-        try:
-            async with Database(self.database_url) as database:
-                await database.fetch_one("select count(*) from slack_installations")
-        except Exception as e:
-            engine = sqlalchemy.create_engine(self.database_url)
-            self.installation_store.metadata.create_all(engine)
-            self.state_store.metadata.create_all(engine)
-
     async def start(self):
         """
         This method starts the app.
@@ -135,7 +122,8 @@ class CogniqSlack:
         - The app will keep running until it is manually stopped or encounters an error.
         """
         logger.info("Starting Slack app!!")
-        await self.initialize_db()
+        await self.installation_store.async_setup()
+        await self.state_store.async_setup()
 
         @self.api.post("/slack/events")
         async def slack_events(request: Request):
@@ -197,7 +185,7 @@ class CogniqSlack:
                     logger.error("Rate limit hit, not retrying: %s", e)
             if e.response["error"] == "invalid_refresh_token":
                 logger.error("Invalid refresh token, not retrying: %s", e)
-                raise TokenRevokedError(message="Invalid refresh token", context=context)
+                raise RefreshTokenInvalidError(message="Invalid refresh token", context=context)
             if e.response["error"] == "token_revoked":
                 if retry_on_revoked_token:
                     logger.warning("I must have tried to use a revoked token. I'll try to fetch a newer one.")
