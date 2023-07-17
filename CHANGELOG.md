@@ -1,3 +1,10 @@
+## [0.4.18](https://github.com/CogniQ/CogniQ/compare/v0.4.17...v0.4.18) (2023-07-17)
+
+
+### Bug Fixes
+
+* perform an upsert when possible ([5b14e0b](https://github.com/CogniQ/CogniQ/commit/5b14e0bc6effe41cf81669bf67ff7f5db651188e))
+
 ## [0.4.17](https://github.com/CogniQ/CogniQ/compare/v0.4.16...v0.4.17) (2023-07-16)
 
 
