@@ -9,6 +9,7 @@ user_must_supply_these = {
     "OPENAI_API_KEY": None,
     "BING_SUBSCRIPTION_KEY": None,
     "APP_URL": None,
+    "WANDB_API_KEY": None,
 }
 
 # Attempt to load .env values, fallback to empty dict if .env file doesn't exist
@@ -44,6 +45,7 @@ defaults = {
     "POSTGRES_USER": "cogniq",
     "POSTGRES_PASSWORD": "cogniq",
     "POSTGRES_DB": "cogniq",
+    "WANDB_PROJECT": "cogniq",
 }
 for var, default in defaults.items():
     config.setdefault(var, default)
@@ -59,3 +61,7 @@ config.setdefault("DATABASE_URL", postgres_database_url)
 # Set logging level
 config["LOG_LEVEL"] = logging.DEBUG if config["APP_ENV"] == "development" else logging.INFO
 config["MUTED_LOG_LEVEL"] = logging.WARN if config["APP_ENV"] == "development" else logging.WARN
+
+# Set each key as a module-level variable
+for key, value in config.items():
+    globals()[key] = value

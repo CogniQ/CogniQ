@@ -63,4 +63,5 @@ jobs:
           POSTGRES_HOST=secretref:postgres-host \
           POSTGRES_USER=secretref:postgres-user \
           POSTGRES_PASSWORD=secretref:postgres-password \
-          POSTGRES_DB=secretref:postgres-db
+          POSTGRES_DB=secretref:postgres-db \
+          WANDB_PROJECT=cogniq-community-main

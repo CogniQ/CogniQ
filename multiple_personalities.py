@@ -17,7 +17,7 @@ from cogniq.personalities import (
     Evaluator,
 )
 
-from config import config
+from cogniq.config import APP_URL  # type: ignore
 
 
 class MultiplePersonalities:
@@ -108,7 +108,7 @@ class MultiplePersonalities:
     async def dispatch(self, *, event: Dict, context: Dict) -> None:
         original_ts = event["ts"]
         bot_token = context.get("bot_token")
-        app_url = config["APP_URL"]
+        app_url = APP_URL
 
         if bot_token is not None:
             try:

@@ -1,15 +1,16 @@
 from __future__ import annotations
 from typing import *
-
+import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
 
-import asyncio
+from wandb.sdk.data_types.trace_tree import Trace
 
 from cogniq.personalities import BaseAsk, BasePersonality
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
+from cogniq.wandb import WandbChildSpan
 
 from .prompts import evaluator_prompt
 
@@ -67,62 +68,79 @@ class Ask(BaseAsk):
         ask_personalities: Dict[str, Dict[str, Any]],
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
+        parent_span: Trace,
     ) -> Dict[str, Any]:
-        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+        async with WandbChildSpan(parent_span=parent_span, name="ask_the_personalities", kind="agent") as span:
+            bot_name = await self.cslack.openai_history.get_bot_name(context=context)
 
-        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
+            # if the history is too long, summarize it
+            message_history = self.copenai.summarizer.ceil_history(message_history)
 
-        # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
+            # Set the system message
+            message_history = [
+                system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")
+            ] + message_history
 
-        # Set the system message
-        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
+            # if prompt is too long, summarize it
+            short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        # if prompt is too long, summarize it
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
-
-        response_futures = []
-        # Run the personalities
-        for name, info in ask_personalities.items():
-            personality = info["personality"]
-            stream_callback = info["stream_callback"]
-            reply_ts = info["reply_ts"]
-            response_future = asyncio.create_task(
-                personality.ask_directly(
-                    q=short_q, message_history=message_history, stream_callback=stream_callback, context=context, reply_ts=reply_ts
+            response_futures = []
+            # Run the personalities
+            for name, info in ask_personalities.items():
+                personality = info["personality"]
+                personality_stream_callback = info["stream_callback"]
+                reply_ts = info["reply_ts"]
+                response_future = asyncio.create_task(
+                    personality.ask_directly(
+                        q=short_q,
+                        message_history=message_history,
+                        stream_callback=personality_stream_callback,
+                        context=context,
+                        reply_ts=reply_ts,
+                        parent_span=span,
+                    )
                 )
-            )
-            response_futures.append((personality.description, response_future))
+                response_futures.append((personality.description, response_future))
 
-        # Wait for the futures to finish
-        responses = await asyncio.gather(*(response_future for _, response_future in response_futures), return_exceptions=True)
-        responses_with_descriptions = [
-            (description, (response if not isinstance(response, Exception) else "."))
-            for (description, _), response in zip(response_futures, responses)
-        ]
+            # Wait for the futures to finish
+            responses = await asyncio.gather(*(response_future for _, response_future in response_futures), return_exceptions=True)
+            responses_with_descriptions = []
 
-        # Log the responses
-        for description, response in responses_with_descriptions:
-            logger.debug(f"{description}: {response}")
+            for (description, _), response in zip(response_futures, responses):
+                if isinstance(response, Exception):
+                    # Log the error with more details
+                    logger.error(f"Error while processing {description}: {response}")
+                    responses_with_descriptions.append((description, "."))
+                else:
+                    responses_with_descriptions.append((description, response))
 
-        prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
-        # If prompt is too long, summarize it
-        short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
+            # Log the responses
+            for description, response in responses_with_descriptions:
+                logger.debug(f"Response from personality: {description}: {response}")
 
-        if prompt != short_prompt:
-            logger.info(f"Original prompt: {prompt}")
-            logger.info(f"Evaluating shortened prompt: {short_prompt}")
-        else:
-            logger.info(f"Evaluating prompt: {short_prompt}")
+            span.add_inputs_and_outputs(inputs={"message": short_q}, outputs={"responses_with_descriptions": f"{description}: {response}"})
 
-        message_history.append(user_message(short_prompt))
+            async with WandbChildSpan(parent_span=span, name="compile_the_result", kind="chain") as compile_result_span:
+                prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
-        response = await self.copenai.async_chat_completion_create(
-            messages=message_history,
-            model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
-        )
+                # If prompt is too long, summarize it
+                short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
 
-        answer = response["choices"][0]["message"]["content"]
-        logger.info(f"answer: {answer}")
-        return {"answer": answer, "response": response}
+                if prompt != short_prompt:
+                    logger.info(f"Original prompt: {prompt}")
+                    logger.info(f"Evaluating shortened prompt: {short_prompt}")
+                else:
+                    logger.info(f"Evaluating prompt: {short_prompt}")
+
+                message_history.append(user_message(short_prompt))
+
+                response = await self.copenai.async_chat_completion_create(
+                    messages=message_history,
+                    model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+                )
+
+                answer = response["choices"][0]["message"]["content"]
+                logger.info(f"answer: {answer}")
+                compile_result_span.add_inputs_and_outputs(inputs={"message": prompt}, outputs={"answer": answer})
+                return {"answer": answer, "response": response}

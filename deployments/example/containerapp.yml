@@ -29,6 +29,8 @@ properties:
         value: ABC123
       - name: dd-api-key
         value: ABC123
+      - name: wandb-api-key
+        value: ABC123
     ingress:
       external: true
       allowInsecure: false
@@ -80,6 +82,8 @@ properties:
             secretRef: postgres-password
           - name: POSTGRES_DB
             secretRef: postgres-db
+          - name: WANDB_API_KEY
+            secretRef: wandb-api-key
         resources:
           cpu: 1
           memory: 1Gi

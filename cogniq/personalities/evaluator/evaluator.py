@@ -12,6 +12,7 @@ from functools import partial
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
+from cogniq.wandb import WandbRun, WandbSpan
 
 from .ask import Ask
 
@@ -58,52 +59,59 @@ class Evaluator(BasePersonality):
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
         buffer_post_timeout = 300  # seconds
-        try:
-            channel = event["channel"]
-            message = event["text"]
 
-            # create a buffer for each personality
-            response_buffers = {p.name: Buffer() for p in personalities}
-            for name, buf in response_buffers.items():
-                buf.text += f"-------------------------\n{name} Stream of Thought:\n"
+        async with WandbRun(name="evaluator") as run:
+            async with WandbSpan(run=run, name="ask_task", kind="agent") as span:
+                try:
+                    channel = event["channel"]
+                    message = event["text"]
 
-            buffer_post_end = asyncio.Event()
+                    # create a buffer for each personality
+                    response_buffers = {p.name: Buffer() for p in personalities}
+                    for name, buf in response_buffers.items():
+                        buf.text += f"-------------------------\n{name} Stream of Thought:\n"
 
-            def stream_callback(name: str, token: str, **kwargs) -> None:
-                setattr(response_buffers[name], "text", response_buffers[name].text + token)
+                    buffer_post_end = asyncio.Event()
 
-            # Wrap personalities and their callbacks in a dict of dicts
-            ask_personalities = {
-                p.name: {"personality": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts} for p in personalities
-            }
+                    def stream_callback(name: str, token: str, **kwargs) -> None:
+                        setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
-            buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
-            buffer_and_post_task = asyncio.create_task(
-                self.buffer_and_post(
-                    response_buffers=response_buffers,
-                    channel=channel,
-                    reply_ts=reply_ts,
-                    context=context,
-                    interval=1,
-                    buffer_post_end=buffer_post_end,
-                )
-            )
-            message_history = await self.cslack.openai_history.get_history(event=event, context=context)
+                    # Wrap personalities and their callbacks in a dict of dicts
+                    ask_personalities = {
+                        p.name: {"personality": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts}
+                        for p in personalities
+                    }
 
-            ask_response = {"answer": ""}
-            ask_response = await asyncio.wait_for(
-                self.ask.ask(
-                    q=message,
-                    message_history=message_history,
-                    ask_personalities=ask_personalities,
-                    context=context,
-                ),
-                buffer_post_timeout,
-            )
-        finally:
-            buffer_post_end.set()  # end the buffer_and_post loop
-            await buffer_and_post_task  # ensure buffer_and_post task is finished
-            await self.cslack.chat_update(channel=channel, ts=reply_ts, text=ask_response["answer"], context=context)
+                    buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
+                    buffer_and_post_task = asyncio.create_task(
+                        self.buffer_and_post(
+                            response_buffers=response_buffers,
+                            channel=channel,
+                            reply_ts=reply_ts,
+                            context=context,
+                            interval=1,
+                            buffer_post_end=buffer_post_end,
+                        )
+                    )
+                    message_history = await self.cslack.openai_history.get_history(event=event, context=context)
+
+                    ask_response = {"answer": ""}
+                    ask_response = await asyncio.wait_for(
+                        self.ask.ask(
+                            q=message,
+                            message_history=message_history,
+                            ask_personalities=ask_personalities,
+                            context=context,
+                            parent_span=span,
+                        ),
+                        buffer_post_timeout,
+                    )
+                finally:
+                    buffer_post_end.set()  # end the buffer_and_post loop
+                    await buffer_and_post_task  # ensure buffer_and_post task is finished
+                    answer = ask_response["answer"]
+                    span.add_inputs_and_outputs(inputs={"message": message}, outputs={"answer": answer})
+                    await self.cslack.chat_update(channel=channel, ts=reply_ts, text=answer, context=context)
 
     async def buffer_and_post(
         self, *, response_buffers: Dict, channel: str, reply_ts: float, context: Dict, interval: int, buffer_post_end: asyncio.Event

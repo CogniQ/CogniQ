@@ -39,5 +39,6 @@ services:
       DD_TRACE_ENABLED: "true"
       DD_VERSION: local-development
       DD_REMOTE_CONFIGURATION_ENABLED: "false"
+      WANDB_PROJECT: ${WANDB_PROJECT}
 volumes:
   pgdata:

@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import asyncio
-from config import config
+from cogniq.config import config, WANDB_API_KEY  # type: ignore
 from multiple_personalities import MultiplePersonalities
 
 
@@ -39,9 +39,16 @@ def mute_certain_loggers(level=logging.WARN):
                 break
 
 
+def initialize_wandb():
+    import wandb
+
+    wandb.login(key=WANDB_API_KEY)
+
+
 if __name__ == "__main__":
     setup_root_logger(level=config["LOG_LEVEL"])
     mute_certain_loggers(level=config["MUTED_LOG_LEVEL"])
+    initialize_wandb()
 
     mp = MultiplePersonalities(config=config)
 

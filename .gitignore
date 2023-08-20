@@ -1,3 +1,4 @@
+wandb/
 deployments/*
 .envrc
 .env
