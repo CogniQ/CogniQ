@@ -67,7 +67,7 @@ class Ask(BaseAsk):
         reply_ts: float | None = None,
         parent_span: Trace,
     ) -> Dict[str, Any]:
-        with WandbChildSpan(parent=parent_span, name="slack_search", kind="chain"):
+        with WandbChildSpan(parent_span=parent_span, name="slack_search", kind="chain"):
             # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
             bot_name = await self.cslack.openai_history.get_bot_name(context=context)
             # if the history is too long, summarize it
