@@ -118,7 +118,7 @@ class Ask(BaseAsk):
             for description, response in responses_with_descriptions:
                 logger.debug(f"Response from personality: {description}: {response}")
 
-            span.add_inputs_and_outputs(inputs={"message": short_q}, outputs={"responses_with_descriptions": f"{description}: {response}"})
+            span.add_inputs_and_outputs(inputs={"query": short_q}, outputs={"responses_with_descriptions": f"{description}: {response}"})
 
         with WandbChildSpan(parent_span=parent_span, name="compile_the_result", kind="chain") as compile_result_span:
             prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
@@ -141,5 +141,5 @@ class Ask(BaseAsk):
 
             answer = response["choices"][0]["message"]["content"]
             logger.info(f"answer: {answer}")
-            compile_result_span.add_inputs_and_outputs(inputs={"message": prompt}, outputs={"answer": answer})
+            compile_result_span.add_inputs_and_outputs(inputs={"query": prompt}, outputs={"answer": answer})
             return {"answer": answer, "response": response}

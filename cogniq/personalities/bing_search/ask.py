@@ -19,6 +19,7 @@ from cogniq.openai import (
     CogniqOpenAI,
 )
 from cogniq.slack import CogniqSlack
+from cogniq.wandb import WandbChildSpan
 
 
 from .prompts import agent_prompt
@@ -109,44 +110,51 @@ class Ask(BaseAsk):
         context: Dict,
         parent_span: Trace,
     ) -> Dict[str, Any]:
-        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
-        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
-        if message_history == None:
-            message_history = []
-        # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
+        with WandbChildSpan(parent_span=parent_span, name="bing_search", kind="agent") as span:
+            # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+            bot_name = await self.cslack.openai_history.get_bot_name(context=context)
+            if message_history == None:
+                message_history = []
+            # if the history is too long, summarize it
+            message_history = self.copenai.summarizer.ceil_history(message_history)
 
-        # Set the system message
-        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
+            # Set the system message
+            message_history = [
+                system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")
+            ] + message_history
 
-        # if prompt is too long, summarize it
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
+            # if prompt is too long, summarize it
+            short_q = await self.copenai.summarizer.ceil_prompt(q)
 
-        logger.info("short_q: " + short_q)
-        history_augmented_prompt = await self.get_history_augmented_prompt(
-            q=short_q,
-            message_history=message_history,
-        )
-
-        logger.info("history amended query: " + history_augmented_prompt)
-
-        loop = asyncio.get_event_loop()
-        with PoolExecutor() as executor:
-            agent_response_task = loop.run_in_executor(
-                executor,
-                self.agent_run,
-                history_augmented_prompt,
-                stream_callback,
+            logger.info("short_q: " + short_q)
+            history_augmented_prompt = await self.get_history_augmented_prompt(
+                q=short_q,
+                message_history=message_history,
             )
-            agent_response = await agent_response_task
-        final_answer = agent_response["answers"][0]
-        logger.debug(f"final_answer: {final_answer}")
-        final_answer_text = final_answer.answer
-        if not final_answer_text:
-            transcript = agent_response["transcript"]
-            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"])
-            final_answer_text = summarized_transcript
-        return {"answer": final_answer_text, "response": agent_response}
+
+            logger.info("history amended query: " + history_augmented_prompt)
+
+            loop = asyncio.get_event_loop()
+            with PoolExecutor() as executor:
+                agent_response_task = loop.run_in_executor(
+                    executor,
+                    self.agent_run,
+                    history_augmented_prompt,
+                    stream_callback,
+                )
+                agent_response = await agent_response_task
+            final_answer = agent_response["answers"][0]
+            logger.debug(f"final_answer: {final_answer}")
+            final_answer_text = final_answer.answer
+
+            span.add_inputs_and_outputs(inputs={"query": q}, outputs={"answer": final_answer_text})
+            if not final_answer_text:
+                transcript = agent_response["transcript"]
+                summarized_transcript = await self.copenai.summarizer.summarize_content(
+                    transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"]
+                )
+                final_answer_text = summarized_transcript
+            return {"answer": final_answer_text, "response": agent_response}
 
     async def get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]]) -> str:
         """

@@ -110,7 +110,7 @@ class Evaluator(BasePersonality):
                     buffer_post_end.set()  # end the buffer_and_post loop
                     await buffer_and_post_task  # ensure buffer_and_post task is finished
                     answer = ask_response["answer"]
-                    span.add_inputs_and_outputs(inputs={"message": message}, outputs={"answer": answer})
+                    span.add_inputs_and_outputs(inputs={"query": message}, outputs={"answer": answer})
                     await self.cslack.chat_update(channel=channel, ts=reply_ts, text=answer, context=context)
 
     async def buffer_and_post(
