@@ -44,6 +44,7 @@ class WandbRun(AbstractContextManager):
 
     def __exit__(self, exc_type: Type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
         self.end_time_ms = round(datetime.datetime.now().timestamp() * 1000)  # logged in milliseconds
+        self.root_span.end_time_ms = self.end_time_ms
 
         if exc_value:
             wandb.alert(title=exc_type, text=f"{exc_type}: {exc_value}", level="ERROR")
