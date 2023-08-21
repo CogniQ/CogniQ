@@ -5,10 +5,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from wandb.sdk.data_types.trace_tree import Trace
+from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLayer
+
+
 from cogniq.personalities import BaseAsk
 from cogniq.slack import CogniqSlack
-
-from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLayer
 
 
 class Ask(BaseAsk):
@@ -40,7 +42,7 @@ class Ask(BaseAsk):
         """
         pass
 
-    async def ask(self, *, q: str, message_history: str | None = None) -> Dict[str, Any]:
+    async def ask(self, *, q: str, message_history: str | None = None, parent_span: Trace) -> Dict[str, Any]:
         message_history = message_history or ""
         kwargs = {
             "model": "claude-2",

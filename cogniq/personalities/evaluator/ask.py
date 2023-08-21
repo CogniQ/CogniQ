@@ -114,7 +114,6 @@ class Ask(BaseAsk):
                 else:
                     responses_with_descriptions.append((description, response))
 
-
             # Log the responses
             for description, response in responses_with_descriptions:
                 logger.debug(f"Response from personality: {description}: {response}")

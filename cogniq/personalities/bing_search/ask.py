@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 import asyncio
 from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
+from wandb.sdk.data_types.trace_tree import Trace
+
 from cogniq.personalities import BaseAsk
 from cogniq.openai import (
     system_message,
@@ -99,7 +101,13 @@ class Ask(BaseAsk):
         )
 
     async def ask(
-        self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        parent_span: Trace,
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)

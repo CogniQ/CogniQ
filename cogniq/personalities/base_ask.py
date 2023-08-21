@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 import abc
 
+from wandb.sdk.data_types.trace_tree import Trace
+
 from cogniq.slack import CogniqSlack
 
 from cogniq.openai import system_message, user_message, CogniqOpenAI
@@ -61,6 +63,7 @@ class BaseAsk(metaclass=abc.ABCMeta):
         personalities: Dict,
         context: Dict,
         stream_callback: Callable[..., None] | None = None,
+        parent_span: Trace,
     ) -> Dict[str, Any]:
         """
         Ask a question to the personality.

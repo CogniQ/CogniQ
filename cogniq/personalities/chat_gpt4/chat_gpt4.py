@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from wandb.sdk.data_types.trace_tree import Trace
 
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
@@ -46,14 +47,14 @@ class ChatGPT4(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, parent_span: Trace) -> None:
         channel = event["channel"]
         message = event["text"]
 
         history = await self.cslack.openai_history.get_history(event=event, context=context)
         # logger.debug(f"history: {history}")
 
-        ask_response = await self.ask.ask(q=message, message_history=history, context=context)
+        ask_response = await self.ask.ask(q=message, message_history=history, context=context, parent_span=parent_span)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
@@ -62,13 +63,16 @@ class ChatGPT4(BasePersonality):
         q: str,
         message_history: List[Dict[str, str]],
         stream_callback: Callable[..., None] | None = None,
+        context: Dict,
         reply_ts: float | None = None,
-        **kwargs,
+        parent_span: Trace,
     ) -> str:
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
+        ask_response = await self.ask.ask(
+            q=q, message_history=message_history, context=context, stream_callback=stream_callback, parent_span=parent_span
+        )
         return ask_response["answer"]
 
     @property

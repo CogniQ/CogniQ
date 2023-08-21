@@ -5,6 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from wandb.sdk.data_types.trace_tree import Trace
+
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
@@ -44,7 +46,7 @@ class SlackSearch(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, parent_span: Trace) -> None:
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -52,21 +54,24 @@ class SlackSearch(BasePersonality):
         message = event["text"]
 
         message_history = await self.cslack.openai_history.get_history(event=event, context=context)
-        ask_response = await self.ask.ask(
-            q=message,
-            context=context,
-            message_history=message_history,
-        )
+        ask_response = await self.ask.ask(q=message, context=context, message_history=message_history, parent_span=parent_span)
         # logger.debug(openai_response)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
-        self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs
+        self,
+        *,
+        q,
+        message_history: List[dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+        parent_span: Trace,
     ) -> str:
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts, **kwargs)
+        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts, parent_span=parent_span)
         return ask_response["answer"]
 
     @property

@@ -5,6 +5,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from wandb.sdk.data_types.trace_tree import Trace
+
 from cogniq.personalities import BaseAsk
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack
@@ -50,7 +52,13 @@ class Ask(BaseAsk):
         pass
 
     async def ask(
-        self, *, q: str, message_history: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, context: Dict
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        parent_span: Trace,
     ) -> Dict[str, Any]:
         message_history = message_history or []
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
