@@ -120,26 +120,26 @@ class Ask(BaseAsk):
 
             span.add_inputs_and_outputs(inputs={"message": short_q}, outputs={"responses_with_descriptions": f"{description}: {response}"})
 
-            with WandbChildSpan(parent_span=span, name="compile_the_result", kind="chain") as compile_result_span:
-                prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
+        with WandbChildSpan(parent_span=parent_span, name="compile_the_result", kind="chain") as compile_result_span:
+            prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
-                # If prompt is too long, summarize it
-                short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
+            # If prompt is too long, summarize it
+            short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
 
-                if prompt != short_prompt:
-                    logger.info(f"Original prompt: {prompt}")
-                    logger.info(f"Evaluating shortened prompt: {short_prompt}")
-                else:
-                    logger.info(f"Evaluating prompt: {short_prompt}")
+            if prompt != short_prompt:
+                logger.info(f"Original prompt: {prompt}")
+                logger.info(f"Evaluating shortened prompt: {short_prompt}")
+            else:
+                logger.info(f"Evaluating prompt: {short_prompt}")
 
-                message_history.append(user_message(short_prompt))
+            message_history.append(user_message(short_prompt))
 
-                response = await self.copenai.async_chat_completion_create(
-                    messages=message_history,
-                    model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
-                )
+            response = await self.copenai.async_chat_completion_create(
+                messages=message_history,
+                model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+            )
 
-                answer = response["choices"][0]["message"]["content"]
-                logger.info(f"answer: {answer}")
-                compile_result_span.add_inputs_and_outputs(inputs={"message": prompt}, outputs={"answer": answer})
-                return {"answer": answer, "response": response}
+            answer = response["choices"][0]["message"]["content"]
+            logger.info(f"answer: {answer}")
+            compile_result_span.add_inputs_and_outputs(inputs={"message": prompt}, outputs={"answer": answer})
+            return {"answer": answer, "response": response}
