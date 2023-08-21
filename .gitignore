@@ -1,4 +1,4 @@
-wandb/
+/wandb
 deployments/*
 .envrc
 .env

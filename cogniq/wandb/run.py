@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-from contextlib import AbstractAsyncContextManager
+from contextlib import AbstractContextManager
 
 from wandb.sdk.data_types.trace_tree import Trace
 from wandb.sdk.wandb_run import Run
@@ -14,10 +14,10 @@ from wandb.sdk.lib import RunDisabled
 import datetime
 import wandb
 
-from cogniq.config import WANDB_PROJECT # type: ignore
+from cogniq.config import WANDB_PROJECT  # type: ignore
 
 
-class WandbRun(AbstractAsyncContextManager):
+class WandbRun(AbstractContextManager):
     def __init__(
         self,
         *,
@@ -31,7 +31,7 @@ class WandbRun(AbstractAsyncContextManager):
 
         self.name = name  # TODO: add feature to add descriptive name at conclusion of run.
 
-    async def __aenter__(self) -> Run | RunDisabled | None:
+    def __enter__(self) -> Run | RunDisabled | None:
         self.start_time_ms = datetime.datetime.now().timestamp() * 1000
         name_prefix = f"{self.name}-" if self.name else ""
         self.root_span = Trace(
@@ -42,7 +42,7 @@ class WandbRun(AbstractAsyncContextManager):
 
         return self
 
-    async def __aexit__(self, exc_type: Type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
+    def __exit__(self, exc_type: Type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
         self.end_time_ms = round(datetime.datetime.now().timestamp() * 1000)  # logged in milliseconds
 
         if exc_value:

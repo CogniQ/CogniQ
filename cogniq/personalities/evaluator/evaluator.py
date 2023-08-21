@@ -60,8 +60,8 @@ class Evaluator(BasePersonality):
         """
         buffer_post_timeout = 300  # seconds
 
-        async with WandbRun(name="evaluator") as run:
-            async with WandbSpan(run=run, name="ask_task", kind="agent") as span:
+        with WandbRun(name="evaluator") as run:
+            with WandbSpan(run=run, name="ask_task", kind="agent") as span:
                 try:
                     channel = event["channel"]
                     message = event["text"]

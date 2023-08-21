@@ -70,7 +70,7 @@ class Ask(BaseAsk):
         stream_callback: Callable[..., None] | None = None,
         parent_span: Trace,
     ) -> Dict[str, Any]:
-        async with WandbChildSpan(parent_span=parent_span, name="ask_the_personalities", kind="agent") as span:
+        with WandbChildSpan(parent_span=parent_span, name="ask_the_personalities", kind="agent") as span:
             bot_name = await self.cslack.openai_history.get_bot_name(context=context)
 
             # if the history is too long, summarize it
@@ -120,7 +120,7 @@ class Ask(BaseAsk):
 
             span.add_inputs_and_outputs(inputs={"message": short_q}, outputs={"responses_with_descriptions": f"{description}: {response}"})
 
-            async with WandbChildSpan(parent_span=span, name="compile_the_result", kind="chain") as compile_result_span:
+            with WandbChildSpan(parent_span=span, name="compile_the_result", kind="chain") as compile_result_span:
                 prompt = evaluator_prompt(q=short_q, responses_with_descriptions=responses_with_descriptions)
 
                 # If prompt is too long, summarize it
