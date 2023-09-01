@@ -85,8 +85,8 @@ properties:
           - name: WANDB_API_KEY
             secretRef: wandb-api-key
         resources:
-          cpu: 1
-          memory: 1Gi
+          cpu: 0.25
+          memory: 1.5Gi
         # probes:
         # - type: liveness
         #   httpGet:
