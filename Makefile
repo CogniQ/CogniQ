@@ -6,6 +6,11 @@ VERSION:=$(SHORT_SHA)$(DIRTY)
 DOCKER_TAG:=$(LOWERCASE_APP):$(VERSION)
 TIMESTAMP:=$(shell date --iso-8601=seconds)
 
+
+#: Display help
+help:
+	@ruby -e 'results = []; %w[$(MAKEFILE_LIST)].each {|file| File.read(file).scan(%r{(?<=^#: )(?<description>.+)\n(?:.PHONY: .*\n)*(?<target>^\S+):.*}) {results << $$~}}; padwidth=results.max_by{|e|e["target"].length}["target"].length; results.sort_by{|e|e["target"]}.each {|e|printf("%s: %s\n", e["target"].ljust(padwidth), e["description"].gsub("DANGER", "\u001b[31;1mDANGER\u001b[0m"))}'
+
 .venv:
 	python3 -mvenv .venv
 
@@ -80,7 +85,3 @@ logs:
 		--name cogniq \
 		--resource-group cogniq-community-main \
 		--follow
-
-#: Display help
-help:
-	@ruby -e 'results = []; %w[$(MAKEFILE_LIST)].each {|file| File.read(file).scan(%r{(?<=^#: )(?<description>.+)\n(?:.PHONY: .*\n)*(?<target>^\S+):.*}) {results << $$~}}; padwidth=results.max_by{|e|e["target"].length}["target"].length; results.sort_by{|e|e["target"]}.each {|e|printf("%s: %s\n", e["target"].ljust(padwidth), e["description"].gsub("DANGER", "\u001b[31;1mDANGER\u001b[0m"))}'
