@@ -81,8 +81,8 @@ properties:
           - name: POSTGRES_DB
             secretRef: postgres-db
         resources:
-          cpu: 1
-          memory: 1Gi
+          cpu: 0.25
+          memory: 1.5Gi
         # probes:
         # - type: liveness
         #   httpGet:
