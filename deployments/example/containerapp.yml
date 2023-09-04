@@ -84,6 +84,8 @@ properties:
             secretRef: postgres-db
           - name: WANDB_API_KEY
             secretRef: wandb-api-key
+          - name: WANDB_PROJECT
+            value: cogniq-example
         resources:
           cpu: 0.75
           memory: 1.5Gi
