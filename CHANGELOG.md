@@ -1,3 +1,11 @@
+## [0.4.20](https://github.com/CogniQ/CogniQ/compare/v0.4.19...v0.4.20) (2023-09-04)
+
+
+### Bug Fixes
+
+* constrained cpu / memory combinations: ([c399914](https://github.com/CogniQ/CogniQ/commit/c399914fafbb9208f2daa9e80431897d1898de87))
+* historical usage indicates we do not need as much cpu as we thought ([2c313c7](https://github.com/CogniQ/CogniQ/commit/2c313c70950f7f71fae8e0ab461ef6149ddf31c3))
+
 ## [0.4.19](https://github.com/CogniQ/CogniQ/compare/v0.4.18...v0.4.19) (2023-07-17)
 
 
