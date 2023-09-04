@@ -44,7 +44,7 @@ class Ask(BaseAsk):
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        ask = Ask(cslack=cslack, copenai=copenai)
         await ask.async_setup()
         ```
 
@@ -64,7 +64,7 @@ class Ask(BaseAsk):
 
         self.web_qa_tool = Tool(
             name="Search",
-            pipeline_or_node=CustomWebQAPipeline(config=config),
+            pipeline_or_node=CustomWebQAPipeline(),
             description="useful for when you need to Google questions.",
             output_variable="answers",
         )

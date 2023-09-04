@@ -27,7 +27,7 @@ class BingSearch(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        bing_search = BingSearch(config=config, cslack=cslack, copenai=copenai)
+        bing_search = BingSearch(cslack=cslack, copenai=copenai)
         await bing_search.async_setup()
         ```
 
@@ -46,7 +46,7 @@ class BingSearch(BasePersonality):
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

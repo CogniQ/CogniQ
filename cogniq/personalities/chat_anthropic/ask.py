@@ -18,7 +18,7 @@ class Ask(BaseAsk):
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, cslack=cslack)
+        ask = Ask(cslack=cslack)
         await ask.async_setup()
         ```
 

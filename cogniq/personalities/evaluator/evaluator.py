@@ -28,7 +28,7 @@ class Evaluator(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        evaluator = Evaluator(config=config, copenai=copenai)
+        evaluator = Evaluator(copenai=copenai)
         await evaluator.async_setup()
         ```
 
@@ -45,7 +45,7 @@ class Evaluator(BasePersonality):
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

@@ -21,7 +21,7 @@ class ChatGPT4(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        chat_gpt4 = ChatGPT4(config=config, cslack=cslack, copenai=copenai)
+        chat_gpt4 = ChatGPT4(cslack=cslack, copenai=copenai)
         await chat_gpt4.async_setup()
         ```
 
@@ -38,7 +38,7 @@ class ChatGPT4(BasePersonality):
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

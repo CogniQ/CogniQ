@@ -19,7 +19,7 @@ class SlackSearch(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        slack_search = SlackSearch(config=config, copenai=copenai)
+        slack_search = SlackSearch(copenai=copenai)
         await slack_search.async_setup()
         ```
 
@@ -36,7 +36,7 @@ class SlackSearch(BasePersonality):
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

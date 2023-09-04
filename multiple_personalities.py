@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 
+from cogniq.config import APP_URL
 from cogniq.slack import CogniqSlack
 from cogniq.openai import CogniqOpenAI
 from cogniq.personalities import (
@@ -17,38 +18,29 @@ from cogniq.personalities import (
     Evaluator,
 )
 
-from config import config
-
 
 class MultiplePersonalities:
-    def __init__(self, *, config):
-        self.config = config
-
+    def __init__(self):
         # Initialize the slack bot
-        self.cslack = CogniqSlack(
-            config=config,
-        )
+        self.cslack = CogniqSlack()
 
         # Setup the personalities
-        self.copenai = CogniqOpenAI(config=config)
+        self.copenai = CogniqOpenAI()
 
-        self.bing_search = BingSearch(config=config, cslack=self.cslack, copenai=self.copenai)
+        self.bing_search = BingSearch(cslack=self.cslack, copenai=self.copenai)
 
-        self.chat_gpt4 = ChatGPT4(config=config, cslack=self.cslack, copenai=self.copenai)
+        self.chat_gpt4 = ChatGPT4(cslack=self.cslack, copenai=self.copenai)
 
         self.chat_anthropic = ChatAnthropic(
-            config=config,
             cslack=self.cslack,
         )
 
         self.slack_search = SlackSearch(
-            config=config,
             cslack=self.cslack,
             copenai=self.copenai,
         )
 
         self.evaluator = Evaluator(
-            config=config,
             cslack=self.cslack,
             copenai=self.copenai,
         )
@@ -108,7 +100,7 @@ class MultiplePersonalities:
     async def dispatch(self, *, event: Dict, context: Dict) -> None:
         original_ts = event["ts"]
         bot_token = context.get("bot_token")
-        app_url = config["APP_URL"]
+        app_url = APP_URL
 
         if bot_token is not None:
             try:

@@ -19,7 +19,7 @@ class ChatAnthropic(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        chat_anthropic = ChatAnthropic(config=config, cslack=cslack)
+        chat_anthropic = ChatAnthropic(cslack=cslack)
         await chat_anthropic.async_setup()
         ```
 
@@ -34,7 +34,7 @@ class ChatAnthropic(BasePersonality):
         self.config = config
         self.cslack = cslack
 
-        self.ask = Ask(config=config, cslack=cslack)
+        self.ask = Ask(cslack=cslack)
 
     async def async_setup(self) -> None:
         """
