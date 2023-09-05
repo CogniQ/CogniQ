@@ -17,6 +17,8 @@ properties:
         value: ABC123
       - name: openai-api-key
         value: sk-ABC123
+      - name: anthropic-api-key
+        value: sk-ABC123
       - name: bing-subscription-key
         value: ABC123
       - name: postgres-host
@@ -70,6 +72,8 @@ properties:
             secretRef: slack-signing-secret
           - name: OPENAI_API_KEY
             secretRef: openai-api-key
+          - name: ANTHROPIC_API_KEY
+            secretRef: anthropic-api-key
           - name: BING_SUBSCRIPTION_KEY
             secretRef: bing-subscription-key
           - name: POSTGRES_HOST
