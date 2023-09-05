@@ -25,6 +25,19 @@ from slack_sdk.errors import SlackApiError
 from databases import Database
 import sqlalchemy
 
+from cogniq.config import (
+    APP_ENV,
+    APP_URL,
+    DATABASE_URL,
+    HOST,
+    PORT,
+    LOG_LEVEL,
+    MUTED_LOG_LEVEL,
+    SLACK_CLIENT_ID,
+    SLACK_CLIENT_SECRET,
+    SLACK_SIGNING_SECRET,
+)
+
 from .history.openai_history import OpenAIHistory
 from .history.anthropic_history import AnthropicHistory
 from .search import Search
@@ -34,37 +47,27 @@ from .errors import BotTokenNoneError, BotTokenRevokedError, RefreshTokenInvalid
 
 
 class CogniqSlack:
-    def __init__(self, *, config: Dict[str, str]):
+    def __init__(self):
         """
         Slack bot with given configuration, app, and logger.
-
-        Parameters:
-        config (dict): Configuration for the Slack app with the following keys:
-            SLACK_SIGNING_SECRET (str): Slack signing secret.
-            HOST (str, default='0.0.0.0'): Host on which the app will be started.
-            PORT (str or int, default=3000): Port on which the app will be started.
-            APP_ENV (str, either 'production' or 'development'): Environment in which the app is running.
-
         """
 
-        self.config = config
-
-        self.database_url = config["DATABASE_URL"]
+        self.database_url = DATABASE_URL
 
         self.installation_store = InstallationStore(
-            client_id=config["SLACK_CLIENT_ID"],
-            client_secret=config["SLACK_CLIENT_SECRET"],
+            client_id=SLACK_CLIENT_ID,
+            client_secret=SLACK_CLIENT_SECRET,
             database_url=self.database_url,
-            install_path=f"{config['APP_URL']}/slack/install",
+            install_path=f"{APP_URL}/slack/install",
         )
         self.state_store = StateStore(
             expiration_seconds=120,
-            database_url=self.database_url,
+            database_url=DATABASE_URL,
             logger=logger,
         )
         oauth_settings = AsyncOAuthSettings(
-            client_id=self.config["SLACK_CLIENT_ID"],
-            client_secret=self.config["SLACK_CLIENT_SECRET"],
+            client_id=SLACK_CLIENT_ID,
+            client_secret=SLACK_CLIENT_SECRET,
             scopes=[
                 "app_mentions:read",
                 "channels:history",
@@ -81,10 +84,10 @@ class CogniqSlack:
         )
 
         app_logger = logging.getLogger(f"{__name__}.slack_bolt")
-        app_logger.setLevel(self.config["MUTED_LOG_LEVEL"])
+        app_logger.setLevel(MUTED_LOG_LEVEL)
         self.app = AsyncApp(
             logger=app_logger,
-            signing_secret=self.config["SLACK_SIGNING_SECRET"],
+            signing_secret=SLACK_SIGNING_SECRET,
             installation_store=self.installation_store,
             oauth_settings=oauth_settings,
         )
@@ -99,9 +102,6 @@ class CogniqSlack:
         self.openai_history = OpenAIHistory(app=self.app)
 
         # Set defaults
-        self.config.setdefault("HOST", "0.0.0.0")
-        self.config.setdefault("PORT", 3000)
-        self.config.setdefault("APP_ENV", "production")
         self.search = Search(cslack=self)
 
     async def start(self):
@@ -137,13 +137,13 @@ class CogniqSlack:
         async def slack_oauth_redirect(request: Request):
             return await self.app_handler.handle(request)
 
-        reload = self.config["APP_ENV"] == "development"
+        reload = APP_ENV == "development"
         # Run the FastAPI app using Uvicorn
         uvicorn_config = uvicorn.Config(
             self.api,
-            host=self.config["HOST"],
-            port=int(self.config["PORT"]),
-            log_level=self.config["LOG_LEVEL"],
+            host=HOST,
+            port=int(PORT),
+            log_level=LOG_LEVEL,
             reload=reload,
         )
         uvicorn_server = uvicorn.Server(uvicorn_config)

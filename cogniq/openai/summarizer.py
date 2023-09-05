@@ -5,33 +5,32 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import tiktoken
 from functools import singledispatchmethod
 
+from cogniq.config import (
+    OPENAI_CHAT_MODEL,
+    OPENAI_MAX_TOKENS_HISTORY,
+    OPENAI_MAX_TOKENS_RETRIEVAL,
+    OPENAI_MAX_TOKENS_PROMPT,
+    OPENAI_MAX_TOKENS_RESPONSE,
+    OPENAI_TOTAL_MAX_TOKENS,
+)
 from .chat import system_message, user_message
-
-import tiktoken
 
 
 class Summarizer:
-    def __init__(self, *, config: Dict[str, str], async_chat_completion_create: Callable):
+    def __init__(self, *, async_chat_completion_create: Callable):
         """
         Summarizer is intended as a subclass of CogniqOpenAI and is responsible for managing context window.
 
-        Parameters:
-        config (dict): Configuration dictionary with the following keys:
-            OPENAI_CHAT_MODEL (str): OpenAI model to use for chat.
-            OPENAI_MAX_TOKENS_HISTORY (int): Context from chat history
-            OPENAI_MAX_TOKENS_RETRIEVAL (int): Context from retrieval, such as Bing.
-            OPENAI_MAX_TOKENS_PROMPT (int): The text that the user types will be summarized to this length if necessary.
-            OPENAI_MAX_TOKENS_RESPONSE (int): Response from OpenAI.
 
         async_chat_completion_create (function): Function to create a chat completion.
 
         """
-        self.config = config
         self.async_chat_completion_create = async_chat_completion_create
 
-        self.encoding = tiktoken.encoding_for_model(self.config["OPENAI_CHAT_MODEL"])
+        self.encoding = tiktoken.encoding_for_model(OPENAI_CHAT_MODEL)
 
     def encode(self, text: str) -> List[int]:
         return self.encoding.encode(text)
@@ -73,7 +72,7 @@ class Summarizer:
         Removes entries from the BEGINNING of the history until the total number of tokens is less than max_tokens.
         """
         if max_tokens is None:
-            max_tokens = self.config["OPENAI_MAX_TOKENS_HISTORY"]
+            max_tokens = OPENAI_MAX_TOKENS_HISTORY
 
         message_history_copy = message_history.copy()
 
@@ -92,7 +91,7 @@ class Summarizer:
         Removes entries from the END of the retrieval until the total number of tokens is less than max_tokens.
         """
         if max_tokens is None:
-            max_tokens = self.config["OPENAI_MAX_TOKENS_RETRIEVAL"]
+            max_tokens = OPENAI_MAX_TOKENS_RETRIEVAL
 
         retrieval_copy = retrieval.copy()
 
@@ -106,19 +105,19 @@ class Summarizer:
 
     async def ceil_prompt(self, prompt: str, max_tokens: int | None = None) -> str:
         if max_tokens is None:
-            max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
+            max_tokens = OPENAI_MAX_TOKENS_PROMPT
 
         simple_coerced_string = str(prompt)
         if self.count_tokens(simple_coerced_string) > max_tokens:
-            return await self.summarize_content(simple_coerced_string, self.config["OPENAI_MAX_TOKENS_PROMPT"])
+            return await self.summarize_content(simple_coerced_string, OPENAI_MAX_TOKENS_PROMPT)
         else:
             return prompt
 
     async def summarize_content(self, content: str, max_tokens=None) -> str:
         if max_tokens is None:
-            max_tokens = self.config["OPENAI_MAX_TOKENS_PROMPT"]
+            max_tokens = OPENAI_MAX_TOKENS_PROMPT
         content_length = self.count_tokens(content)
-        remaining_context_window = self.config["OPENAI_TOTAL_MAX_TOKENS"] - max_tokens
+        remaining_context_window = OPENAI_TOTAL_MAX_TOKENS - max_tokens
 
         if content_length < max_tokens:
             return content

@@ -17,7 +17,7 @@ from haystack.pipelines.base import Pipeline
 from haystack.nodes.retriever.web import WebRetriever
 from haystack.nodes.preprocessor import PreProcessor
 
-from typing import Optional
+from cogniq.config import BING_SUBSCRIPTION_KEY, OPENAI_API_KEY, OPENAI_MAX_TOKENS_RESPONSE
 
 
 class CustomWebQAPipeline(BaseStandardPipeline):
@@ -25,20 +25,13 @@ class CustomWebQAPipeline(BaseStandardPipeline):
     Pipeline for Generative Question Answering performed based on Documents returned from a web search engine.
     """
 
-    def __init__(self, *, config: Dict[str, str]):
+    def __init__(self):
         """
         CustomWebQAPipeline constructor.
-
-        Parameters:
-        config (dict): Configuration for the pipeline with the following keys:
-            OPENAI_API_KEY (str): OpenAI API key.
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens in the response.
-            BING_SUBSCRIPTION_KEY (str): Bing subscription key.
         """
-        self.config = config
 
         self.web_retriever = WebRetriever(
-            api_key=self.config["BING_SUBSCRIPTION_KEY"],
+            api_key=BING_SUBSCRIPTION_KEY,
             search_engine_provider="BingAPI",
             top_k=5,
             mode="preprocessed_documents",
@@ -50,8 +43,8 @@ class CustomWebQAPipeline(BaseStandardPipeline):
 
         prompt_node = PromptNode(
             "gpt-3.5-turbo",
-            api_key=self.config["OPENAI_API_KEY"],
-            max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
+            api_key=OPENAI_API_KEY,
+            max_length=OPENAI_MAX_TOKENS_RESPONSE,
             default_prompt_template=web_retriever_prompt,
             model_kwargs={"temperature": 0.2},
         )

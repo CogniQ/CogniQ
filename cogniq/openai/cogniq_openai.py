@@ -32,10 +32,10 @@ class CogniqOpenAI:
         stream_callback_set = stream_callback is not None
         url = f"https://api.openai.com/v1/chat/completions"
         default_payload = {
-            "model": OPENAI_CHAT_MODEL
+            "model": OPENAI_CHAT_MODEL,
             "messages": messages,
             "stream": stream_callback_set,
-            "max_tokens": OPENAI_MAX_TOKENS_RESPONSE
+            "max_tokens": OPENAI_MAX_TOKENS_RESPONSE,
         }
         payload = {**default_payload, **kwargs}  # add and override any additional kwargs to payload
 
@@ -54,7 +54,7 @@ class CogniqOpenAI:
     async def async_openai(self, *, url: str, payload: Dict[str, Any], **kwargs) -> Dict[str, Any]:
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f'Bearer {OPENAI_API_KEY}',
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
         }
 
         async with aiohttp.ClientSession() as session:
@@ -72,7 +72,7 @@ class CogniqOpenAI:
     ) -> Dict[str, Any]:
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f'Bearer {OPENAI_API_KEY}',
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
         }
 
         async with aiohttp.ClientSession() as session:

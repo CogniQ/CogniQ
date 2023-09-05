@@ -13,7 +13,7 @@ from .ask import Ask
 
 
 class SlackSearch(BasePersonality):
-    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         SlackSearch personality
         Please call async_setup after initializing the personality.
@@ -24,15 +24,9 @@ class SlackSearch(BasePersonality):
         ```
 
         Parameters:
-        config (dict): Configuration for the Chat GPT4 personality with the following keys:
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
-            OPENAI_API_KEY (str): OpenAI API key.
-
-
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
-        self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
