@@ -1,3 +1,10 @@
+## [0.4.21](https://github.com/CogniQ/CogniQ/compare/v0.4.20...v0.4.21) (2023-09-05)
+
+
+### Bug Fixes
+
+* use config as a module.  ([#83](https://github.com/CogniQ/CogniQ/issues/83)) ([2e47c22](https://github.com/CogniQ/CogniQ/commit/2e47c22ba0c0fe4846637bbc758aa52a5f15fac2))
+
 ## [0.4.20](https://github.com/CogniQ/CogniQ/compare/v0.4.19...v0.4.20) (2023-09-04)
 
 
