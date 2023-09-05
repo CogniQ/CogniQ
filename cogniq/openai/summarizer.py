@@ -49,22 +49,19 @@ class Summarizer:
             raise e
 
     @count_tokens.register(list)
-    def _(self, history: List[Dict[str, str]] | List[str]) -> int:
+    def _(self, history: List[Union[Dict[str, str], str]]) -> int:
         """
         Count tokens in a list of OpenAI messages or a list of strings
         """
         if history and isinstance(history[0], dict) and "content" in history[0]:
-            try:
-                return sum(map(lambda x: self.count_tokens(x["content"]), history))
-            except KeyError as e:
-                logger.error("ceil_history expects an OpenAI formatted message history. Message history: %s", history)
-                raise e
+            token_sum = 0
+            for msg in history:
+                if isinstance(msg, dict) and "content" in msg:
+                    token_sum += self.count_tokens(msg["content"])
+            return token_sum
         elif history and isinstance(history[0], str):
             return sum(map(self.count_tokens, history))
-        elif not history:
-            return 0
-        else:
-            raise TypeError("count_tokens expects a list of OpenAI messages or a list of strings.")
+        return 0
 
     def ceil_history(self, message_history: List[Dict[str, str]], max_tokens: int | None = None) -> List[Dict[str, str]]:
         """
