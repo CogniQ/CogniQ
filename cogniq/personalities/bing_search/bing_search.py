@@ -17,7 +17,6 @@ class BingSearch(BasePersonality):
     def __init__(
         self,
         *,
-        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
     ):
@@ -27,26 +26,19 @@ class BingSearch(BasePersonality):
         Please call async_setup after initializing the personality.
 
         ```
-        bing_search = BingSearch(config=config, cslack=cslack, copenai=copenai)
+        bing_search = BingSearch(cslack=cslack, copenai=copenai)
         await bing_search.async_setup()
         ```
 
         Parameters:
-        config (dict): Configuration for the Bing Search personality with the following keys:
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
-            OPENAI_API_KEY (str): OpenAI API key.
-            BING_SUBSCRIPTION_KEY (str): Bing subscription key.
-
-
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
 
-        self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

@@ -6,11 +6,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 import asyncio
-from config import config
+from cogniq.config import LOG_LEVEL, MUTED_LOG_LEVEL
 from multiple_personalities import MultiplePersonalities
 
 
-def setup_root_logger(level=logging.INFO):
+def setup_root_logger(level: int):
     root = logging.getLogger()
     root.setLevel(level)
     handler = logging.StreamHandler()
@@ -18,7 +18,7 @@ def setup_root_logger(level=logging.INFO):
     root.addHandler(handler)
 
 
-def mute_certain_loggers(level=logging.WARN):
+def mute_certain_loggers(level: int):
     logs = [
         "generalimport",
         "aiosqlite",
@@ -40,9 +40,9 @@ def mute_certain_loggers(level=logging.WARN):
 
 
 if __name__ == "__main__":
-    setup_root_logger(level=config["LOG_LEVEL"])
-    mute_certain_loggers(level=config["MUTED_LOG_LEVEL"])
+    setup_root_logger(level=LOG_LEVEL)
+    mute_certain_loggers(level=MUTED_LOG_LEVEL)
 
-    mp = MultiplePersonalities(config=config)
+    mp = MultiplePersonalities()
 
     asyncio.run(mp.start())

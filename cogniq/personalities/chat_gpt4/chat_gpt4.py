@@ -15,30 +15,24 @@ from .ask import Ask
 
 
 class ChatGPT4(BasePersonality):
-    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
         """
         Chat GPT4 personality
         Please call async_setup after initializing the personality.
 
         ```
-        chat_gpt4 = ChatGPT4(config=config, cslack=cslack, copenai=copenai)
+        chat_gpt4 = ChatGPT4(cslack=cslack, copenai=copenai)
         await chat_gpt4.async_setup()
         ```
 
         Parameters:
-        config (dict): Configuration for the Chat GPT4 personality with the following keys:
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
-            OPENAI_API_KEY (str): OpenAI API key.
-
-
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
-        self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
-        self.ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        self.ask = Ask(cslack=cslack, copenai=copenai)
 
     async def async_setup(self) -> None:
         """

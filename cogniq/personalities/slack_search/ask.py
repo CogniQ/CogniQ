@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 import json
 
+
+from cogniq.config import APP_URL, OPENAI_CHAT_MODEL
 from cogniq.personalities import BaseAsk
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack, UserTokenNoneError
@@ -19,7 +21,6 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -29,22 +30,15 @@ class Ask(BaseAsk):
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        ask = Ask(cslack=cslack, copenai=copenai)
         await ask.async_setup()
         ```
 
         Parameters:
-        config (dict): Configuration for the Chat GPT4 personality with the following keys:
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
-            OPENAI_API_KEY (str): OpenAI API key.
-
-
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
 
         """
-
-        self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
@@ -119,7 +113,7 @@ class Ask(BaseAsk):
         try:
             slack_search_response = await self.cslack.search.search_texts(q=search_query, context=context, filter=filter)
         except UserTokenNoneError as e:
-            error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {self.config["APP_URL"]}/slack/install"""
+            error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {APP_URL}/slack/install"""
             answer = error_string
             response = {"choices": [{"message": {"content": error_string}}]}
             return {"answer": answer, "response": response}
@@ -140,7 +134,7 @@ class Ask(BaseAsk):
         response = await self.copenai.async_chat_completion_create(
             messages=message_history,
             stream_callback=stream_callback,
-            model=self.config["OPENAI_CHAT_MODEL"],  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+            model=OPENAI_CHAT_MODEL,  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             stop=["\n\n"],
             temperature=0.2,
         )

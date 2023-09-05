@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 import asyncio
 from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
+from cogniq.config import OPENAI_API_KEY, OPENAI_MAX_TOKENS_RESPONSE
 from cogniq.personalities import BaseAsk
 from cogniq.openai import (
     system_message,
@@ -34,7 +35,6 @@ class Ask(BaseAsk):
     def __init__(
         self,
         *,
-        config: Dict[str, str],
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
         **kwargs,
@@ -44,35 +44,29 @@ class Ask(BaseAsk):
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, cslack=cslack, copenai=copenai)
+        ask = Ask(cslack=cslack, copenai=copenai)
         await ask.async_setup()
         ```
 
         Parameters:
-        config (dict): Configuration for the Bing Search personality with the following keys:
-            OPENAI_MAX_TOKENS_RESPONSE (int): Maximum number of tokens to generate for the response.
-            OPENAI_API_KEY (str): OpenAI API key.
-            BING_SUBSCRIPTION_KEY (str): Bing subscription key.
-
         cslack (CogniqSlack): CogniqSlack instance.
         copenai (CogniqOpenAI): CogniqOpenAI instance.
         """
 
-        self.config = config
         self.cslack = cslack
         self.copenai = copenai
 
         self.web_qa_tool = Tool(
             name="Search",
-            pipeline_or_node=CustomWebQAPipeline(config=config),
+            pipeline_or_node=CustomWebQAPipeline(),
             description="useful for when you need to Google questions.",
             output_variable="answers",
         )
 
         self.agent_prompt_node = PromptNode(
             "gpt-3.5-turbo",
-            api_key=self.config["OPENAI_API_KEY"],
-            max_length=self.config["OPENAI_MAX_TOKENS_RESPONSE"],
+            api_key=OPENAI_API_KEY,
+            max_length=OPENAI_MAX_TOKENS_RESPONSE,
             stop_words=["Observation:"],
         )
 
@@ -136,7 +130,7 @@ class Ask(BaseAsk):
         final_answer_text = final_answer.answer
         if not final_answer_text:
             transcript = agent_response["transcript"]
-            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, self.config["OPENAI_MAX_TOKENS_RESPONSE"])
+            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, OPENAI_MAX_TOKENS_RESPONSE)
             final_answer_text = summarized_transcript
         return {"answer": final_answer_text, "response": agent_response}
 

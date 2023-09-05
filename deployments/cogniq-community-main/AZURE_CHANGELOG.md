@@ -177,7 +177,7 @@ az containerapp up \
   --name cogniq \
   --resource-group ${AZURE_RESOURCE_GROUP_NAME} \
   --location ${LOCATION} \
-  --image ghcr.io/cogniq/cogniq:4a
+  --image ghcr.io/cogniq/cogniq:main
 
 az containerapp show \
   --name cogniq \

@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from cogniq.config import ANTHROPIC_API_KEY
 from cogniq.personalities import BaseAsk
 from cogniq.slack import CogniqSlack
 
@@ -12,26 +13,21 @@ from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLaye
 
 
 class Ask(BaseAsk):
-    def __init__(self, *, config: Dict[str, str], cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, **kwargs):
         """
         Ask subclass of ChatAnthropic personality
         Please call async_setup before using this class, please!
 
         ```
-        ask = Ask(config=config, cslack=cslack)
+        ask = Ask(cslack=cslack)
         await ask.async_setup()
         ```
 
         Parameters:
-        config (dict): Configuration for the Chat Anthropic personality with the following keys:
-            ANTHROPIC_API_KEY (str): Anthropics API key.
-
-
         cslack (CogniqSlack): CogniqSlack instance.
 
         """
 
-        self.config = config
         self.cslack = cslack
 
     async def async_setup(self) -> None:
@@ -52,7 +48,7 @@ class Ask(BaseAsk):
             "stream": False,
         }
 
-        api_key = self.config["ANTHROPIC_API_KEY"]
+        api_key = ANTHROPIC_API_KEY
         layer = AnthropicClaudeInvocationLayer(api_key=api_key, **kwargs)
         newprompt = f"{message_history}\n\nHuman: {q}"
         res = layer.invoke(prompt=newprompt)
