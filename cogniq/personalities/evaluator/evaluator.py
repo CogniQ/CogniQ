@@ -60,7 +60,14 @@ class Evaluator(BasePersonality):
         buffer_post_timeout = 300  # seconds
         try:
             channel = event["channel"]
-            message = event["text"]
+            message = event.get("text")
+            if not message:
+                logger.debug("I think the message was deleted. Ignoring.")
+                return
+
+            if message is None:
+                logger.debug("Message is None, I think the message was deleted. Ignoring.")
+                return
 
             # create a buffer for each personality
             response_buffers = {p.name: Buffer() for p in personalities}
