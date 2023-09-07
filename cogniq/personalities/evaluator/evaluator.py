@@ -95,7 +95,7 @@ class Evaluator(BasePersonality):
                 self.ask.ask_personalities(
                     q=message,
                     message_history=message_history,
-                    ask_personalities=ask_personalities,
+                    personalities=ask_personalities,
                     context=context,
                 ),
                 buffer_post_timeout,
@@ -125,15 +125,14 @@ class Evaluator(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
-        context: Dict[str, any],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
     ) -> str:
         """
-        Ask directly to the personality.
+        Not implemented in evaluator
         """
-        ask_response = await self.ask.ask_personalities(q=q, message_history=message_history, personalities=personalities, context=context)
-        return ask_response["answer"]
+        return "Not implemented in evaluator personality."
 
     @property
     def description(self) -> str:

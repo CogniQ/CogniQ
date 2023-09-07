@@ -68,7 +68,7 @@ class Ask(BaseAsk):
         message_history: List[dict[str, str]],
         stream_callback: Callable[..., None] | None = None,
         context: Dict[str, Any],
-        ask_personalities: Dict[str, Dict[str, Any]],
+        personalities: Dict[str, Dict[str, Any]],
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 
@@ -85,7 +85,7 @@ class Ask(BaseAsk):
 
         response_futures = []
         # Run the personalities
-        for name, info in ask_personalities.items():
+        for name, info in personalities.items():
             personality = info["personality"]
             stream_callback = info["stream_callback"]
             reply_ts = info["reply_ts"]
