@@ -293,7 +293,7 @@ class InstallationStore(AsyncInstallationStore):
         *,
         context: Dict[str, Any],
         needs_user_token: bool = False,
-    ) -> Installation:
+    ) -> Installation | None:
         enterprise_id = context["enterprise_id"] if "enterprise_id" in context else None
         team_id = context["team_id"] if "team_id" in context else None
         user_id = context["actor_user_id"] if "actor_user_id" in context else None
@@ -314,14 +314,18 @@ class InstallationStore(AsyncInstallationStore):
         self,
         *,
         context: Dict[str, Any],
-    ):
+    ) -> str | None:
         installation = await self.async_find_from_context(context=context, needs_user_token=True)
+        if installation is None:
+            return None
         return installation.user_token
 
     async def async_find_bot_token(
         self,
         *,
         context: Dict[str, Any],
-    ):
+    ) -> str | None:
         installation = await self.async_find_from_context(context=context)
+        if installation is None:
+            return None
         return installation.bot_token
