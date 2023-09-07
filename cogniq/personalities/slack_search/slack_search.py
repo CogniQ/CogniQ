@@ -43,7 +43,10 @@ class SlackSearch(BasePersonality):
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
         channel = event["channel"]
-        message = event["text"]
+        message = event.get("text")
+        if not message:
+            logger.debug("I think the message was deleted. Ignoring.")
+            return
 
         message_history = await self.cslack.openai_history.get_history(event=event, context=context)
         ask_response = await self.ask.ask(

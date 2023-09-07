@@ -42,7 +42,10 @@ class ChatGPT4(BasePersonality):
 
     async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
         channel = event["channel"]
-        message = event["text"]
+        message = event.get("text")
+        if not message:
+            logger.debug("I think the message was deleted. Ignoring.")
+            return
 
         history = await self.cslack.openai_history.get_history(event=event, context=context)
         # logger.debug(f"history: {history}")
