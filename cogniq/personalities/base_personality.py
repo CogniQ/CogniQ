@@ -12,11 +12,10 @@ from cogniq.slack import CogniqSlack
 
 class BasePersonality(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def __init__(self, cslack: CogniqSlack, **kwargs):
+    def __init__(self, cslack: CogniqSlack):
         """
         Initialize the BasePersonality.
         :param cslack: CogniqSlack instance.
-        :param kwargs: Additional keyword arguments.
         """
         pass
 
@@ -38,7 +37,15 @@ class BasePersonality(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def ask_directly(self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None) -> None:
+    async def ask_directly(
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
+        stream_callback: Callable[..., None] | None = None,
+        reply_ts: float | None = None,
+    ) -> str:
         """
         Ask a question of the personality and return the response.
         :param q: The question to ask.

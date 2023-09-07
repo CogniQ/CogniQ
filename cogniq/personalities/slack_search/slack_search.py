@@ -13,7 +13,7 @@ from .ask import Ask
 
 
 class SlackSearch(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI):
         """
         SlackSearch personality
         Please call async_setup after initializing the personality.
@@ -55,12 +55,18 @@ class SlackSearch(BasePersonality):
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
-        self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
+        stream_callback: Callable[..., None] | None = None,
+        reply_ts: float | None = None,
     ) -> str:
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts, **kwargs)
+        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts)
         return ask_response["answer"]
 
     @property

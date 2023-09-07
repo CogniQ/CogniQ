@@ -20,7 +20,6 @@ class BaseAsk(metaclass=abc.ABCMeta):
         *,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
-        **kwargs,
     ):
         """
         Ask subclass of the X personality
@@ -51,7 +50,7 @@ class BaseAsk(metaclass=abc.ABCMeta):
         self,
         *,
         q: str,
-        message_history: List[dict[str, str]] | None = None,
+        message_history: List[Dict[str, str]],
         stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,

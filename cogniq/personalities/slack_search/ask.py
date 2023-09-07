@@ -51,7 +51,7 @@ class Ask(BaseAsk):
         self,
         *,
         q: str,
-        message_history: List[dict[str, str]] = [],
+        message_history: List[Dict[str, str]],
         stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,
