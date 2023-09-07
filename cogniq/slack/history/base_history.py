@@ -23,5 +23,5 @@ class BaseHistory(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def get_history(self, *, event: Dict, context: Dict, **kwargs):
+    async def get_history(self, *, event: Dict, context: Dict) -> List[Dict[str, str]]:
         pass

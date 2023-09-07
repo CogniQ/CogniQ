@@ -35,7 +35,7 @@ class OpenAIHistory(BaseHistory):
         auth_test = await self.app.client.auth_test(token=context["bot_token"])
         return auth_test["user"]
 
-    async def get_history(self, *, event: Dict, context: Dict):
+    async def get_history(self, *, event: Dict, context: Dict) -> List[Dict[str, str]]:
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
@@ -44,7 +44,9 @@ class OpenAIHistory(BaseHistory):
         logger.debug(f"get_history: {response}")
         return response
 
-    async def _get_conversations_and_convert_to_chat_sequence(self, *, channel_id: str, thread_ts=None, context: Dict):
+    async def _get_conversations_and_convert_to_chat_sequence(
+        self, *, channel_id: str, thread_ts=None, context: Dict
+    ) -> List[Dict[str, str]]:
         messages = await self._get_conversations(channel_id=channel_id, thread_ts=thread_ts, context=context)
 
         bot_user_id = await self.get_bot_user_id(context=context)
@@ -52,12 +54,12 @@ class OpenAIHistory(BaseHistory):
         # If thread_ts is None, it means we fetched the conversation history.
         # We need to reverse this to make it chronological ascending.
         if thread_ts is None:
-            messages = reversed(messages)
+            messages = list(reversed(messages))
 
         return self._convert_to_chat_sequence(messages=messages, bot_user_id=bot_user_id)
 
-    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: Dict):
-        messages = []
+    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: Dict) -> List[Dict[str, str]]:
+        messages: List[Dict[str, str]] = []
         cursor = None
         messages_per_page = 20
         max_messages = 20
