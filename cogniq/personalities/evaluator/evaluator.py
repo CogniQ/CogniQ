@@ -22,7 +22,7 @@ class Buffer:
 
 
 class Evaluator(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI):
         """
         Evaluator personality
         Please call async_setup after initializing the personality.
@@ -69,7 +69,7 @@ class Evaluator(BasePersonality):
 
             buffer_post_end = asyncio.Event()
 
-            def stream_callback(name: str, token: str, **kwargs) -> None:
+            def stream_callback(name: str, token: str) -> None:
                 setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
             # Wrap personalities and their callbacks in a dict of dicts
@@ -121,12 +121,18 @@ class Evaluator(BasePersonality):
             await asyncio.sleep(interval)
 
     async def ask_directly(
-        self, *, q: str, message_history: List[Dict[str, str]], personalities: List[BasePersonality], context: Dict, **kwargs
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        context: Dict[str, any],
+        stream_callback: Callable[..., None] | None = None,
+        reply_ts: float | None = None,
     ) -> str:
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, personalities=personalities, context=context, **kwargs)
+        ask_response = await self.ask.ask_personalities(q=q, message_history=message_history, personalities=personalities, context=context)
         return ask_response["answer"]
 
     @property

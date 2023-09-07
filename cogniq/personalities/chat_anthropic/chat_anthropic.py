@@ -13,7 +13,7 @@ from .ask import Ask
 
 
 class ChatAnthropic(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack):
         """
         Chat Anthropic personality
         Please call async_setup after initializing the personality.
@@ -52,16 +52,16 @@ class ChatAnthropic(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        **kwargs,
     ) -> str:
         """
         Ask directly to the personality.
         """
         # Convert the message history from OpenAI to Anthropic format
         message_history = self.cslack.anthropic_history.openai_to_anthropic(message_history=message_history)
-        ask_response = await self.ask.ask(q=q, message_history=message_history, **kwargs)
+        ask_response = await self.ask.ask(q=q, message_history=message_history)
         return ask_response["answer"]
 
     @property

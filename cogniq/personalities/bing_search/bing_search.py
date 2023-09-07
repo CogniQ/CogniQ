@@ -61,9 +61,9 @@ class BingSearch(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        **kwargs,
     ) -> str:
         ask_response = await self.ask.ask(
             q=q,

@@ -95,13 +95,14 @@ class Ask(BaseAsk):
         self,
         *,
         q: str,
-        message_history: List[dict[str, str]] | None = None,
+        message_history: List[Dict[str, str]],
         stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
         if message_history is None:
             message_history = []
+
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
 

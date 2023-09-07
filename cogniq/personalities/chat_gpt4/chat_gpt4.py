@@ -15,7 +15,7 @@ from .ask import Ask
 
 
 class ChatGPT4(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI):
         """
         Chat GPT4 personality
         Please call async_setup after initializing the personality.
@@ -55,14 +55,14 @@ class ChatGPT4(BasePersonality):
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        **kwargs,
     ) -> str:
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, **kwargs)
+        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback)
         return ask_response["answer"]
 
     @property
