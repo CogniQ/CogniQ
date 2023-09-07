@@ -136,7 +136,7 @@ class InstallationStore(AsyncInstallationStore):
         *,
         enterprise_id: str | None,
         team_id: str | None,
-        is_enterprise_install: bool | None,
+        is_enterprise_install: bool | None = False,
     ) -> Bot | None:
         c = self.bots.c
         query = (

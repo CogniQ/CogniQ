@@ -53,8 +53,6 @@ class Evaluator(BasePersonality):
         """
         pass
 
-
-
     async def ask_personalities_task(self, *, event: Dict, reply_ts: float, personalities: List[BasePersonality], context: Dict) -> None:
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
