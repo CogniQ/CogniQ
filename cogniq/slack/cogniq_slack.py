@@ -201,6 +201,6 @@ class CogniqSlack:
                         retry_on_revoked_token=False,  # Try once, but don't retry again
                     )
                 else:
-                    raise BotTokenRevokedError(message=e, context=context)
+                    raise BotTokenRevokedError(message=str(e), context=context)
             else:
                 raise e
