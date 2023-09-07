@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def evaluator_prompt(responses_with_descriptions: List[List[str]], q: str) -> str:
+def evaluator_prompt(responses_with_descriptions: list[tuple[Any, Any]], q: str) -> str:
     """
     The evaluator prompt.
     """

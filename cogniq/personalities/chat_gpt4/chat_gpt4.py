@@ -62,7 +62,7 @@ class ChatGPT4(BasePersonality):
         """
         Ask directly to the personality.
         """
-        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback)
+        ask_response = await self.ask.ask(q=q, message_history=message_history, stream_callback=stream_callback, context=context)
         return ask_response["answer"]
 
     @property

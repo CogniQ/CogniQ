@@ -69,7 +69,7 @@ class BingSearch(BasePersonality):
             q=q,
             message_history=message_history,
             stream_callback=stream_callback,
-            **kwargs,
+            context=context,
         )
         transcript = ask_response["response"]["transcript"]
         transcript_summary = await self.copenai.summarizer.ceil_prompt(transcript)
