@@ -1,3 +1,10 @@
+## [0.4.22](https://github.com/CogniQ/CogniQ/compare/v0.4.21...v0.4.22) (2023-09-07)
+
+
+### Bug Fixes
+
+* ensure that row exists before attempting to delete it ([54a2473](https://github.com/CogniQ/CogniQ/commit/54a247367b2130e88061f02273cf22b0f21d4634))
+
 ## [0.4.21](https://github.com/CogniQ/CogniQ/compare/v0.4.20...v0.4.21) (2023-09-05)
 
 
