@@ -1,3 +1,11 @@
+## [0.4.23](https://github.com/CogniQ/CogniQ/compare/v0.4.22...v0.4.23) (2023-09-07)
+
+
+### Bug Fixes
+
+* only encapsulate parts of the the code that might raise exceptions in the try block ([e2924b9](https://github.com/CogniQ/CogniQ/commit/e2924b9ecd8c8c338c2570f636b1a13f9aea3fd5))
+* unhandled KeyError on delete ([0ff8417](https://github.com/CogniQ/CogniQ/commit/0ff8417531ad628c3cf13f7e4466389fb18480c1))
+
 ## [0.4.22](https://github.com/CogniQ/CogniQ/compare/v0.4.21...v0.4.22) (2023-09-07)
 
 
