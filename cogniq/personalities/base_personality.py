@@ -39,7 +39,7 @@ class BasePersonality(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def ask_directly(
-        self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None, **kwargs
+        self, *, q, message_history: List[dict[str, str]], context: Dict, reply_ts: float | None = None
     ) -> None:
         """
         Ask a question of the personality and return the response.
@@ -47,7 +47,6 @@ class BasePersonality(metaclass=abc.ABCMeta):
         :param message_history: The message history.
         :param context: The context data.
         :param reply_ts: The timestamp for the reply. If None, behavior may vary.
-        :param kwargs: Additional keyword arguments.
         """
         pass
 

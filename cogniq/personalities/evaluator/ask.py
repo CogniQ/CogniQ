@@ -26,7 +26,6 @@ class Ask(BaseAsk):
         *,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
-        **kwargs,
     ):
         """
         Ask subclass of the ChatGPT4 personality
@@ -54,11 +53,22 @@ class Ask(BaseAsk):
     async def ask(
         self,
         *,
-        q,
-        message_history: List[dict[str, str]],
-        ask_personalities: Dict[str, Dict[str, Any]],
-        context: Dict[str, Any],
+        q: str,
+        message_history: List[dict[str, str]] = [],
         stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+    ) -> Dict[str, Any]:
+        return {"answer": "This personality does not support asking directly. Please use the ask_personalities method.", "response": None}
+
+    async def ask_personalities(
+        self,
+        *,
+        q: str,
+        message_history: List[dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict[str, Any],
+        ask_personalities: Dict[str, Dict[str, Any]],
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
 
