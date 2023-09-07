@@ -58,46 +58,40 @@ class Evaluator(BasePersonality):
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
         buffer_post_timeout = 300  # seconds
-        try:
-            channel = event["channel"]
-            message = event.get("text")
-            if not message:
-                logger.debug("I think the message was deleted. Ignoring.")
-                return
 
-            if message is None:
-                logger.debug("Message is None, I think the message was deleted. Ignoring.")
-                return
+        channel = event["channel"]
+        message = event.get("text")
+        if not message:
+            logger.debug("I think the message was deleted. Ignoring.")
+            return
+        # create a buffer for each personality
+        response_buffers = {p.name: Buffer() for p in personalities}
+        for name, buf in response_buffers.items():
+            buf.text += f"-------------------------\n{name} Stream of Thought:\n"
 
-            # create a buffer for each personality
-            response_buffers = {p.name: Buffer() for p in personalities}
-            for name, buf in response_buffers.items():
-                buf.text += f"-------------------------\n{name} Stream of Thought:\n"
+        def stream_callback(name: str, token: str) -> None:
+            setattr(response_buffers[name], "text", response_buffers[name].text + token)
 
-            buffer_post_end = asyncio.Event()
+        # Wrap personalities and their callbacks in a dict of dicts
+        ask_personalities = {
+            p.name: {"personality": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts} for p in personalities
+        }
 
-            def stream_callback(name: str, token: str) -> None:
-                setattr(response_buffers[name], "text", response_buffers[name].text + token)
-
-            # Wrap personalities and their callbacks in a dict of dicts
-            ask_personalities = {
-                p.name: {"personality": p, "stream_callback": partial(stream_callback, p.name), "reply_ts": reply_ts} for p in personalities
-            }
-
-            buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
-            buffer_and_post_task = asyncio.create_task(
-                self.buffer_and_post(
-                    response_buffers=response_buffers,
-                    channel=channel,
-                    reply_ts=reply_ts,
-                    context=context,
-                    interval=1,
-                    buffer_post_end=buffer_post_end,
-                )
+        buffer_post_end = asyncio.Event()  # event flag for ending the buffer_and_post loop
+        buffer_and_post_task = asyncio.create_task(
+            self.buffer_and_post(
+                response_buffers=response_buffers,
+                channel=channel,
+                reply_ts=reply_ts,
+                context=context,
+                interval=1,
+                buffer_post_end=buffer_post_end,
             )
-            message_history = await self.cslack.openai_history.get_history(event=event, context=context)
+        )
+        message_history = await self.cslack.openai_history.get_history(event=event, context=context)
 
-            ask_response = {"answer": ""}
+        ask_response = {"answer": ""}
+        try:
             ask_response = await asyncio.wait_for(
                 self.ask.ask_personalities(
                     q=message,
