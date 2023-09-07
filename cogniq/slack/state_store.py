@@ -69,8 +69,13 @@ class StateStore(AsyncOAuthStateStore):
                     query = self.oauth_states.select().where(and_(c.state == state, c.expire_at > datetime.utcnow()))
                     row = await database.fetch_one(query)
                     self.logger.debug(f"consume's query result: {row}")
+
+                    if row is None:
+                        return False
+
                     await database.execute(self.oauth_states.delete().where(c.id == row["id"]))
                     return True
+
             return False
         except Exception as e:
             message = f"Failed to find any persistent data for state: {state} - {e}"
