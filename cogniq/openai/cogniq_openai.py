@@ -40,7 +40,7 @@ class CogniqOpenAI:
         payload = {**default_payload, **kwargs}  # add and override any additional kwargs to payload
 
         if stream_callback_set:
-            return await self.async_openai_stream(url=url, payload=payload, stream_callback=stream_callback, **kwargs)
+            return await self.async_openai_stream(url=url, payload=payload, stream_callback=stream_callback, **kwargs)  # type: ignore # since mypy is not picking up on the control flow that ensures stream_callback is not None
         else:
             return await self.async_openai(url=url, payload=payload, **kwargs)
 
