@@ -50,11 +50,11 @@ class BaseAsk(metaclass=abc.ABCMeta):
     async def ask(
         self,
         *,
-        q,
-        message_history: List[dict[str, str]],
-        personalities: Dict,
-        context: Dict,
+        q: str,
+        message_history: List[dict[str, str]] | None = None,
         stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
     ) -> Dict[str, Any]:
         """
         Ask a question to the personality.

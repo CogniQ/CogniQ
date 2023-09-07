@@ -47,7 +47,15 @@ class Evaluator(BasePersonality):
         """
         await self.ask.async_setup()
 
-    async def ask_task(self, *, event: Dict, reply_ts: float, personalities: List[BasePersonality], context: Dict) -> None:
+    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
+        """
+        Not implemented for Evaluator.
+        """
+        pass
+
+
+
+    async def ask_personalities_task(self, *, event: Dict, reply_ts: float, personalities: List[BasePersonality], context: Dict) -> None:
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
         """
@@ -86,7 +94,7 @@ class Evaluator(BasePersonality):
 
             ask_response = {"answer": ""}
             ask_response = await asyncio.wait_for(
-                self.ask.ask(
+                self.ask.ask_personalities(
                     q=message,
                     message_history=message_history,
                     ask_personalities=ask_personalities,

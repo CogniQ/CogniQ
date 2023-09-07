@@ -13,7 +13,7 @@ from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLaye
 
 
 class Ask(BaseAsk):
-    def __init__(self, *, cslack: CogniqSlack, **kwargs):
+    def __init__(self, *, cslack: CogniqSlack):
         """
         Ask subclass of ChatAnthropic personality
         Please call async_setup before using this class, please!
@@ -36,8 +36,17 @@ class Ask(BaseAsk):
         """
         pass
 
-    async def ask(self, *, q: str, message_history: str | None = None) -> Dict[str, Any]:
-        message_history = message_history or ""
+    async def ask(
+        self,
+        *,
+        q: str,
+        message_history: List[dict[str, str]] | None = None,
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+    ) -> Dict[str, Any]:
+        if message_history is None:
+            message_history = []
         kwargs = {
             "model": "claude-2",
             "max_tokens_to_sample": 100000,

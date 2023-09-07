@@ -89,7 +89,7 @@ class MultiplePersonalities:
         ]
 
         _evaluation_task = asyncio.create_task(
-            self.evaluator.ask_task(
+            self.evaluator.ask_personalities_task(
                 event=event,
                 reply_ts=reply_ts,
                 personalities=personalities,

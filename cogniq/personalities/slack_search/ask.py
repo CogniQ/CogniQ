@@ -23,7 +23,6 @@ class Ask(BaseAsk):
         *,
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
-        **kwargs,
     ):
         """
         Ask subclass of the ChatGPT4 personality
@@ -52,7 +51,7 @@ class Ask(BaseAsk):
         self,
         *,
         q: str,
-        message_history: List[dict[str, str]],
+        message_history: List[dict[str, str]] = [],
         stream_callback: Callable[..., None] | None = None,
         context: Dict,
         reply_ts: float | None = None,
