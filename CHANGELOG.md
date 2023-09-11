@@ -1,3 +1,10 @@
+## [0.4.25](https://github.com/CogniQ/CogniQ/compare/v0.4.24...v0.4.25) (2023-09-11)
+
+
+### Bug Fixes
+
+* update containerapp to include datadog/serverless-init required env vars ([66666cf](https://github.com/CogniQ/CogniQ/commit/66666cfac9cf48472a03bf00d6dab559816d1623))
+
 ## [0.4.24](https://github.com/CogniQ/CogniQ/compare/v0.4.23...v0.4.24) (2023-09-11)
 
 
