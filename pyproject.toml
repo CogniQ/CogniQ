@@ -46,7 +46,7 @@ torchvision = [
   { version = "0.15.2+cu118", source = "pytorch", markers = "sys_platform=='linux'" },
   { version = "0.15.2", markers = "sys_platform=='darwin'" }
 ] 
-farm-haystack = { version = "1.17.2", extras = [] }
+farm-haystack = { version = "1.20.0", extras = [] }
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,6 +1,6 @@
-FROM deepset/haystack:base-cpu-v1.17.2 AS build-image
+FROM deepset/haystack:base-cpu-v1.20.0 AS build-image
 
-LABEL org.opencontainers.image.base.name="docker.io/deepset/haystack:base-cpu-v1.17.2" \
+LABEL org.opencontainers.image.base.name="docker.io/deepset/haystack:base-cpu-v1.20.0"q   \
       org.opencontainers.image.description="Application packaged by CogniQ" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.title="CogniQ" \
