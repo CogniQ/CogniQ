@@ -1,3 +1,10 @@
+## [0.4.26](https://github.com/CogniQ/CogniQ/compare/v0.4.25...v0.4.26) (2023-09-11)
+
+
+### Bug Fixes
+
+* permit anthropic claude to stream responses ([165e8cc](https://github.com/CogniQ/CogniQ/commit/165e8cc0eb8dfc1e226a704f4f5b8cc080e0510f))
+
 ## [0.4.25](https://github.com/CogniQ/CogniQ/compare/v0.4.24...v0.4.25) (2023-09-11)
 
 
