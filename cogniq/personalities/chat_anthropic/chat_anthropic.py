@@ -37,6 +37,8 @@ class ChatAnthropic(BasePersonality):
     ) -> Dict[str, Any]:
         if message_history is None:
             message_history = []
+
+        stream_callback_set = stream_callback is not None
         kwargs = {
             "model": "claude-2",
             "max_tokens_to_sample": 100000,
@@ -44,7 +46,8 @@ class ChatAnthropic(BasePersonality):
             "top_p": -1,  # disabled
             "top_k": -1,
             "stop_sequences": ["\n\nHuman: "],
-            "stream": False,
+            "stream": stream_callback_set,
+            "stream_handler": stream_callback,
         }
 
         api_key = ANTHROPIC_API_KEY
