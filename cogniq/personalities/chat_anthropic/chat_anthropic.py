@@ -1,15 +1,14 @@
 from __future__ import annotations
 from typing import *
-
 import logging
 
 logger = logging.getLogger(__name__)
 
+from haystack.nodes.prompt.invocation_layer import AnthropicClaudeInvocationLayer
 
+from cogniq.config import ANTHROPIC_API_KEY
 from cogniq.personalities import BasePersonality
 from cogniq.slack import CogniqSlack
-
-from .ask import Ask
 
 
 class ChatAnthropic(BasePersonality):
@@ -29,13 +28,11 @@ class ChatAnthropic(BasePersonality):
 
         self.cslack = cslack
 
-        self.ask = Ask(cslack=cslack)
-
     async def async_setup(self) -> None:
         """
         Please call after initializing the personality.
         """
-        await self.ask.async_setup()
+        pass
 
     async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
         channel = event["channel"]
@@ -47,7 +44,7 @@ class ChatAnthropic(BasePersonality):
         history = await self.cslack.anthropic_history.get_history(event=event, context=context)
         logger.debug(f"history: {history}")
 
-        ask_response = await self.ask.ask(q=message, message_history=history, context=context)
+        ask_response = await self.ask(q=message, message_history=history, context=context)
         await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
 
     async def ask_directly(
@@ -64,8 +61,38 @@ class ChatAnthropic(BasePersonality):
         """
         # Convert the message history from OpenAI to Anthropic format
         message_history = self.cslack.anthropic_history.openai_to_anthropic(message_history=message_history)
-        ask_response = await self.ask.ask(q=q, message_history=message_history, context=context)
+        ask_response = await self.ask(q=q, message_history=message_history, context=context)
         return ask_response["answer"]
+
+    async def ask(
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+    ) -> Dict[str, Any]:
+        if message_history is None:
+            message_history = []
+        kwargs = {
+            "model": "claude-2",
+            "max_tokens_to_sample": 100000,
+            "temperature": 1,
+            "top_p": -1,  # disabled
+            "top_k": -1,
+            "stop_sequences": ["\n\nHuman: "],
+            "stream": False,
+        }
+
+        api_key = ANTHROPIC_API_KEY
+        layer = AnthropicClaudeInvocationLayer(api_key=api_key, **kwargs)
+        newprompt = f"{message_history}\n\nHuman: {q}"
+        res = layer.invoke(prompt=newprompt)
+
+        logger.info(f"res: {res}")
+        answer = "".join(res)
+        return {"answer": answer, "response": res}
 
     @property
     def description(self) -> str:

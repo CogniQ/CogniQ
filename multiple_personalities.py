@@ -24,22 +24,18 @@ class MultiplePersonalities:
         # Initialize the slack bot
         self.cslack = CogniqSlack()
 
-        # Setup the personalities
         self.copenai = CogniqOpenAI()
 
+        # Setup the personalities
         self.bing_search = BingSearch(cslack=self.cslack, copenai=self.copenai)
-
         self.chat_gpt4 = ChatGPT4(cslack=self.cslack, copenai=self.copenai)
-
         self.chat_anthropic = ChatAnthropic(
             cslack=self.cslack,
         )
-
         self.slack_search = SlackSearch(
             cslack=self.cslack,
             copenai=self.copenai,
         )
-
         self.evaluator = Evaluator(
             cslack=self.cslack,
             copenai=self.copenai,

@@ -55,6 +55,21 @@ class BasePersonality(metaclass=abc.ABCMeta):
         """
         pass
 
+    @abc.abstractmethod
+    async def ask(
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        stream_callback: Callable[..., None] | None = None,
+        context: Dict,
+        reply_ts: float | None = None,
+    ) -> Dict[str, Any]:
+        """
+        Ask a question to the personality.
+        """
+        pass
+
     @property
     @abc.abstractmethod
     def description(self) -> str:
