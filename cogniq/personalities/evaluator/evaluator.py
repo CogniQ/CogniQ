@@ -148,7 +148,6 @@ class Evaluator(BasePersonality):
             else:
                 responses_with_descriptions.append((description, response))
 
-
         # Log the responses
         for description, response in responses_with_descriptions:
             logger.debug(f"{description}: {response}")
