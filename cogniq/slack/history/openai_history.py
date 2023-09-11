@@ -28,14 +28,14 @@ class OpenAIHistory(BaseHistory):
         """
         self.app = app
 
-    async def get_bot_user_id(self, *, context: Dict) -> str:
+    async def get_bot_user_id(self, *, context: Dict[str, Any]) -> str:
         return context["bot_user_id"]
 
-    async def get_bot_name(self, *, context: Dict) -> str:
+    async def get_bot_name(self, *, context: Dict[str, Any]) -> str:
         auth_test = await self.app.client.auth_test(token=context["bot_token"])
         return auth_test["user"]
 
-    async def get_history(self, *, event: Dict, context: Dict) -> List[Dict[str, str]]:
+    async def get_history(self, *, event: Dict[str, str], context: Dict[str, Any]) -> List[Dict[str, str]]:
         channel_id = event["channel"]
         thread_ts = event.get("thread_ts")
 
@@ -45,7 +45,7 @@ class OpenAIHistory(BaseHistory):
         return response
 
     async def _get_conversations_and_convert_to_chat_sequence(
-        self, *, channel_id: str, thread_ts=None, context: Dict
+        self, *, channel_id: str, thread_ts=None, context: Dict[str, Any]
     ) -> List[Dict[str, str]]:
         messages = await self._get_conversations(channel_id=channel_id, thread_ts=thread_ts, context=context)
 
@@ -58,7 +58,7 @@ class OpenAIHistory(BaseHistory):
 
         return self._convert_to_chat_sequence(messages=messages, bot_user_id=bot_user_id)
 
-    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: Dict) -> List[Dict[str, str]]:
+    async def _get_conversations(self, *, channel_id: str, thread_ts=None, context: Dict[str, Any]) -> List[Dict[str, str]]:
         messages: List[Dict[str, str]] = []
         cursor = None
         messages_per_page = 20
