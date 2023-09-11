@@ -1,3 +1,10 @@
+## [0.4.24](https://github.com/CogniQ/CogniQ/compare/v0.4.23...v0.4.24) (2023-09-11)
+
+
+### Bug Fixes
+
+* update deps on 20230910 ([#88](https://github.com/CogniQ/CogniQ/issues/88)) ([26694e9](https://github.com/CogniQ/CogniQ/commit/26694e9ad82b71a3bb4d9d91f4fefba2d7f70dd8))
+
 ## [0.4.23](https://github.com/CogniQ/CogniQ/compare/v0.4.22...v0.4.23) (2023-09-07)
 
 
