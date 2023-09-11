@@ -19,6 +19,8 @@ RUN apt-get update && \
     git \
     gcc \
     postgresql-client \
+    build-essential \
+    python3-dev \
     libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
