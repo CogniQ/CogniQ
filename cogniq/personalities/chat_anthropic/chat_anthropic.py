@@ -12,65 +12,27 @@ from cogniq.slack import CogniqSlack
 
 
 class ChatAnthropic(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack):
+    @property
+    def description(self) -> str:
+        return "I do not modify the query. I simply ask the question to Anthropic Claude."
+
+    @property
+    def name(self) -> str:
+        return "Anthropic Claude"
+
+    async def history(self, *, event: Dict[str, str], context: Dict[str, Any]) -> List[Dict[str, str]]:
         """
-        Chat Anthropic personality
-        Please call async_setup after initializing the personality.
-
-        ```
-        chat_anthropic = ChatAnthropic(cslack=cslack)
-        await chat_anthropic.async_setup()
-        ```
-
-        Parameters:
-        cslack (CogniqSlack): CogniqSlack instance.
+        Returns the history of the event.
         """
-
-        self.cslack = cslack
-
-    async def async_setup(self) -> None:
-        """
-        Please call after initializing the personality.
-        """
-        pass
-
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
-        channel = event["channel"]
-        message = event.get("text")
-        if not message:
-            logger.debug("I think the message was deleted. Ignoring.")
-            return
-
-        history = await self.cslack.anthropic_history.get_history(event=event, context=context)
-        logger.debug(f"history: {history}")
-
-        ask_response = await self.ask(q=message, message_history=history, context=context)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
-
-    async def ask_directly(
-        self,
-        *,
-        q: str,
-        message_history: List[Dict[str, str]],
-        context: Dict[str, Any],
-        stream_callback: Callable[..., None] | None = None,
-        reply_ts: float | None = None,
-    ) -> str:
-        """
-        Ask directly to the personality.
-        """
-        # Convert the message history from OpenAI to Anthropic format
-        message_history = self.cslack.anthropic_history.openai_to_anthropic(message_history=message_history)
-        ask_response = await self.ask(q=q, message_history=message_history, context=context)
-        return ask_response["answer"]
+        return await self.cslack.anthropic_history.get_history(event=event, context=context)
 
     async def ask(
         self,
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        context: Dict,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
         if message_history is None:
@@ -93,11 +55,3 @@ class ChatAnthropic(BasePersonality):
         logger.info(f"res: {res}")
         answer = "".join(res)
         return {"answer": answer, "response": res}
-
-    @property
-    def description(self) -> str:
-        return "I do not modify the query. I simply ask the question to Anthropic Claude."
-
-    @property
-    def name(self) -> str:
-        return "Anthropic Claude"

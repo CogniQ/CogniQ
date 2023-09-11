@@ -32,23 +32,7 @@ class BingSearch(BasePersonality):
         cslack: CogniqSlack,
         copenai: CogniqOpenAI,
     ):
-        """
-        Bing Search personality
-
-        Please call async_setup after initializing the personality.
-
-        ```
-        bing_search = BingSearch(cslack=cslack, copenai=copenai)
-        await bing_search.async_setup()
-        ```
-
-        Parameters:
-        cslack (CogniqSlack): CogniqSlack instance.
-        copenai (CogniqOpenAI): CogniqOpenAI instance.
-        """
-
-        self.cslack = cslack
-        self.copenai = copenai
+        super().__init__(cslack=cslack, copenai=copenai)
         self.web_qa_tool = Tool(
             name="Search",
             pipeline_or_node=CustomWebQAPipeline(),
@@ -63,24 +47,13 @@ class BingSearch(BasePersonality):
             stop_words=["Observation:"],
         )
 
-    async def async_setup(self) -> None:
-        """
-        Please call after initializing the personality.
-        """
-        pass
+    @property
+    def description(self) -> str:
+        return "I perform extractive generation of answers from Bing search results."
 
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict, **kwargs) -> None:
-        channel = event["channel"]
-        message = event.get("text")
-        if not message:
-            logger.debug("I think the message was deleted. Ignoring.")
-            return
-
-        history = await self.cslack.openai_history.get_history(event=event, context=context)
-        # logger.debug(f"history: {history}")
-
-        ask_response = await self.ask(q=message, message_history=history, context=context)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
+    @property
+    def name(self) -> str:
+        return "Bing Search"
 
     async def ask_directly(
         self,
@@ -94,14 +67,77 @@ class BingSearch(BasePersonality):
         ask_response = await self.ask(
             q=q,
             message_history=message_history,
-            stream_callback=stream_callback,
             context=context,
+            stream_callback=stream_callback,
         )
         transcript = ask_response["response"]["transcript"]
         transcript_summary = await self.copenai.summarizer.ceil_prompt(transcript)
         return transcript_summary
 
-    def agent_run(self, query: str, stream_callback: Callable[..., None] | None = None) -> Dict[str, Any]:
+    async def ask(
+        self,
+        *,
+        q: str,
+        message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
+        stream_callback: Callable[..., None] | None = None,
+        reply_ts: float | None = None,
+    ) -> Dict[str, Any]:
+        if message_history is None:
+            message_history = []
+
+        history_augmented_prompt = await self._get_history_augmented_prompt(
+            q=q,
+            message_history=message_history,
+            context=context,
+        )
+
+        loop = asyncio.get_event_loop()
+        with PoolExecutor() as executor:
+            agent_response_task = loop.run_in_executor(
+                executor,
+                self._agent_run,
+                history_augmented_prompt,
+                stream_callback,
+            )
+            agent_response = await agent_response_task
+        final_answer = agent_response["answers"][0]
+        logger.debug(f"final_answer: {final_answer}")
+        final_answer_text = final_answer.answer
+        if not final_answer_text:
+            transcript = agent_response["transcript"]
+            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, OPENAI_MAX_TOKENS_RESPONSE)
+            final_answer_text = summarized_transcript
+        return {"answer": final_answer_text, "response": agent_response}
+
+    async def _get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]], context: Dict[str, Any]) -> str:
+        """
+        Returns a prompt augmented with the message history.
+        """
+        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
+        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
+
+        # if the history is too long, summarize it
+        message_history = self.copenai.summarizer.ceil_history(message_history)
+
+        # Set the system message
+        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
+
+        # if prompt is too long, summarize it
+        short_q = await self.copenai.summarizer.ceil_prompt(q)
+
+        logger.info("short_q: " + short_q)
+
+        message_history_string = ("\n\n".join([message_to_string(message) for message in message_history]),)
+        prompt = f"""Conversation history: {message_history_string}
+
+        Query: {short_q}"""
+        history_augmented_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
+
+        logger.info("history_augmented_prompt: " + history_augmented_prompt)
+        return history_augmented_prompt
+
+    def _agent_run(self, query: str, stream_callback: Callable[..., None] | None = None) -> Dict[str, Any]:
         agent = Agent(
             prompt_node=self.agent_prompt_node,
             prompt_template=agent_prompt,
@@ -116,71 +152,3 @@ class BingSearch(BasePersonality):
                 "Retriever": {"top_k": 3},
             },
         )
-
-    async def ask(
-        self,
-        *,
-        q: str,
-        message_history: List[Dict[str, str]],
-        stream_callback: Callable[..., None] | None = None,
-        context: Dict,
-        reply_ts: float | None = None,
-    ) -> Dict[str, Any]:
-        if message_history is None:
-            message_history = []
-
-        # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
-        bot_name = await self.cslack.openai_history.get_bot_name(context=context)
-
-        # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
-
-        # Set the system message
-        message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
-
-        # if prompt is too long, summarize it
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
-
-        logger.info("short_q: " + short_q)
-        history_augmented_prompt = await self.get_history_augmented_prompt(
-            q=short_q,
-            message_history=message_history,
-        )
-
-        logger.info("history amended query: " + history_augmented_prompt)
-
-        loop = asyncio.get_event_loop()
-        with PoolExecutor() as executor:
-            agent_response_task = loop.run_in_executor(
-                executor,
-                self.agent_run,
-                history_augmented_prompt,
-                stream_callback,
-            )
-            agent_response = await agent_response_task
-        final_answer = agent_response["answers"][0]
-        logger.debug(f"final_answer: {final_answer}")
-        final_answer_text = final_answer.answer
-        if not final_answer_text:
-            transcript = agent_response["transcript"]
-            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, OPENAI_MAX_TOKENS_RESPONSE)
-            final_answer_text = summarized_transcript
-        return {"answer": final_answer_text, "response": agent_response}
-
-    async def get_history_augmented_prompt(self, *, q: str, message_history: List[Dict[str, str]]) -> str:
-        """
-        Returns a prompt augmented with the message history.
-        """
-        history = ("\n\n".join([message_to_string(message) for message in message_history]),)
-        prompt = f"""Conversation history: {history}
-
-        Query: {q}"""
-        return prompt
-
-    @property
-    def description(self) -> str:
-        return "I perform extractive generation of answers from Bing search results."
-
-    @property
-    def name(self) -> str:
-        return "Bing Search"

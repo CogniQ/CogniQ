@@ -15,70 +15,21 @@ from .functions import get_search_query_function
 
 
 class SlackSearch(BasePersonality):
-    def __init__(self, *, cslack: CogniqSlack, copenai: CogniqOpenAI):
-        """
-        SlackSearch personality
-        Please call async_setup after initializing the personality.
+    @property
+    def description(self) -> str:
+        return "I search Slack for relevant conversations."
 
-        ```
-        slack_search = SlackSearch(copenai=copenai)
-        await slack_search.async_setup()
-        ```
-
-        Parameters:
-        cslack (CogniqSlack): CogniqSlack instance.
-        copenai (CogniqOpenAI): CogniqOpenAI instance.
-        """
-        self.cslack = cslack
-        self.copenai = copenai
-
-    async def async_setup(self) -> None:
-        """
-        Please call after initializing the personality.
-        """
-        pass
-
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
-        """
-        Executes the ask_task against all the personalities and returns the best or compiled response.
-        """
-        channel = event["channel"]
-        message = event.get("text")
-        if not message:
-            logger.debug("I think the message was deleted. Ignoring.")
-            return
-
-        message_history = await self.cslack.openai_history.get_history(event=event, context=context)
-        ask_response = await self.ask(
-            q=message,
-            context=context,
-            message_history=message_history,
-        )
-        # logger.debug(openai_response)
-        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
-
-    async def ask_directly(
-        self,
-        *,
-        q: str,
-        message_history: List[Dict[str, str]],
-        context: Dict[str, Any],
-        stream_callback: Callable[..., None] | None = None,
-        reply_ts: float | None = None,
-    ) -> str:
-        """
-        Ask directly to the personality.
-        """
-        ask_response = await self.ask(q=q, message_history=message_history, context=context, reply_ts=reply_ts)
-        return ask_response["answer"]
+    @property
+    def name(self) -> str:
+        return "Slack Search"
 
     async def ask(
         self,
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        context: Dict,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
@@ -172,11 +123,3 @@ class SlackSearch(BasePersonality):
             return True
 
         return message["ts"] != reply_ts
-
-    @property
-    def description(self) -> str:
-        return "I search Slack for relevant conversations."
-
-    @property
-    def name(self) -> str:
-        return "Slack Search"

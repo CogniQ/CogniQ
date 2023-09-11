@@ -5,38 +5,64 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import abc
+from abc import ABC, abstractmethod
 
 from cogniq.slack import CogniqSlack
+from cogniq.openai import system_message, user_message, CogniqOpenAI
 
 
-class BasePersonality(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def __init__(self, cslack: CogniqSlack):
+class BasePersonality(ABC):
+    def __init__(self, cslack: CogniqSlack, copenai: CogniqOpenAI):
         """
         Initialize the BasePersonality.
         :param cslack: CogniqSlack instance.
         """
+        self.cslack = cslack
+        self.copenai = copenai
+
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        """
+        A short description of the personality. This is used by an evaluator to note the context of the response.
+        :return: The description of the personality.
+        """
         pass
 
-    @abc.abstractmethod
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """
+        The name of the personality.
+        :return: The name of the personality.
+        """
+        pass
+
     async def async_setup(self) -> None:
         """
         Perform any asynchronous setup tasks that are necessary for the personalityto function properly.
         """
         pass
 
-    @abc.abstractmethod
-    async def ask_task(self, *, event: Dict, reply_ts: float, context: Dict) -> None:
+    async def history(self, *, event: Dict[str, str], context: Dict[str, Any]) -> List[Dict[str, str]]:
         """
-        Ask a question of the personality and have it reply to the given channel and thread.
-        :param event: The event data.
-        :param reply_ts: The timestamp for the reply.
-        :param context: The context data.
+        Returns the history of the event.
         """
-        pass
+        return await self.cslack.openai_history.get_history(event=event, context=context)
 
-    @abc.abstractmethod
+    async def ask_task(self, *, event: Dict[str, str], reply_ts: float, context: Dict[str, Any], **kwargs) -> None:
+        channel = event["channel"]
+        message = event.get("text")
+        if not message:
+            logger.debug("I think the message was deleted. Ignoring.")
+            return
+
+        history = await self.cslack.openai_history.get_history(event=event, context=context)
+        # logger.debug(f"history: {history}")
+
+        ask_response = await self.ask(q=message, message_history=history, context=context)
+        await self.cslack.chat_update(channel=channel, ts=reply_ts, context=context, text=ask_response["answer"])
+
     async def ask_directly(
         self,
         *,
@@ -47,43 +73,24 @@ class BasePersonality(metaclass=abc.ABCMeta):
         reply_ts: float | None = None,
     ) -> str:
         """
-        Ask a question of the personality and return the response.
-        :param q: The question to ask.
-        :param message_history: The message history.
-        :param context: The context data.
-        :param reply_ts: The timestamp for the reply. If None, behavior may vary.
+        Ask directly to the personality.
         """
-        pass
+        ask_response = await self.ask(
+            q=q, message_history=message_history, context=context, stream_callback=stream_callback, reply_ts=reply_ts
+        )
+        return ask_response["answer"]
 
-    @abc.abstractmethod
+    @abstractmethod
     async def ask(
         self,
         *,
         q: str,
         message_history: List[Dict[str, str]],
+        context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        context: Dict,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
         """
         Ask a question to the personality.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def description(self) -> str:
-        """
-        A short description of the personality. This is used by an evaluator to note the context of the response.
-        :return: The description of the personality.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        """
-        The name of the personality.
-        :return: The name of the personality.
         """
         pass

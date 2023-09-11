@@ -31,6 +31,7 @@ class MultiplePersonalities:
         self.chat_gpt4 = ChatGPT4(cslack=self.cslack, copenai=self.copenai)
         self.chat_anthropic = ChatAnthropic(
             cslack=self.cslack,
+            copenai=self.copenai,
         )
         self.slack_search = SlackSearch(
             cslack=self.cslack,
@@ -56,7 +57,7 @@ class MultiplePersonalities:
         await self.evaluator.async_setup()
         await self.cslack.start()
 
-    async def first_response(self, *, context: Dict, original_ts: str) -> Dict[str, str]:
+    async def first_response(self, *, context: Dict[str, Any], original_ts: str) -> Dict[str, str]:
         """
         This method is called when the bot is called.
         """
@@ -70,7 +71,7 @@ class MultiplePersonalities:
             logger.error(e)
             raise e
 
-    async def _dispatch(self, *, event: Dict, context: Dict, original_ts: str) -> None:
+    async def _dispatch(self, *, event: Dict[str, str], context: Dict[str, Any], original_ts: str) -> None:
         reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
 
@@ -93,7 +94,7 @@ class MultiplePersonalities:
             )
         )
 
-    async def dispatch(self, *, event: Dict, context: Dict) -> None:
+    async def dispatch(self, *, event: Dict[str, str], context: Dict[str, Any]) -> None:
         original_ts = event["ts"]
         bot_token = context.get("bot_token")
         app_url = APP_URL
@@ -112,13 +113,13 @@ class MultiplePersonalities:
 
     def register_app_mention(self) -> None:
         @self.cslack.app.event("app_mention")
-        async def handle_app_mention(event: Dict, context: Dict) -> None:
+        async def handle_app_mention(event: Dict[str, str], context: Dict[str, Any]) -> None:
             logger.info(f"app_mention: {event.get('text')}")
             await self.dispatch(event=event, context=context)
 
     def register_message(self) -> None:
         @self.cslack.app.event("message")
-        async def handle_message_events(event: Dict, context: Dict) -> None:
+        async def handle_message_events(event: Dict[str, str], context: Dict[str, Any]) -> None:
             logger.info(f"message: {event.get('text')}")
             channel_type = event["channel_type"]
             if channel_type == "im":
