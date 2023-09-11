@@ -40,5 +40,7 @@ services:
       DD_TRACE_ENABLED: "true"
       DD_VERSION: local-development
       DD_REMOTE_CONFIGURATION_ENABLED: "false"
+      DD_AZURE_SUBSCRIPTION_ID: ${DD_AZURE_SUBSCRIPTION_ID}
+      DD_AZURE_RESOURCE_GROUP: ${DD_AZURE_RESOURCE_GROUP}
 volumes:
   pgdata:

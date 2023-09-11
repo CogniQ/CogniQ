@@ -64,6 +64,10 @@ properties:
             value: datadoghq.com
           - name: DD_API_KEY
             secretRef: dd-api-key
+          - name: DD_AZURE_SUBSCRIPTION_ID
+            secretRef: dd-azure-subscription-id
+          - name: DD_AZURE_RESOURCE_GROUP
+            value: cogniq
           - name: SLACK_CLIENT_ID
             secretRef: slack-client-id
           - name: SLACK_CLIENT_SECRET

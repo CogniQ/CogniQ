@@ -55,6 +55,8 @@ jobs:
           DD_REMOTE_CONFIGURATION_ENABLED=false \
           DD_SITE=datadoghq.com \
           DD_API_KEY=secretref:dd-api-key \
+          DD_AZURE_SUBSCRIPTION_ID=secretref:dd-azure-subscription-id \
+          DD_AZURE_RESOURCE_GROUP=cogniq-community-main \
           SLACK_CLIENT_ID=secretref:slack-client-id \
           SLACK_CLIENT_SECRET=secretref:slack-client-secret \
           SLACK_SIGNING_SECRET=secretref:slack-signing-secret \
