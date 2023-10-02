@@ -137,6 +137,10 @@ class CogniqSlack:
         async def slack_oauth_redirect(request: Request):
             return await self.app_handler.handle(request)
 
+        @self.api.get("/healthz")
+        async def healthz(request: Request):
+            return "OK"
+
         reload = APP_ENV == "development"
         # Run the FastAPI app using Uvicorn
         uvicorn_config = uvicorn.Config(
