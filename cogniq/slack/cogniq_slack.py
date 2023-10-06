@@ -24,6 +24,7 @@ from slack_sdk.errors import SlackApiError
 
 from databases import Database
 import sqlalchemy
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from cogniq.config import (
     APP_ENV,
@@ -53,17 +54,17 @@ class CogniqSlack:
         """
 
         self.database_url = DATABASE_URL
+        self.engine: AsyncEngine = sqlalchemy.ext.asyncio.create_async_engine(DATABASE_URL)
 
         self.installation_store = InstallationStore(
             client_id=SLACK_CLIENT_ID,
             client_secret=SLACK_CLIENT_SECRET,
-            database_url=self.database_url,
+            engine=self.engine,
             install_path=f"{APP_URL}/slack/install",
         )
         self.state_store = StateStore(
             expiration_seconds=120,
-            database_url=DATABASE_URL,
-            logger=logger,
+            engine=self.engine,
         )
         oauth_settings = AsyncOAuthSettings(
             client_id=SLACK_CLIENT_ID,
@@ -104,6 +105,18 @@ class CogniqSlack:
         # Set defaults
         self.search = Search(cslack=self)
 
+    async def async_setup(self) -> None:
+        async with self.engine.begin() as conn:
+
+            def get_tables(sync_conn):
+                inspector = sqlalchemy.inspect(sync_conn)
+                return inspector.get_table_names()
+
+            table_names = await conn.run_sync(get_tables)
+            for table in ["slack_installations", "slack_bots", "slack_oauth_states"]:
+                if table not in table_names:
+                    raise Exception(f"Table {table} not found in database. Please run migrations with `.venv/bin/alembic upgrade head`.")
+
     async def start(self):
         """
         This method starts the app.
@@ -122,8 +135,7 @@ class CogniqSlack:
         - The app will keep running until it is manually stopped or encounters an error.
         """
         logger.info("Starting Slack app!!")
-        await self.installation_store.async_setup()
-        await self.state_store.async_setup()
+        await self.async_setup()
 
         @self.api.post("/slack/events")
         async def slack_events(request: Request):

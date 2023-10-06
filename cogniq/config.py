@@ -41,6 +41,6 @@ POSTGRES_USER = env("POSTGRES_USER", "cogniq")
 POSTGRES_PASSWORD = env("POSTGRES_PASSWORD", "cogniq")
 POSTGRES_DB = env("POSTGRES_DB", "cogniq")
 
-DATABASE_URL = env("DATABASE_URL", f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}")
+DATABASE_URL = env("DATABASE_URL", f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}")
 LOG_LEVEL = logging.DEBUG if APP_ENV == "development" else logging.INFO
 MUTED_LOG_LEVEL = logging.WARN if APP_ENV == "development" else logging.WARN
