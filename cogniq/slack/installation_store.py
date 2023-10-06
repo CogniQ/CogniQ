@@ -15,17 +15,17 @@ from logging import Logger
 from uuid import uuid4
 
 import sqlalchemy
-from databases import Database
+from sqlalchemy import and_, desc, Table, MetaData
+from sqlalchemy.ext.asyncio import AsyncEngine
+
 from slack_sdk.oauth.installation_store import Bot, Installation
 from slack_sdk.oauth.installation_store.async_installation_store import (
     AsyncInstallationStore,
 )
 from slack_sdk.oauth.installation_store.sqlalchemy import SQLAlchemyInstallationStore
-from sqlalchemy import and_, desc, Table, MetaData
 
 
 class InstallationStore(AsyncInstallationStore):
-    database_url: str
     client_id: str
     metadata: MetaData
     installations: Table
@@ -35,12 +35,12 @@ class InstallationStore(AsyncInstallationStore):
         self,
         client_id: str,
         client_secret: str,
-        database_url: str,
+        engine: AsyncEngine,
         install_path: str | None = None,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.database_url = database_url
+        self.engine = engine
         self._logger = logger
         self.install_path = install_path
         self.token_rotation_expiration_minutes = 60 * 9  # with 9 hours remaining, that's roughly every 3 hours at maximum.
@@ -54,28 +54,22 @@ class InstallationStore(AsyncInstallationStore):
             table_name="slack_bots",
         )
 
-        self.engine = sqlalchemy.create_engine(self.database_url)
-
     async def async_setup(self) -> None:
-        try:
-            async with Database(self.database_url) as database:
-                await database.fetch_one("select count(*) from slack_installations")
-        except Exception as e:
-            self.metadata.create_all(self.engine)
+        pass
 
     @property
     def logger(self) -> Logger:
         return self._logger
 
     async def async_save(self, installation: Installation) -> None:
-        async with Database(self.database_url) as database:
+        async with self.engine.begin() as conn:
             i = installation.to_dict()
             i["client_id"] = self.client_id
             i_column = self.installations.c
 
             # check if an installation with these attributes already exists
             installations_row_id: Optional[str] = None
-            installations_rows = await database.fetch_all(
+            result = await conn.execute(
                 sqlalchemy.select(i_column.id)
                 .where(
                     and_(
@@ -87,29 +81,30 @@ class InstallationStore(AsyncInstallationStore):
                 )
                 .limit(1)
             )
+            installations_rows = result.fetchall()
+
             for row in installations_rows:
                 installations_row_id = row["id"]
 
-            async with database.transaction():
-                if installations_row_id is None:
-                    await database.execute(self.installations.insert(), i)
-                else:
-                    update_statement = self.installations.update().where(i_column.id == installations_row_id).values(**i)
-                    await database.execute(update_statement)
+            if installations_row_id is None:
+                await conn.execute(self.installations.insert().values(i))
+            else:
+                update_statement = self.installations.update().where(i_column.id == installations_row_id).values(**i)
+                await conn.execute(update_statement)
 
-            # bots
-            await self.async_save_bot(installation.to_bot())
+        # bots
+        await self.async_save_bot(installation.to_bot())
 
     async def async_save_bot(self, bot: Bot) -> None:
         """Saves a bot installation data"""
-        async with Database(self.database_url) as database:
+        async with self.engine.begin() as conn:
             b = bot.to_dict()
             b["client_id"] = self.client_id
             b_column = self.bots.c
 
             # check if a bot with these attributes already exists
             bots_row_id: Optional[str] = None
-            bots_rows = await database.fetch_all(
+            result = await conn.execute(
                 sqlalchemy.select(b_column.id)
                 .where(
                     and_(
@@ -121,15 +116,16 @@ class InstallationStore(AsyncInstallationStore):
                 )
                 .limit(1)
             )
+            bots_rows = result.fetchall()
+
             for row in bots_rows:
                 bots_row_id = row["id"]
 
-            async with database.transaction():
-                if bots_row_id is None:
-                    await database.execute(self.bots.insert(), b)
-                else:
-                    update_statement = self.bots.update().where(b_column.id == bots_row_id).values(**b)
-                    await database.execute(update_statement)
+            if bots_row_id is None:
+                await conn.execute(self.bots.insert().values(b))
+            else:
+                update_statement = self.bots.update().where(b_column.id == bots_row_id).values(**b)
+                await conn.execute(update_statement)
 
     async def async_find_bot(
         self,
@@ -137,7 +133,7 @@ class InstallationStore(AsyncInstallationStore):
         enterprise_id: str | None,
         team_id: str | None,
         is_enterprise_install: bool | None = False,
-    ) -> Bot | None:
+    ) -> Optional[Bot]:
         c = self.bots.c
         query = (
             self.bots.select()
@@ -151,22 +147,23 @@ class InstallationStore(AsyncInstallationStore):
             .order_by(desc(c.installed_at), desc(c.id))
             .limit(1)
         )
-        async with Database(self.database_url) as database:
-            result = await database.fetch_one(query)
-            # logger.info("found bot: %s" % result)
-            if result:
+        async with self.engine.begin() as conn:
+            result = await conn.execute(query)
+            row = result.one_or_none()
+            if row:
                 return Bot(
-                    app_id=result["app_id"],
-                    enterprise_id=result["enterprise_id"],
-                    team_id=result["team_id"],
-                    bot_token=result["bot_token"],
-                    bot_id=result["bot_id"],
-                    bot_user_id=result["bot_user_id"],
-                    bot_scopes=result["bot_scopes"],
-                    installed_at=result["installed_at"],
+                    app_id=row['app_id'],
+                    enterprise_id=row['enterprise_id'],
+                    team_id=row['team_id'],
+                    bot_token=row['bot_token'],
+                    bot_id=row['bot_id'],
+                    bot_user_id=row['bot_user_id'],
+                    bot_scopes=row['bot_scopes'],
+                    installed_at=row['installed_at'],
                 )
             else:
                 return None
+
 
     @typing.no_type_check
     async def async_find_installation(
@@ -186,59 +183,62 @@ class InstallationStore(AsyncInstallationStore):
             c.is_enterprise_install == is_enterprise_install,
         ]
         if user_id:
-            logger.debug("searching for installation with user_id: %s" % user_id)
+            logger.debug(f"searching for installation with user_id: {user_id}")
             conditions.append(c.user_id == user_id)
             if needs_user_token:
                 conditions.append(c.user_token != None)
         else:
-            logger.debug("searching for installation with team_id: %s" % team_id)
+            logger.debug(f"searching for installation with team_id: {team_id}")
 
         query = self.installations.select().where(and_(*conditions)).order_by(desc(c.installed_at), desc(c.id)).limit(1)
 
-        async with Database(self.database_url) as database:
-            i = await database.fetch_one(query)
-            if i:
+        async with self.engine.begin() as conn:
+            result = await conn.execute(query)
+            row = result.one_or_none()
+
+            if row:
                 installation = Installation(
-                    app_id=i.app_id,
+                    app_id=row['app_id'],
                     # org / workspace
-                    enterprise_id=i.enterprise_id,
-                    enterprise_name=i.enterprise_name,
-                    enterprise_url=i.enterprise_url,
-                    team_id=i.team_id,
-                    team_name=i.team_name,
+                    enterprise_id=row['enterprise_id'],
+                    enterprise_name=row['enterprise_name'],
+                    enterprise_url=row['enterprise_url'],
+                    team_id=row['team_id'],
+                    team_name=row['team_name'],
                     # bot
-                    bot_token=i.bot_token,
-                    bot_id=i.bot_id,
-                    bot_user_id=i.bot_user_id,
-                    bot_scopes=i.bot_scopes,
+                    bot_token=row['bot_token'],
+                    bot_id=row['bot_id'],
+                    bot_user_id=row['bot_user_id'],
+                    bot_scopes=row['bot_scopes'],
                     # only when token rotation is enabled
-                    bot_refresh_token=i.bot_refresh_token,
-                    # bot_token_expires_in=i.bot_token_expires_in,
-                    bot_token_expires_at=i.bot_token_expires_at,
+                    bot_refresh_token=row['bot_refresh_token'],
+                    # bot_token_expires_in=row['bot_token_expires_in'],
+                    bot_token_expires_at=row['bot_token_expires_at'],
                     # installer
-                    user_id=i.user_id,
-                    user_token=i.user_token,
-                    user_scopes=i.user_scopes,
+                    user_id=row['user_id'],
+                    user_token=row['user_token'],
+                    user_scopes=row['user_scopes'],
                     # only when token rotation is enabled
-                    user_refresh_token=i.user_refresh_token,
-                    # user_token_expires_in=i.user_token_expires_in,
-                    user_token_expires_at=i.user_token_expires_at,
+                    user_refresh_token=row['user_refresh_token'],
+                    # user_token_expires_in=row['user_token_expires_in'],
+                    user_token_expires_at=row['user_token_expires_at'],
                     # incoming webhook
-                    incoming_webhook_url=i.incoming_webhook_url,
-                    incoming_webhook_channel=i.incoming_webhook_channel,
-                    incoming_webhook_channel_id=i.incoming_webhook_channel_id,
-                    incoming_webhook_configuration_url=i.incoming_webhook_configuration_url,
+                    incoming_webhook_url=row['incoming_webhook_url'],
+                    incoming_webhook_channel=row['incoming_webhook_channel'],
+                    incoming_webhook_channel_id=row['incoming_webhook_channel_id'],
+                    incoming_webhook_configuration_url=row['incoming_webhook_configuration_url'],
                     # org app
-                    is_enterprise_install=i.is_enterprise_install,
-                    token_type=i.token_type,
+                    is_enterprise_install=row['is_enterprise_install'],
+                    token_type=row['token_type'],
                     # timestamps
-                    installed_at=i.installed_at,
+                    installed_at=row['installed_at'],
                     # custom values
-                    # custom_values=i.custom_values,
+                    # custom_values=row['custom_values'],
                 )
                 return installation
             else:
                 return None
+
 
     async def async_delete_bot(
         self,
@@ -254,8 +254,8 @@ class InstallationStore(AsyncInstallationStore):
                 c.team_id == team_id,
             )
         )
-        async with Database(self.database_url) as database:
-            await database.execute(query)
+        async with self.engine.begin() as conn:
+            await conn.execute(query)
 
     async def async_delete_installation(
         self,
@@ -275,8 +275,8 @@ class InstallationStore(AsyncInstallationStore):
 
         query = self.installations.delete().where(and_(*conditions))
 
-        async with Database(self.database_url) as database:
-            await database.execute(query)
+        async with self.engine.begin() as conn:
+            await conn.execute(query)
 
     async def async_delete_all(
         self,

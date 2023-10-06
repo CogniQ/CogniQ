@@ -22,7 +22,7 @@ help:
 #: Installs the dependencies.
 deps: pyproject.toml .venv-activate
 	poetry lock
-	poetry install --with localinstall
+	poetry install --with localinstall --with dev
 
 poetry.lock: pyproject.toml .venv
 	poetry update

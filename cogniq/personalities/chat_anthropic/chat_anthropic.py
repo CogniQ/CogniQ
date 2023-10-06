@@ -35,8 +35,8 @@ class ChatAnthropic(BasePersonality):
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
     ) -> Dict[str, Any]:
-        if message_history is None:
-            message_history = []
+        # disregard provided message_history and fetch from cslack
+        message_history = await self.history(event=context["event"], context=context)
 
         stream_callback_set = stream_callback is not None
         kwargs = {
