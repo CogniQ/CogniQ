@@ -152,18 +152,17 @@ class InstallationStore(AsyncInstallationStore):
             row = result.one_or_none()
             if row:
                 return Bot(
-                    app_id=row['app_id'],
-                    enterprise_id=row['enterprise_id'],
-                    team_id=row['team_id'],
-                    bot_token=row['bot_token'],
-                    bot_id=row['bot_id'],
-                    bot_user_id=row['bot_user_id'],
-                    bot_scopes=row['bot_scopes'],
-                    installed_at=row['installed_at'],
+                    app_id=row["app_id"],
+                    enterprise_id=row["enterprise_id"],
+                    team_id=row["team_id"],
+                    bot_token=row["bot_token"],
+                    bot_id=row["bot_id"],
+                    bot_user_id=row["bot_user_id"],
+                    bot_scopes=row["bot_scopes"],
+                    installed_at=row["installed_at"],
                 )
             else:
                 return None
-
 
     @typing.no_type_check
     async def async_find_installation(
@@ -198,47 +197,46 @@ class InstallationStore(AsyncInstallationStore):
 
             if row:
                 installation = Installation(
-                    app_id=row['app_id'],
+                    app_id=row["app_id"],
                     # org / workspace
-                    enterprise_id=row['enterprise_id'],
-                    enterprise_name=row['enterprise_name'],
-                    enterprise_url=row['enterprise_url'],
-                    team_id=row['team_id'],
-                    team_name=row['team_name'],
+                    enterprise_id=row["enterprise_id"],
+                    enterprise_name=row["enterprise_name"],
+                    enterprise_url=row["enterprise_url"],
+                    team_id=row["team_id"],
+                    team_name=row["team_name"],
                     # bot
-                    bot_token=row['bot_token'],
-                    bot_id=row['bot_id'],
-                    bot_user_id=row['bot_user_id'],
-                    bot_scopes=row['bot_scopes'],
+                    bot_token=row["bot_token"],
+                    bot_id=row["bot_id"],
+                    bot_user_id=row["bot_user_id"],
+                    bot_scopes=row["bot_scopes"],
                     # only when token rotation is enabled
-                    bot_refresh_token=row['bot_refresh_token'],
+                    bot_refresh_token=row["bot_refresh_token"],
                     # bot_token_expires_in=row['bot_token_expires_in'],
-                    bot_token_expires_at=row['bot_token_expires_at'],
+                    bot_token_expires_at=row["bot_token_expires_at"],
                     # installer
-                    user_id=row['user_id'],
-                    user_token=row['user_token'],
-                    user_scopes=row['user_scopes'],
+                    user_id=row["user_id"],
+                    user_token=row["user_token"],
+                    user_scopes=row["user_scopes"],
                     # only when token rotation is enabled
-                    user_refresh_token=row['user_refresh_token'],
+                    user_refresh_token=row["user_refresh_token"],
                     # user_token_expires_in=row['user_token_expires_in'],
-                    user_token_expires_at=row['user_token_expires_at'],
+                    user_token_expires_at=row["user_token_expires_at"],
                     # incoming webhook
-                    incoming_webhook_url=row['incoming_webhook_url'],
-                    incoming_webhook_channel=row['incoming_webhook_channel'],
-                    incoming_webhook_channel_id=row['incoming_webhook_channel_id'],
-                    incoming_webhook_configuration_url=row['incoming_webhook_configuration_url'],
+                    incoming_webhook_url=row["incoming_webhook_url"],
+                    incoming_webhook_channel=row["incoming_webhook_channel"],
+                    incoming_webhook_channel_id=row["incoming_webhook_channel_id"],
+                    incoming_webhook_configuration_url=row["incoming_webhook_configuration_url"],
                     # org app
-                    is_enterprise_install=row['is_enterprise_install'],
-                    token_type=row['token_type'],
+                    is_enterprise_install=row["is_enterprise_install"],
+                    token_type=row["token_type"],
                     # timestamps
-                    installed_at=row['installed_at'],
+                    installed_at=row["installed_at"],
                     # custom values
                     # custom_values=row['custom_values'],
                 )
                 return installation
             else:
                 return None
-
 
     async def async_delete_bot(
         self,
