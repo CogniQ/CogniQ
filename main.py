@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 import asyncio
 from cogniq.config import LOG_LEVEL, MUTED_LOG_LEVEL
-from multiple_personalities import MultiplePersonalities
+from single import Single
 
 
 def setup_root_logger(level: int):
@@ -43,6 +43,6 @@ if __name__ == "__main__":
     setup_root_logger(level=LOG_LEVEL)
     mute_certain_loggers(level=MUTED_LOG_LEVEL)
 
-    mp = MultiplePersonalities()
+    runtime = Single()
 
-    asyncio.run(mp.start())
+    asyncio.run(runtime.start())

@@ -50,7 +50,7 @@ class StateStore(AsyncOAuthStateStore):
                 c = self.oauth_states.c
                 query = self.oauth_states.select().where(and_(c.state == state, c.expire_at > datetime.utcnow())).limit(1)
                 result = await conn.execute(query)
-                row =  result.one_or_none()
+                row = result.one_or_none()
                 logger.debug(f"consume's query result: {row}")
 
                 if row is None:

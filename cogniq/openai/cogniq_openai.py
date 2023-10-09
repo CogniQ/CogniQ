@@ -61,8 +61,6 @@ class CogniqOpenAI:
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 200:
                     return await response.json()
-                elif response.status == 429:
-                    raise Exception(f"Error {response.status}: {await response.text()}")
                 else:
                     raise Exception(f"Error {response.status}: {await response.text()}")
 
@@ -97,7 +95,5 @@ class CogniqOpenAI:
                                     stream_callback(content)
                             except (KeyError, IndexError):
                                 logger.error("Unexpected data structure: %s", obj)
-                elif response.status == 429:
-                    raise Exception(f"Error {response.status}: {await response.text()}")
                 else:
                     raise Exception(f"Error {response.status}: {await response.text()}")
