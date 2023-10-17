@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 import json
 import textwrap
 import dateutil
+import dateutil.parser
+from datetime import datetime
+import asyncio
 
 from cogniq.config import APP_URL, OPENAI_CHAT_MODEL
 from cogniq.personalities import BasePersonality
@@ -36,15 +39,16 @@ class TaskManager(BasePersonality):
 
     async def async_setup(self) -> None:
         await self.task_store.async_setup()
+        asyncio.create_task(self.start_task_worker())
 
-    def _parse_arguments(self, arguments: str) -> Dict[str, Any] | str:
+    def _parse_arguments(self, arguments: str) -> Dict[str, Any]:
         try:
             result = json.loads(arguments)
-            result['when_time'] = self._parse_date(result['when_time'])
+            result["when_time"] = self._parse_date(result["when_time"])
             return result
         except Exception as e:
             logger.error(f"JSON parsing failed for function call arguments: {e}: {arguments}")
-            return arguments
+            raise e
 
     def _parse_date(self, datestring: str) -> datetime:
         try:
@@ -84,107 +88,68 @@ class TaskManager(BasePersonality):
             answer = tasks_message["message"]["content"]
         else:
             function_call = tasks_message["message"]["function_call"]
-            function_arguments = self._parse_arguments(function_call["arguments"])
-            function_name = function_call["name"]
+            try:
+                function_arguments = self._parse_arguments(function_call["arguments"])
+            except Exception as e:
+                return {
+                    "answer": f"I had an error parsing the response from OpenAI. See the logs for details and try again.",
+                    "response": tasks_response,
+                }
+            function_name: str = function_call["name"]
 
             if function_name == "schedule_future_message":
-                future_message = function_arguments["future_message"]
-                when_time = function_arguments["when_time"]
-                confirmation_response = function_arguments["confirmation_response"]
-                logger.info(f"scheduling future message: {future_message} at {when_time}")
+                future_message: str = function_arguments["future_message"]
+                when_time: datetime = function_arguments["when_time"]
+                confirmation_response: str = function_arguments["confirmation_response"]
+                logger.info(f"scheduling future message: {future_message} at {when_time} with context: {context}")
 
-                answer = await self.task_store.async_enqueue_task(
+                answer = await self.task_store.enqueue_task(
                     future_message=future_message,
                     when_time=when_time,
                     confirmation_response=confirmation_response,
+                    context=context,
+                    reply_ts=reply_ts,
                 )
             else:
                 logger.warning(f"unknown function: {function_name}")
                 answer = function_call
 
-        # try:
-        #     tasks_dict = json.loads(tasks_full_message["message"]["function_call"]["arguments"])
-        # except Exception as e:
-        #     logger.warning(f"generation failed: {tasks_full_message}")
-        #     return tasks_full_message["message"]["content"]
-
-        # logger.info(f"tasks_dict: {tasks_dict}")
-        # if tasks_dict.get("response-clarification"):
-        #     answer = tasks_dict["response-clarification"]
-        #     # drop the remainder as clarification is called for.
-        # elif tasks_dict.get("response-confirmation"):
-        #     answer = textwrap.dedent(f"""
-        #         {tasks_dict["response-confirmation"]}
-
-        #         ---
-        #         The following message will be sent at {tasks_dict["when_time"]}:
-        #         {tasks_dict["future_message"]}
-        #     """)
-        # else:
-        #     answer = "I am not sure what you mean. Please try again."
-
-        return {"answer": answer, "response": tasks_response}
-        # time_query = ""
-        # if tasks_dict.get("on"):
-        #     time_query = f'on:{tasks_dict["on"]}'
-        # elif tasks_dict.get("during"):
-        #     time_query = f'during:{tasks_dict["during"]}'
-        # elif tasks_dict.get("after"):
-        #     time_query = f'after:{tasks_dict["after"]}'
-        # elif tasks_dict.get("before"):
-        #     time_query = f'before:{tasks_dict["before"]}'
-
-        # tasks_list = [
-        #     " ".join([f'"{phrase}"' for phrase in tasks_dict.get("phrases", [])]),
-        #     " ".join([f'-"{word}"' for word in tasks_dict.get("negative_words", [])]),
-        #     f'in:{tasks_dict["in"]}' if tasks_dict.get("in") else "",
-        #     f'from:{tasks_dict["from"]}' if tasks_dict.get("from") else "",
-        #     f'with:{tasks_dict["with"]}' if tasks_dict.get("with") else "",
-        #     f'has:{tasks_dict["has"]}' if tasks_dict.get("has") else "",
-        #     time_query,
-        #     "is:thread" if tasks_dict.get("is_thread", False) else "",
-        # ]
-
-        # tasks = " ".join(tasks_list)
-
-        # logger.info(f"searching slack with tasks: {tasks}")
-
-        # filter = lambda message: self._remove_my_reply_filter(message=message, reply_ts=reply_ts)
-        # try:
-        #     slack_search_response = await self.cslack.search.search_texts(q=tasks, context=context, filter=filter)
-        # except UserTokenNoneError as e:
-        #     error_string = f"""USER_NOTIFICATION: Please install the app to use the search personality. The app can be installed at {APP_URL}/slack/install"""
-        #     answer = error_string
-        #     response = {"choices": [{"message": {"content": error_string}}]}
-        #     return {"answer": answer, "response": response}
-
-        # logger.debug(f"slack_search_response: {slack_search_response}")
-
-        # short_slack_search_response = self.copenai.summarizer.ceil_retrieval(slack_search_response)
-
-        # if slack_search_response != short_slack_search_response:
-        #     logger.debug(f"slack_search_response was shortened: {slack_search_response}")
-
-        # short_q = await self.copenai.summarizer.ceil_prompt(q)
-
-        # prompt = retrieval_augmented_prompt(q=short_q, slack_search_response=short_slack_search_response)
-
-        # message_history.append(user_message(prompt))
-
-        # response = await self.copenai.async_chat_completion_create(
-        #     messages=message_history,
-        #     stream_callback=stream_callback,
-        #     model=OPENAI_CHAT_MODEL,  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
-        #     stop=["\n\n"],
-        #     temperature=0.2,
-        # )
-
-        # answer = response["choices"][0]["message"]["content"]
-        # logger.info(f"answer: {answer}")
         return {"answer": answer, "response": tasks_response}
 
-    def _remove_my_reply_filter(self, *, message: Dict[str, str], reply_ts: float | None = None) -> bool:
-        if not reply_ts:
-            return True
+    async def start_task_worker(self) -> None:
+        while True:
+            await self.task_store.reset_orphaned_tasks()
+            # Get the earliest task
+            task: Dict[str, Any] | None = await self.task_store.dequeue_task()
 
-        return message["ts"] != reply_ts
+            # If there are no tasks, sleep for some time
+            if not task:
+                await asyncio.sleep(60)  # sleep for 1 minute
+                continue
+
+            # Calculate how long to sleep until the task's start time
+            sleep_time = (task["when_time"] - datetime.utcnow()).total_seconds()
+
+            if sleep_time > 0:
+                # If the task is in the future, sleep until it's time to start
+                await asyncio.sleep(sleep_time)
+
+            # Now it's time to start the task, so we can lock and dequeue it
+            try:
+                # lock the task.
+                # TODO: wrap this in a context manager
+                await self.task_store.lock_task(task["id"])
+
+                # Execute the task
+                logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
+                await self.cslack.chat_update(
+                    channel=task["context"]["channel_id"],
+                    ts=task["reply_ts"],
+                    text=task["future_message"],
+                    context=task["context"],
+                )
+
+                # Delete task from queue after it's done
+                await self.task_store.delete_task(task["id"])
+            except Exception as e:
+                logger.error(f"Failed to execute task: {task}, error: {e}")

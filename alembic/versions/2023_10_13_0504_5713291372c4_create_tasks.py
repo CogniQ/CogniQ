@@ -13,6 +13,8 @@ from sqlalchemy import (
     DateTime,
     Index,
     Integer,
+    Float,
+    PickleType,
     String,
 )
 
@@ -32,8 +34,14 @@ def upgrade() -> None:
         # The max length of a slack message is 40000 characters: https://api.slack.com/changelog/2018-04-truncating-really-long-messages
         Column("future_message", String(40000), nullable=False),
         Column("when_time", DateTime, nullable=False),
+        Column("context", PickleType, nullable=False),
+        Column("reply_ts", Float, nullable=True),
+        Column("status", String, default="ready"),
+        Column("locked_at", DateTime, nullable=True),
     )
+    op.create_index("idx_when_time", table_name, ["when_time"])
 
 
 def downgrade() -> None:
+    op.drop_index("idx_when_time", table_name="tasks")
     op.drop_table("tasks")
