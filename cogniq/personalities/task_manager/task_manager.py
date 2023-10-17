@@ -65,6 +65,7 @@ class TaskManager(BasePersonality):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
+        thread_ts: float | None = None,
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
@@ -109,6 +110,7 @@ class TaskManager(BasePersonality):
                     confirmation_response=confirmation_response,
                     context=context,
                     reply_ts=reply_ts,
+                    thread_ts=thread_ts,
                 )
             else:
                 logger.warning(f"unknown function: {function_name}")
@@ -142,12 +144,15 @@ class TaskManager(BasePersonality):
 
                 # Execute the task
                 logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
-                await self.cslack.chat_update(
-                    channel=task["context"]["channel_id"],
-                    ts=task["reply_ts"],
-                    text=task["future_message"],
-                    context=task["context"],
-                )
+                try:
+                    response = await task["context"]["say"](
+                        task["future_message"],
+                        thread_ts=task["thread_ts"],
+                    )
+                    return response
+                except Exception as e:
+                    logger.error(e)
+                    raise e
 
                 # Delete task from queue after it's done
                 await self.task_store.delete_task(task["id"])

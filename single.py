@@ -50,6 +50,7 @@ class Single:
     async def _dispatch(self, *, event: Dict[str, str], context: Dict[str, Any], original_ts: str) -> None:
         reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
+        thread_ts = original_ts
 
         # Text from the event
         text = event.get("text")
@@ -60,6 +61,7 @@ class Single:
                 event=event,
                 reply_ts=reply_ts,
                 context=context,
+                thread_ts=thread_ts,
             )
         )
 

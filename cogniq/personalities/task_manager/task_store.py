@@ -40,6 +40,7 @@ class TaskStore:
             Column("when_time", DateTime),
             Column("context", PickleType),
             Column("reply_ts", Float, nullable=True),
+            Column("thread_ts", Float, nullable=True),
             Column("status", String, default="ready"),
             Column("locked_at", DateTime, nullable=True),
         )
@@ -64,6 +65,7 @@ class TaskStore:
         confirmation_response: str,
         context: Dict[str, Any],
         reply_ts: float | None,
+        thread_ts: float | None,
     ) -> str:
         """
         Enqueue a task to be completed at a later time.
@@ -77,6 +79,7 @@ class TaskStore:
                         "when_time": when_time,
                         "context": context,
                         "reply_ts": reply_ts,
+                        "thread_ts": thread_ts,
                         "status": "ready",
                     }
                 )
