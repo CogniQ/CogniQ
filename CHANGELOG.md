@@ -1,3 +1,10 @@
+## [0.5.3](https://github.com/CogniQ/CogniQ/compare/v0.5.2...v0.5.3) (2023-11-13)
+
+
+### Bug Fixes
+
+* add timezone information to parsed when_time ([ef09ffd](https://github.com/CogniQ/CogniQ/commit/ef09ffd743bb4fd40f74f830a2bb4552b43f5ca9))
+
 ## [0.5.2](https://github.com/CogniQ/CogniQ/compare/v0.5.1...v0.5.2) (2023-11-13)
 
 
