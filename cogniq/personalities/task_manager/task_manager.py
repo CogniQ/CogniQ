@@ -65,7 +65,7 @@ class TaskManager(BasePersonality):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
@@ -102,7 +102,7 @@ class TaskManager(BasePersonality):
                 future_message: str = function_arguments["future_message"]
                 when_time: datetime = function_arguments["when_time"]
                 confirmation_response: str = function_arguments["confirmation_response"]
-                logger.info(f"scheduling future message: {future_message} at {when_time} with context: {context}")
+                logger.info(f"scheduling future message: {future_message} at {when_time}")
 
                 answer = await self.task_store.enqueue_task(
                     future_message=future_message,
@@ -148,7 +148,7 @@ class TaskManager(BasePersonality):
                     await self.task_store.lock_task(task["id"])
 
                     # Execute the task
-                    logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
+                    logger.info(f"Executing task: {task['future_message']}")
                     try:
                         await self.cslack.chat_postMessage(
                             channel=task["context"]["channel_id"],

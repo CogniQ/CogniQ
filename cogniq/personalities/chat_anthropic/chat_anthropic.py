@@ -34,7 +34,7 @@ class ChatAnthropic(BasePersonality):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         # disregard provided message_history and fetch from cslack
         message_history = await self.history(event=context["event"], context=context)

@@ -50,7 +50,7 @@ class BasePersonality(ABC):
         """
         return await self.cslack.openai_history.get_history(event=event, context=context)
 
-    async def ask_task(self, *, event: Dict[str, str], reply_ts: float, context: Dict[str, Any], thread_ts: float, **kwargs) -> None:
+    async def ask_task(self, *, event: Dict[str, str], reply_ts: float, context: Dict[str, Any], thread_ts: str, **kwargs) -> None:
         channel = event["channel"]
         message = event.get("text")
         if not message:
@@ -89,7 +89,7 @@ class BasePersonality(ABC):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         """
         Ask a question to the personality.

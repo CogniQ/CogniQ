@@ -63,7 +63,7 @@ class TaskStore:
         when_time: datetime,
         confirmation_response: str,
         context: Dict[str, Any],
-        thread_ts: float | None,
+        thread_ts: str | None,
     ) -> str:
         """
         Enqueue a task to be completed at a later time.
