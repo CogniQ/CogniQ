@@ -39,7 +39,7 @@ class TaskStore:
             Column("future_message", String),
             Column("when_time", DateTime(timezone=True)),
             Column("context", PickleType),
-            Column("thread_ts", Float, nullable=True),
+            Column("thread_ts", String, nullable=True),
             Column("status", String, default="ready"),
             Column("locked_at", DateTime(timezone=True), nullable=True),
         )
