@@ -1,3 +1,22 @@
+# [0.5.0](https://github.com/CogniQ/CogniQ/compare/v0.4.26...v0.5.0) (2023-11-13)
+
+
+### Bug Fixes
+
+* add healthcheck ([cd7d5eb](https://github.com/CogniQ/CogniQ/commit/cd7d5eb0d41e297eb9ffce2ac52794ae371731a1))
+* need to check for new tasks more regularly than some far out task ([0c7fccf](https://github.com/CogniQ/CogniQ/commit/0c7fccfec3aa9ca9dbb86e047908342b7cadb8aa))
+* pass reply_ts and thread_ts to ask method ([742bd1d](https://github.com/CogniQ/CogniQ/commit/742bd1dbf001ee99c6d8a4018e4cfa458d6a2cb3))
+* poetry update 20231113 ([ac42068](https://github.com/CogniQ/CogniQ/commit/ac4206855bdbd8ede50f4240d6e2ced3bf71b5e3))
+* thread-ts is a string not a float. ([0636dd0](https://github.com/CogniQ/CogniQ/commit/0636dd0f1d9c8f0df615a11ace5cdb65287dd19d))
+* unlock task after faililng to complete ([c74631b](https://github.com/CogniQ/CogniQ/commit/c74631b9987d1fdac3330b440f7b4c889611ee86))
+
+
+### Features
+
+* add alembic to manage database ([6fe2824](https://github.com/CogniQ/CogniQ/commit/6fe282415c63878da2a25a68ea9be7671f8c1b41))
+* enqueue and dequeue tasks ([44cf98d](https://github.com/CogniQ/CogniQ/commit/44cf98d7250f98592ee7a4ef217182ff80b52b06))
+* postMessage ([ad280f8](https://github.com/CogniQ/CogniQ/commit/ad280f8709d25e010f0bca0d171a3e1e1bfe0359))
+
 ## [0.4.26](https://github.com/CogniQ/CogniQ/compare/v0.4.25...v0.4.26) (2023-09-11)
 
 
