@@ -193,7 +193,7 @@ class CogniqSlack:
         *,
         channel: str,
         text: str,
-        thread_ts: str,
+        thread_ts: str | None = None,
         context: Dict[str, Any],
         retry_on_rate_limit: bool = True,
         retry_on_revoked_token: bool = True,
@@ -233,7 +233,7 @@ class CogniqSlack:
                 channel=channel,
                 text=text,
                 thread_ts=thread_ts,
-                # ts=ts,
+                ts=ts,
                 token=bot_token,
             )
         except SlackApiError as e:
