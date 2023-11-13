@@ -79,7 +79,7 @@ class TaskManager(BasePersonality):
 
         tasks_response = await self.copenai.async_chat_completion_create(
             messages=message_history,
-            model="gpt-3.5-turbo",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+            model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call="auto",
             functions=[schedule_future_message_function],
         )
@@ -124,37 +124,44 @@ class TaskManager(BasePersonality):
             # Get the earliest task
             task: Dict[str, Any] | None = await self.task_store.dequeue_task()
 
-            # If there are no tasks, sleep for some time
-            if not task:
-                await asyncio.sleep(60)  # sleep for 1 minute
-                continue
-
-            # Calculate how long to sleep until the task's start time
-            sleep_time = (task["when_time"] - datetime.utcnow()).total_seconds()
-
-            if sleep_time > 0:
-                # If the task is in the future, sleep until it's time to start
+            # If there are no tasks, sleep for some time in an incremental fashion, up to 1 minute
+            # Interruptable by a enqueue event
+            sleep_time = 0
+            if task is None:
+                if sleep_time is None:
+                    sleep_time = 5
+                else:
+                    sleep_time = max(5, min(60, sleep_time * 2))
                 await asyncio.sleep(sleep_time)
+                continue
+            else:
+                # Calculate how long to sleep until the task's start time
+                sleep_time = (task["when_time"] - datetime.utcnow()).total_seconds()
 
-            # Now it's time to start the task, so we can lock and dequeue it
-            try:
-                # lock the task.
-                # TODO: wrap this in a context manager
-                await self.task_store.lock_task(task["id"])
+                if sleep_time > 0:
+                    # If the task is in the future, sleep until it's time to start
+                    await asyncio.sleep(sleep_time)
 
-                # Execute the task
-                logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
+                # Now it's time to start the task, so we can lock and dequeue it
                 try:
-                    response = await task["context"]["say"](
-                        task["future_message"],
-                        thread_ts=task["thread_ts"],
-                    )
-                    return response
-                except Exception as e:
-                    logger.error(e)
-                    raise e
+                    # lock the task.
+                    # TODO: wrap this in a context manager
+                    await self.task_store.lock_task(task["id"])
 
-                # Delete task from queue after it's done
-                await self.task_store.delete_task(task["id"])
-            except Exception as e:
-                logger.error(f"Failed to execute task: {task}, error: {e}")
+                    # Execute the task
+                    logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
+                    try:
+                        response = await task["context"]["say"](
+                            task["future_message"],
+                            thread_ts=task["thread_ts"],
+                        )
+                        return response
+                    except Exception as e:
+                        logger.error(e)
+                        raise e
+
+                    # Delete task from queue after it's done
+                    await self.task_store.delete_task(task["id"])
+                except Exception as e:
+                    logger.error(f"Failed to execute task: {task}, error: {e}")
+                    await self.task_store.unlock_task(task["id"])

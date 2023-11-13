@@ -208,9 +208,9 @@ class CogniqSlack:
             if e.response["error"] == "invalid_refresh_token":
                 logger.error("Invalid refresh token, not retrying: %s", e)
                 raise RefreshTokenInvalidError(message="Invalid refresh token", context=context)
-            if e.response["error"] == "token_revoked":
+            if e.response["error"] in ["token_revoked", "invalid_auth"]:
                 if retry_on_revoked_token:
-                    logger.warning("I must have tried to use a revoked token. I'll try to fetch a newer one.")
+                    logger.warning("I must have tried to use a revoked or invalid token. I'll try to fetch a newer one.")
                     bot_token = await self.installation_store.async_find_bot_token(context=context)
                     new_context = context.copy()
                     new_context["bot_token"] = bot_token
