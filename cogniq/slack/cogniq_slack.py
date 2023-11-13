@@ -21,6 +21,7 @@ from slack_bolt.async_app import AsyncApp
 from slack_bolt.oauth.async_oauth_settings import AsyncOAuthSettings
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from slack_sdk.errors import SlackApiError
+from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
 import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -168,64 +169,24 @@ class CogniqSlack:
         self,
         *,
         channel: str,
+        text: str,
         ts: float,
         context: Dict[str, Any],
-        text: str,
         retry_on_rate_limit: bool = True,
         retry_on_revoked_token: bool = True,
-    ):
+    ) -> AsyncSlackResponse:
         """
         Updates the chat message in the given channel and thread with the given text.
         """
-        bot_token = context.get("bot_token")
-        if bot_token is None:
-            logger.debug("bot_token is not set. Context: %s", context)
-            raise BotTokenNoneError(context=context)
-        try:
-            await self.app.client.chat_update(
-                channel=channel,
-                ts=ts,
-                text=text,
-                token=bot_token,
-            )
-        except SlackApiError as e:
-            if e.response["error"] == "ratelimited":
-                if retry_on_rate_limit:
-                    # Extract the retry value from the headers
-                    retry_after = int(e.response.headers.get("Retry-After", 1))
-                    # Wait for the requested amount of time before retrying
-                    await asyncio.sleep(retry_after)
-                    await self.chat_update(
-                        channel=channel,
-                        ts=ts,
-                        text=text,
-                        context=context,
-                        retry_on_rate_limit=retry_on_rate_limit,
-                    )
-                else:
-                    # Log the rate limit error and move on
-                    logger.error("Rate limit hit, not retrying: %s", e)
-            if e.response["error"] == "invalid_refresh_token":
-                logger.error("Invalid refresh token, not retrying: %s", e)
-                raise RefreshTokenInvalidError(message="Invalid refresh token", context=context)
-            if e.response["error"] in ["token_revoked", "invalid_auth"]:
-                if retry_on_revoked_token:
-                    logger.warning("I must have tried to use a revoked or invalid token. I'll try to fetch a newer one.")
-                    bot_token = await self.installation_store.async_find_bot_token(context=context)
-                    new_context = context.copy()
-                    new_context["bot_token"] = bot_token
-                    await self.chat_update(
-                        channel=channel,
-                        ts=ts,
-                        text=text,
-                        context=new_context,
-                        retry_on_rate_limit=retry_on_rate_limit,
-                        retry_on_revoked_token=False,  # Try once, but don't retry again
-                    )
-                else:
-                    raise BotTokenRevokedError(message=str(e), context=context)
-            else:
-                raise e
+        return await self.api_call(
+            method="chat_update",
+            channel=channel,
+            ts=ts,
+            context=context,
+            text=text,
+            retry_on_rate_limit=retry_on_rate_limit,
+            retry_on_revoked_token=retry_on_revoked_token,
+        )
 
     async def chat_postMessage(
         self,
@@ -236,19 +197,42 @@ class CogniqSlack:
         context: Dict[str, Any],
         retry_on_rate_limit: bool = True,
         retry_on_revoked_token: bool = True,
-    ):
+    ) -> AsyncSlackResponse:
         """
         Adds the chat message to the given channel and thread with the given text.
         """
+        return await self.api_call(
+            method="chat_postMessage",
+            channel=channel,
+            text=text,
+            thread_ts=thread_ts,
+            context=context,
+            retry_on_rate_limit=retry_on_rate_limit,
+            retry_on_revoked_token=retry_on_revoked_token,
+        )
+
+    async def api_call(
+        self,
+        *,
+        method: str,
+        channel: str,
+        text: str,
+        thread_ts: float | None = None,
+        ts: float | None = None,
+        context: Dict[str, Any],
+        retry_on_rate_limit: bool = True,
+        retry_on_revoked_token: bool = True,
+    ) -> AsyncSlackResponse:
         bot_token = context.get("bot_token")
         if bot_token is None:
             logger.debug("bot_token is not set. Context: %s", context)
             raise BotTokenNoneError(context=context)
         try:
-            await self.app.client.chat_postMessage(
+            return await getattr(self.app.client, method)(
                 channel=channel,
                 text=text,
                 thread_ts=thread_ts,
+                ts=ts,
                 token=bot_token,
             )
         except SlackApiError as e:
@@ -258,10 +242,12 @@ class CogniqSlack:
                     retry_after = int(e.response.headers.get("Retry-After", 1))
                     # Wait for the requested amount of time before retrying
                     await asyncio.sleep(retry_after)
-                    await self.chat_postMessage(
+                    return await self.api_call(
+                        method=method,
                         channel=channel,
                         text=text,
                         thread_ts=thread_ts,
+                        ts=ts,
                         context=context,
                         retry_on_rate_limit=retry_on_rate_limit,
                     )
@@ -277,10 +263,12 @@ class CogniqSlack:
                     bot_token = await self.installation_store.async_find_bot_token(context=context)
                     new_context = context.copy()
                     new_context["bot_token"] = bot_token
-                    await self.chat_postMessage(
+                    return await self.api_call(
+                        method=method,
                         channel=channel,
                         text=text,
                         thread_ts=thread_ts,
+                        ts=ts,
                         context=new_context,
                         retry_on_rate_limit=retry_on_rate_limit,
                         retry_on_revoked_token=False,  # Try once, but don't retry again
