@@ -1,3 +1,10 @@
+## [0.5.2](https://github.com/CogniQ/CogniQ/compare/v0.5.1...v0.5.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* make more datetimes timezone aware ([c101710](https://github.com/CogniQ/CogniQ/commit/c101710d8c910a6426aebeb5f22366253689c49c))
+
 ## [0.5.1](https://github.com/CogniQ/CogniQ/compare/v0.5.0...v0.5.1) (2023-11-13)
 
 
