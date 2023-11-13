@@ -1,3 +1,10 @@
+## [0.5.4](https://github.com/CogniQ/CogniQ/compare/v0.5.3...v0.5.4) (2023-11-13)
+
+
+### Bug Fixes
+
+* configure SQLAlchemy to correctly include tz in dates ([06a6ba7](https://github.com/CogniQ/CogniQ/commit/06a6ba74fb792dabf14ab68bd5be2d7421a1a4e9))
+
 ## [0.5.3](https://github.com/CogniQ/CogniQ/compare/v0.5.2...v0.5.3) (2023-11-13)
 
 
