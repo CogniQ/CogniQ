@@ -10,7 +10,7 @@ import dateutil.parser
 from datetime import datetime
 import asyncio
 
-from cogniq.config import APP_URL, OPENAI_CHAT_MODEL
+from cogniq.config import APP_URL, OPENAI_CHAT_MODEL, TASK_MANAGER_MAX_SLEEP_TIME
 from cogniq.personalities import BasePersonality
 from cogniq.openai import system_message, user_message, CogniqOpenAI
 from cogniq.slack import CogniqSlack, UserTokenNoneError
@@ -131,12 +131,12 @@ class TaskManager(BasePersonality):
                 if sleep_time is None:
                     sleep_time = 5
                 else:
-                    sleep_time = max(5, min(60, sleep_time * 2))
+                    sleep_time = max(5, min(TASK_MANAGER_MAX_SLEEP_TIME, sleep_time * 2))
                 await asyncio.sleep(sleep_time)
                 continue
             else:
                 # Calculate how long to sleep until the task's start time
-                sleep_time = (task["when_time"] - datetime.utcnow()).total_seconds()
+                sleep_time = min(TASK_MANAGER_MAX_SLEEP_TIME, (task["when_time"] - datetime.utcnow()).total_seconds())
 
                 if sleep_time > 0:
                     # If the task is in the future, sleep until it's time to start

@@ -44,3 +44,5 @@ POSTGRES_DB = env("POSTGRES_DB", "cogniq")
 DATABASE_URL = env("DATABASE_URL", f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}")
 LOG_LEVEL = logging.DEBUG if APP_ENV == "development" else logging.INFO
 MUTED_LOG_LEVEL = logging.WARN if APP_ENV == "development" else logging.WARN
+
+TASK_MANAGER_MAX_SLEEP_TIME = env("TASK_MANAGER_MAX_SLEEP_TIME", 30)  # 30 seconds
