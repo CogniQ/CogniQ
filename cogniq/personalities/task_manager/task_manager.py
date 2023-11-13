@@ -109,7 +109,6 @@ class TaskManager(BasePersonality):
                     when_time=when_time,
                     confirmation_response=confirmation_response,
                     context=context,
-                    reply_ts=reply_ts,
                     thread_ts=thread_ts,
                 )
             else:
