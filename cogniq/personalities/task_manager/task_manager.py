@@ -52,7 +52,9 @@ class TaskManager(BasePersonality):
 
     def _parse_date(self, datestring: str) -> datetime:
         try:
-            return dateutil.parser.parse(datestring)
+            date = dateutil.parser.parse(datestring)
+            date.replace(tzinfo=timezone.utc)
+            return date
         except Exception as e:
             logger.error(f"Date parsing failed for datestring: {e}: {datestring}")
             raise e
