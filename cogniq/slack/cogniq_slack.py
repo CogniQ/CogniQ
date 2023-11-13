@@ -211,6 +211,16 @@ class CogniqSlack:
             retry_on_revoked_token=retry_on_revoked_token,
         )
 
+    def _validate_api_call_params(self, *, bot_token, thread_ts, ts, context) -> None:
+        if bot_token is None:
+            logger.debug("bot_token is not set. Context: %s", context)
+            raise BotTokenNoneError(context=context)
+
+        if thread_ts is not None and not isinstance(thread_ts, str):
+            raise ValueError(f"thread_ts should be a string or None, but was {type(thread_ts)}: {thread_ts}")
+        if ts is not None and not isinstance(ts, str):
+            raise ValueError(f"ts should be a string or None, but was {type(ts)}: {ts}")
+
     async def api_call(
         self,
         *,
@@ -224,9 +234,8 @@ class CogniqSlack:
         retry_on_revoked_token: bool = True,
     ) -> AsyncSlackResponse:
         bot_token = context.get("bot_token")
-        if bot_token is None:
-            logger.debug("bot_token is not set. Context: %s", context)
-            raise BotTokenNoneError(context=context)
+        self._validate_api_call_params(bot_token=bot_token, thread_ts=thread_ts, ts=ts, context=context)
+
         try:
             logger.debug(f"Calling {method} at {ts} in thread {thread_ts} in channel {channel}")
             return await getattr(self.app.client, method)(
