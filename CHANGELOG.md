@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/CogniQ/CogniQ/compare/v0.5.0...v0.5.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* use offset-aware datetime objects ([4df242a](https://github.com/CogniQ/CogniQ/commit/4df242a2d1c2313154fdacd22376c0b1de6cc202))
+
 # [0.5.0](https://github.com/CogniQ/CogniQ/compare/v0.4.26...v0.5.0) (2023-11-13)
 
 
