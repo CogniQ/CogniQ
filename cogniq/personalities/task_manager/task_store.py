@@ -37,11 +37,11 @@ class TaskStore:
             self.metadata,
             Column("id", Integer, primary_key=True),
             Column("future_message", String),
-            Column("when_time", DateTime),
+            Column("when_time", DateTime(timezone=True)),
             Column("context", PickleType),
             Column("thread_ts", Float, nullable=True),
             Column("status", String, default="ready"),
-            Column("locked_at", DateTime, nullable=True),
+            Column("locked_at", DateTime(timezone=True), nullable=True),
         )
 
     async def async_setup(self) -> None:
