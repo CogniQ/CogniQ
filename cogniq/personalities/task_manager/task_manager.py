@@ -79,7 +79,7 @@ class TaskManager(BasePersonality):
 
         tasks_response = await self.copenai.async_chat_completion_create(
             messages=message_history,
-            model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
+            model="gpt-4-1106-preview",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call="auto",
             functions=[schedule_future_message_function],
         )
@@ -151,9 +151,11 @@ class TaskManager(BasePersonality):
                     # Execute the task
                     logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
                     try:
-                        response = await task["context"]["say"](
-                            task["future_message"],
-                            thread_ts=task["thread_ts"],
+                        response = await self.cslack.chat_update(
+                            channel=task["context"]["channel_id"],
+                            ts=task["thread_ts"],
+                            context=task["context"],
+                            text=task["future_message"],
                         )
                         return response
                     except Exception as e:
