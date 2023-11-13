@@ -60,7 +60,7 @@ class Single:
                 event=event,
                 reply_ts=reply_ts,
                 context=context,
-                thread_ts=event.get("thread_ts", None),
+                thread_ts=event.get("thread_ts", original_ts),
             )
         )
 
