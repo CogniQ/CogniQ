@@ -101,6 +101,7 @@ class TaskManager(BasePersonality):
             if function_name == "schedule_future_message":
                 future_message: str = function_arguments["future_message"]
                 when_time: datetime = function_arguments["when_time"]
+                when_time = when_time.replace(tzinfo=timezone.utc)
                 confirmation_response: str = function_arguments["confirmation_response"]
                 logger.info(f"scheduling future message: {future_message} at {when_time}")
 

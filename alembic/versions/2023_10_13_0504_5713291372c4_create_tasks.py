@@ -33,11 +33,11 @@ def upgrade() -> None:
         Column("id", Integer, primary_key=True, autoincrement=True),
         # The max length of a slack message is 40000 characters: https://api.slack.com/changelog/2018-04-truncating-really-long-messages
         Column("future_message", String(40000), nullable=False),
-        Column("when_time", DateTime, nullable=False),
+        Column("when_time", DateTime(timezone=True), nullable=False),
         Column("context", PickleType, nullable=False),
         Column("thread_ts", String, nullable=True),
         Column("status", String, default="ready"),
-        Column("locked_at", DateTime, nullable=True),
+        Column("locked_at", DateTime(timezone=True), nullable=True),
     )
     op.create_index("idx_when_time", table_name, ["when_time"])
 
