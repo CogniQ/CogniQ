@@ -74,7 +74,7 @@ exec:
 	az containerapp exec \
 		--name cogniq \
 		--resource-group cogniq-community-main \
-		--command "/bin/sh"
+		--command "/bin/bash"
 
 .PHONY: logs
 #: Follows the logs of the main container.
