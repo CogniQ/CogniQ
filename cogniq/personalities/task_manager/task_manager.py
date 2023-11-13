@@ -151,13 +151,12 @@ class TaskManager(BasePersonality):
                     # Execute the task
                     logger.info(f"Executing task: {task['future_message']}, context: {task['context']}")
                     try:
-                        response = await self.cslack.chat_postMessage(
+                        await self.cslack.chat_postMessage(
                             channel=task["context"]["channel_id"],
                             text=task["future_message"],
                             thread_ts=task["thread_ts"],
                             context=task["context"],
                         )
-                        return response
                     except Exception as e:
                         logger.error(e)
                         raise e
