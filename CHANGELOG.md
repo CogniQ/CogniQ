@@ -1,3 +1,10 @@
+## [0.5.5](https://github.com/CogniQ/CogniQ/compare/v0.5.4...v0.5.5) (2023-11-13)
+
+
+### Bug Fixes
+
+* thread_ts is a String ([204627d](https://github.com/CogniQ/CogniQ/commit/204627dba20d25fcde64c18bb6db11cda4b49d0b))
+
 ## [0.5.4](https://github.com/CogniQ/CogniQ/compare/v0.5.3...v0.5.4) (2023-11-13)
 
 
