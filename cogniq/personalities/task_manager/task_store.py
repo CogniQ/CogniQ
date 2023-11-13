@@ -128,6 +128,7 @@ class TaskStore:
                 return task.fetchone()
             else:
                 raise Exception("Failed to lock task. Gone?")
+
     async def unlock_task(self, task_id: int) -> None:
         """
         Unlock a task that has been abandoned.
@@ -135,9 +136,7 @@ class TaskStore:
         async with self.engine.begin() as conn:
             await conn.execute(
                 self.table.update()
-                .where(
-                    self.table.c.id == task_id
-                )
+                .where(self.table.c.id == task_id)
                 .values(
                     status="ready",
                     locked_at=None,
