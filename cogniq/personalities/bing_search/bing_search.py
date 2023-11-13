@@ -62,7 +62,7 @@ class BingSearch(BasePersonality):
         message_history: List[Dict[str, str]],
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        reply_ts: float | None = None,
+        reply_ts: str | None = None,
     ) -> str:
         ask_response = await self.ask(
             q=q,
@@ -81,7 +81,7 @@ class BingSearch(BasePersonality):
         message_history: List[Dict[str, str]],
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        reply_ts: float | None = None,
+        reply_ts: str | None = None,
         thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         if message_history is None:

@@ -28,7 +28,7 @@ class Evaluator(BasePersonality):
         return "Evaluator"
 
     async def ask_personalities_task(
-        self, *, event: Dict[str, str], reply_ts: float, personalities: List[BasePersonality], context: Dict[str, Any]
+        self, *, event: Dict[str, str], reply_ts: str, personalities: List[BasePersonality], context: Dict[str, Any]
     ) -> None:
         """
         Executes the ask_task against all the personalities and returns the best or compiled response.
@@ -89,7 +89,7 @@ class Evaluator(BasePersonality):
         *,
         response_buffers: Dict,
         channel: str,
-        reply_ts: float,
+        reply_ts: str,
         context: Dict[str, Any],
         interval: int,
         buffer_post_end: asyncio.Event,
@@ -113,7 +113,7 @@ class Evaluator(BasePersonality):
         message_history: List[Dict[str, str]],
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
-        reply_ts: float | None = None,
+        reply_ts: str | None = None,
         thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         return {"answer": "This personality does not support asking directly. Please use the ask_personalities method.", "response": None}
