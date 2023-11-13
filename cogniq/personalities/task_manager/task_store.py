@@ -18,7 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from cogniq.config import DATABASE_URL
 
@@ -95,7 +95,7 @@ class TaskStore:
             result = await conn.execute(
                 self.table.select()
                 .where(
-                    self.table.c.when_time <= datetime.utcnow(),
+                    self.table.c.when_time <= datetime.now(timezone.utc),
                     self.table.c.status == "ready",
                 )
                 .order_by(self.table.c.when_time)
@@ -117,7 +117,7 @@ class TaskStore:
                 )
                 .values(
                     status="locked",
-                    locked_at=datetime.utcnow(),
+                    locked_at=datetime.now(timezone.utc),
                 )
             )
             if result.rowcount == 1:
@@ -156,7 +156,7 @@ class TaskStore:
                 self.table.update()
                 .where(
                     self.table.c.status == "locked",
-                    self.table.c.locked_at < datetime.utcnow() - timedelta(seconds=max_time),
+                    self.table.c.locked_at < datetime.now(timezone.utc) - timedelta(seconds=max_time),
                 )
                 .values(
                     status="ready",

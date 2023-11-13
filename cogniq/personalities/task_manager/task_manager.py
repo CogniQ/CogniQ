@@ -7,7 +7,7 @@ import json
 import textwrap
 import dateutil
 import dateutil.parser
-from datetime import datetime
+from datetime import datetime, timezone
 import asyncio
 
 from cogniq.config import APP_URL, OPENAI_CHAT_MODEL, TASK_MANAGER_MAX_SLEEP_TIME
@@ -135,7 +135,7 @@ class TaskManager(BasePersonality):
                 continue
             else:
                 # Calculate how long to sleep until the task's start time
-                sleep_time = min(TASK_MANAGER_MAX_SLEEP_TIME, (task["when_time"] - datetime.utcnow()).total_seconds())
+                sleep_time = min(TASK_MANAGER_MAX_SLEEP_TIME, (task["when_time"] - datetime.now(timezone.utc)).total_seconds())
 
                 if sleep_time > 0:
                     # If the task is in the future, sleep until it's time to start
