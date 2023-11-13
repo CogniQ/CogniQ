@@ -39,7 +39,6 @@ class TaskStore:
             Column("future_message", String),
             Column("when_time", DateTime),
             Column("context", PickleType),
-            Column("reply_ts", Float, nullable=True),
             Column("thread_ts", Float, nullable=True),
             Column("status", String, default="ready"),
             Column("locked_at", DateTime, nullable=True),
@@ -64,7 +63,6 @@ class TaskStore:
         when_time: datetime,
         confirmation_response: str,
         context: Dict[str, Any],
-        reply_ts: float | None,
         thread_ts: float | None,
     ) -> str:
         """
@@ -78,7 +76,6 @@ class TaskStore:
                         "future_message": future_message,
                         "when_time": when_time,
                         "context": context,
-                        "reply_ts": reply_ts,
                         "thread_ts": thread_ts,
                         "status": "ready",
                     }

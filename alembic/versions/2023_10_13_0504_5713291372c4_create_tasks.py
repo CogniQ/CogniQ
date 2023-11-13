@@ -35,7 +35,6 @@ def upgrade() -> None:
         Column("future_message", String(40000), nullable=False),
         Column("when_time", DateTime, nullable=False),
         Column("context", PickleType, nullable=False),
-        Column("reply_ts", Float, nullable=True),
         Column("thread_ts", Float, nullable=True),
         Column("status", String, default="ready"),
         Column("locked_at", DateTime, nullable=True),
