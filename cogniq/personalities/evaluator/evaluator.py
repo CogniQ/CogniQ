@@ -114,7 +114,7 @@ class Evaluator(BasePersonality):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         return {"answer": "This personality does not support asking directly. Please use the ask_personalities method.", "response": None}
 

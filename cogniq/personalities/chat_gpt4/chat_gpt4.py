@@ -28,7 +28,7 @@ class ChatGPT4(BasePersonality):
         context: Dict[str, Any],
         stream_callback: Callable[..., None] | None = None,
         reply_ts: float | None = None,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
     ) -> Dict[str, Any]:
         if message_history is None:
             message_history = []

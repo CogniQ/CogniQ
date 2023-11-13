@@ -193,7 +193,7 @@ class CogniqSlack:
         *,
         channel: str,
         text: str,
-        thread_ts: float,
+        thread_ts: str,
         context: Dict[str, Any],
         retry_on_rate_limit: bool = True,
         retry_on_revoked_token: bool = True,
@@ -217,7 +217,7 @@ class CogniqSlack:
         method: str,
         channel: str,
         text: str,
-        thread_ts: float | None = None,
+        thread_ts: str | None = None,
         ts: float | None = None,
         context: Dict[str, Any],
         retry_on_rate_limit: bool = True,
@@ -228,11 +228,12 @@ class CogniqSlack:
             logger.debug("bot_token is not set. Context: %s", context)
             raise BotTokenNoneError(context=context)
         try:
+            logger.debug(f"Calling {method} at {ts} in thread {thread_ts} in channel {channel}")
             return await getattr(self.app.client, method)(
                 channel=channel,
                 text=text,
                 thread_ts=thread_ts,
-                ts=ts,
+                # ts=ts,
                 token=bot_token,
             )
         except SlackApiError as e:

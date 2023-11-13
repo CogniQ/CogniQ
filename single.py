@@ -50,7 +50,6 @@ class Single:
     async def _dispatch(self, *, event: Dict[str, str], context: Dict[str, Any], original_ts: str) -> None:
         reply = await self.first_response(context=context, original_ts=original_ts)
         reply_ts = reply["ts"]
-        thread_ts = original_ts
 
         # Text from the event
         text = event.get("text")
@@ -61,7 +60,7 @@ class Single:
                 event=event,
                 reply_ts=reply_ts,
                 context=context,
-                thread_ts=thread_ts,
+                thread_ts=event.get("thread_ts", None),
             )
         )
 
@@ -92,6 +91,7 @@ class Single:
         @self.cslack.app.event("message")
         async def handle_message_events(event: Dict[str, str], context: Dict[str, Any]) -> None:
             logger.info(f"message: {event.get('text')}")
+            logger.debug(f"event: {event}")
             channel_type = event["channel_type"]
             if channel_type == "im":
                 await self.dispatch(event=event, context=context)
