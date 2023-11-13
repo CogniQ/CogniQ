@@ -70,13 +70,11 @@ update-containerapp:
 
 .PHONY: exec
 #: Starts an SSH-like session on the main container.
-# Useful for debugging. For example:
-#  psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} --password cogniq
 exec:
 	az containerapp exec \
 		--name cogniq \
 		--resource-group cogniq-community-main \
-		--command "/bin/bash"
+		--command "/bin/sh"
 
 .PHONY: logs
 #: Follows the logs of the main container.
