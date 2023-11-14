@@ -26,7 +26,7 @@ schedule_future_message_function = {
             },
             "when_time": {
                 "type": "string",
-                "description": "This is when the message is to be sent at a specific time. The time should be specified in ISO 8601 full-date 'T' full-time format in the UTC timezone(YYYY-MM-DDThh:mm:ssZ). The current time is %s"
+                "description": "When the message is to be sent. The time should be specified in ISO 8601 full-date 'T' full-time format in the UTC timezone(YYYY-MM-DDThh:mm:ss+00:00). The current time is %s"
                 % datetime.now(tz=timezone.utc).isoformat(timespec="minutes"),
                 "format": "date-time",
             },
