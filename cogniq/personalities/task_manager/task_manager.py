@@ -83,7 +83,7 @@ class TaskManager(BasePersonality):
             messages=message_history,
             model="gpt-4-1106-preview",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call="auto",
-            functions=[schedule_future_message_function],
+            functions=[schedule_future_message_function()],
         )
         logger.info(f"tasks_response: {tasks_response}")
         tasks_message = tasks_response["choices"][0]
