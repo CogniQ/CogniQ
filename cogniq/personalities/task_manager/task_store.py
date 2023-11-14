@@ -100,7 +100,12 @@ class TaskStore:
                 )
                 .order_by(self.table.c.when_time)
             )
-            task = result.fetchone()
+            task = dict(result.fetchone())
+            if task['when_time'].tzinfo is None:
+                """
+                This happens when the database does not support timezones, such as SQLite.
+                """
+                task['when_time'] = task['when_time'].replace(tzinfo=timezone.utc)
 
             return task
 
