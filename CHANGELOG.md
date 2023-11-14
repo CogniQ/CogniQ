@@ -1,3 +1,14 @@
+## [0.5.6](https://github.com/CogniQ/CogniQ/compare/v0.5.5...v0.5.6) (2023-11-14)
+
+
+### Bug Fixes
+
+* dequeue consistent timezone math ([a348925](https://github.com/CogniQ/CogniQ/commit/a348925ddd3dac25f5fcbfa1cd86d482069b1b1d))
+* handle databases that do not support timezones, like SQLite ([1492750](https://github.com/CogniQ/CogniQ/commit/149275052013d5443f45a8a2592a7a13fe39534c))
+* handle empty tasks table ([f343dfb](https://github.com/CogniQ/CogniQ/commit/f343dfb95988a568922027d775aee5cf52e54cb0))
+* prompt engineer task manager ([9b40c6b](https://github.com/CogniQ/CogniQ/commit/9b40c6b387a56654ed331c4669eaebc4c054a7eb))
+* set the time each time the function is invoked ([548df5d](https://github.com/CogniQ/CogniQ/commit/548df5db9cb3a63e47bf32c705a962e7167d6066))
+
 ## [0.5.5](https://github.com/CogniQ/CogniQ/compare/v0.5.4...v0.5.5) (2023-11-13)
 
 
