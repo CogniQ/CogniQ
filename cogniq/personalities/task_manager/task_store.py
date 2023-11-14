@@ -15,7 +15,12 @@ from sqlalchemy import (
     PickleType,
     String,
     Table,
+    and_,
+    bindparam,
+    select,
+    text,
 )
+
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from datetime import datetime, timedelta, timezone
@@ -56,6 +61,12 @@ class TaskStore:
                 if table not in table_names:
                     raise Exception(f"Table {table} not found in database. Please run migrations with `.venv/bin/alembic upgrade head`.")
 
+    def current_time(self) -> datetime:
+        """
+        Get the current time in UTC.
+        """
+        return datetime.utcnow().replace(tzinfo=timezone.utc)
+
     async def enqueue_task(
         self,
         *,
@@ -89,29 +100,34 @@ class TaskStore:
 
     async def dequeue_task(self) -> Dict[str, Any] | None:
         """
-        Dequeue tasks that are ready to be completed.
+        Dequeue tasks that are ready to be completed, handling both PostgreSQL and SQLite databases.
         """
         async with self.engine.begin() as conn:
-            result = await conn.execute(
-                self.table.select()
-                .where(
-                    self.table.c.when_time <= datetime.now(timezone.utc),
-                    self.table.c.status == "ready",
-                )
+            query = (
+                select(self.table)
+                .where(and_(self.table.c.when_time <= bindparam("current_time"), self.table.c.status == bindparam("status")))
                 .order_by(self.table.c.when_time)
             )
 
-            if result.rowcount < 1:
+            # logger.debug(f"Dequeue query: {query}")
+            # logger.debug(f"Current time: {current_time}")
+            result = await conn.execute(query, {"current_time": self.current_time(), "status": "ready"})
+
+            task = result.fetchone()
+
+            if task is None:
                 return None
 
-            task = dict(result.fetchone())
-            if task["when_time"].tzinfo is None:
+            dict_task = dict(task)
+
+            if dict_task["when_time"].tzinfo is None:
                 """
                 This happens when the database does not support timezones, such as SQLite.
+                Assume that all datetimes are in UTC.
                 """
-                task["when_time"] = task["when_time"].replace(tzinfo=timezone.utc)
+                dict_task["when_time"] = dict_task["when_time"].replace(tzinfo=timezone.utc)
 
-            return task
+            return dict_task
 
     async def lock_task(self, task_id: int) -> Dict[str, Any]:
         """
@@ -126,7 +142,7 @@ class TaskStore:
                 )
                 .values(
                     status="locked",
-                    locked_at=datetime.now(timezone.utc),
+                    locked_at=self.current_time(),
                 )
             )
             if result.rowcount == 1:
@@ -165,7 +181,7 @@ class TaskStore:
                 self.table.update()
                 .where(
                     self.table.c.status == "locked",
-                    self.table.c.locked_at < datetime.now(timezone.utc) - timedelta(seconds=max_time),
+                    self.table.c.locked_at < self.current_time() - timedelta(seconds=max_time),
                 )
                 .values(
                     status="ready",
