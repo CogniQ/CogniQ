@@ -30,9 +30,9 @@ class BingSearch(BasePersonality):
         self,
         *,
         cslack: CogniqSlack,
-        copenai: CogniqOpenAI,
+        inference_backend: CogniqOpenAI,
     ):
-        super().__init__(cslack=cslack, copenai=copenai)
+        super().__init__(cslack=cslack, inference_backend=inference_backend)
         self.web_qa_tool = Tool(
             name="Search",
             pipeline_or_node=CustomWebQAPipeline(),
@@ -71,7 +71,7 @@ class BingSearch(BasePersonality):
             stream_callback=stream_callback,
         )
         transcript = ask_response["response"]["transcript"]
-        transcript_summary = await self.copenai.summarizer.ceil_prompt(transcript)
+        transcript_summary = await self.inference_backend.summarizer.ceil_prompt(transcript)
         return transcript_summary
 
     async def ask(
@@ -107,7 +107,7 @@ class BingSearch(BasePersonality):
         final_answer_text = final_answer.answer
         if not final_answer_text:
             transcript = agent_response["transcript"]
-            summarized_transcript = await self.copenai.summarizer.summarize_content(transcript, OPENAI_MAX_TOKENS_RESPONSE)
+            summarized_transcript = await self.inference_backend.summarizer.summarize_content(transcript, OPENAI_MAX_TOKENS_RESPONSE)
             final_answer_text = summarized_transcript
         return {"answer": final_answer_text, "response": agent_response}
 
@@ -119,13 +119,13 @@ class BingSearch(BasePersonality):
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
 
         # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
+        message_history = self.inference_backend.summarizer.ceil_history(message_history)
 
         # Set the system message
         message_history = [system_message(f"Hello, I am {bot_name}. I am a slack bot that can answer your questions.")] + message_history
 
         # if prompt is too long, summarize it
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
+        short_q = await self.inference_backend.summarizer.ceil_prompt(q)
 
         logger.info("short_q: " + short_q)
 
@@ -133,7 +133,7 @@ class BingSearch(BasePersonality):
         prompt = f"""Conversation history: {message_history_string}
 
         Query: {short_q}"""
-        history_augmented_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
+        history_augmented_prompt = await self.inference_backend.summarizer.ceil_prompt(prompt)
 
         logger.info("history_augmented_prompt: " + history_augmented_prompt)
         return history_augmented_prompt

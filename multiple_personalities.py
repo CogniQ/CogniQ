@@ -24,22 +24,20 @@ class MultiplePersonalities:
         # Initialize the slack bot
         self.cslack = CogniqSlack()
 
-        self.copenai = CogniqOpenAI()
-
         # Setup the personalities
-        self.bing_search = BingSearch(cslack=self.cslack, copenai=self.copenai)
-        self.chat_gpt4 = ChatGPT4(cslack=self.cslack, copenai=self.copenai)
+        self.bing_search = BingSearch(cslack=self.cslack, inference_backend=CogniqOpenAI())
+        self.chat_gpt4 = ChatGPT4(cslack=self.cslack, inference_backend=CogniqOpenAI())
         self.chat_anthropic = ChatAnthropic(
             cslack=self.cslack,
-            copenai=self.copenai,
+            inference_backend=CogniqOpenAI(),
         )
         self.slack_search = SlackSearch(
             cslack=self.cslack,
-            copenai=self.copenai,
+            inference_backend=CogniqOpenAI(),
         )
         self.evaluator = Evaluator(
             cslack=self.cslack,
-            copenai=self.copenai,
+            inference_backend=CogniqOpenAI(),
         )
 
         # Finally, register the app_mention and message events

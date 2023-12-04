@@ -40,7 +40,7 @@ class Evaluator(BasePersonality):
         if not q:
             logger.debug("I think the message was deleted. Ignoring.")
             return
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
+        short_q = await self.inference_backend.summarizer.ceil_prompt(q)
 
         # create a buffer for each personality
         response_buffers = {p.name: Buffer() for p in personalities}
@@ -156,7 +156,7 @@ class Evaluator(BasePersonality):
         prompt = evaluator_prompt(q=q, responses_with_descriptions=responses_with_descriptions)
 
         # If prompt is too long, summarize it
-        short_prompt = await self.copenai.summarizer.ceil_prompt(prompt)
+        short_prompt = await self.inference_backend.summarizer.ceil_prompt(prompt)
 
         if prompt != short_prompt:
             logger.info(f"Original prompt: {prompt}")
@@ -166,7 +166,7 @@ class Evaluator(BasePersonality):
 
         message_history.append(user_message(short_prompt))
 
-        response = await self.copenai.async_chat_completion_create(
+        response = await self.inference_backend.async_chat_completion_create(
             messages=message_history,
             model="gpt-4",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
         )

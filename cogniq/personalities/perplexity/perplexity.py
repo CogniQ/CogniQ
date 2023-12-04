@@ -36,7 +36,7 @@ class Perplexity(BasePersonality):
 
         message_history.append(user_message(q))
 
-        res = await self.copenai.async_chat_completion_create(
+        res = await self.inference_backend.async_chat_completion_create(
             messages=message_history,
             stream_callback=stream_callback,
             model="pplx-70b-online",

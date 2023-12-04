@@ -13,13 +13,13 @@ from cogniq.perplexity import CogniqPerplexity
 
 
 class BasePersonality(ABC):
-    def __init__(self, cslack: CogniqSlack, copenai: CogniqOpenAI | CogniqPerplexity):
+    def __init__(self, cslack: CogniqSlack, inference_backend: CogniqOpenAI | CogniqPerplexity):
         """
         Initialize the BasePersonality.
         :param cslack: CogniqSlack instance.
         """
         self.cslack = cslack
-        self.copenai = copenai
+        self.inference_backend = inference_backend
 
     @property
     @abstractmethod

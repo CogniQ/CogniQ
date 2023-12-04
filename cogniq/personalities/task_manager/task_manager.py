@@ -20,13 +20,13 @@ from .task_store import TaskStore
 
 
 class TaskManager(BasePersonality):
-    def __init__(self, cslack: CogniqSlack, copenai: CogniqOpenAI):
+    def __init__(self, cslack: CogniqSlack, inference_backend: CogniqOpenAI):
         """
         Initialize the BasePersonality.
         :param cslack: CogniqSlack instance.
         """
         self.cslack = cslack
-        self.copenai = copenai
+        self.inference_backend = inference_backend
         self.task_store = TaskStore()
 
     @property
@@ -72,14 +72,14 @@ class TaskManager(BasePersonality):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
+        message_history = self.inference_backend.summarizer.ceil_history(message_history)
         message_history = [
             system_message(
                 "I don't make assumptions about what values to plug into functions. I ask for clarification if a user request is ambiguous. I only use the functions that I have been provided with. I only use a function if it makes sense to do so."
             ),
         ] + message_history
 
-        tasks_response = await self.copenai.async_chat_completion_create(
+        tasks_response = await self.inference_backend.async_chat_completion_create(
             messages=message_history,
             model="gpt-4-1106-preview",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call="auto",

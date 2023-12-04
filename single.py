@@ -18,10 +18,8 @@ class Single:
         # Initialize the slack bot
         self.cslack = CogniqSlack()
 
-        self.perplexity = CogniqPerplexity()
-
         # Setup the personalities
-        self.perplexity = Perplexity(cslack=self.cslack, copenai=self.perplexity)
+        self.perplexity = Perplexity(cslack=self.cslack, inference_backend=CogniqPerplexity())
         # Finally, register the app_mention and message events
         self.register_app_mention()
         self.register_message()

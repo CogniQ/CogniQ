@@ -36,7 +36,7 @@ class SlackSearch(BasePersonality):
         # bot_id = await self.cslack.openai_history.get_bot_user_id(context=context)
         bot_name = await self.cslack.openai_history.get_bot_name(context=context)
         # if the history is too long, summarize it
-        message_history = self.copenai.summarizer.ceil_history(message_history)
+        message_history = self.inference_backend.summarizer.ceil_history(message_history)
 
         message_history = [
             system_message(
@@ -44,7 +44,7 @@ class SlackSearch(BasePersonality):
             ),
         ] + message_history
 
-        search_query_response = await self.copenai.async_chat_completion_create(
+        search_query_response = await self.inference_backend.async_chat_completion_create(
             messages=message_history,
             model="gpt-3.5-turbo-0613",  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
             function_call={"name": "get_search_query"},
@@ -96,18 +96,18 @@ class SlackSearch(BasePersonality):
 
         logger.debug(f"slack_search_response: {slack_search_response}")
 
-        short_slack_search_response = self.copenai.summarizer.ceil_retrieval(slack_search_response)
+        short_slack_search_response = self.inference_backend.summarizer.ceil_retrieval(slack_search_response)
 
         if slack_search_response != short_slack_search_response:
             logger.debug(f"slack_search_response was shortened: {slack_search_response}")
 
-        short_q = await self.copenai.summarizer.ceil_prompt(q)
+        short_q = await self.inference_backend.summarizer.ceil_prompt(q)
 
         prompt = retrieval_augmented_prompt(q=short_q, slack_search_response=short_slack_search_response)
 
         message_history.append(user_message(prompt))
 
-        response = await self.copenai.async_chat_completion_create(
+        response = await self.inference_backend.async_chat_completion_create(
             messages=message_history,
             stream_callback=stream_callback,
             model=OPENAI_CHAT_MODEL,  # [gpt-4-32k, gpt-4, gpt-3.5-turbo]
