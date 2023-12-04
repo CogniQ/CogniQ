@@ -9,8 +9,8 @@ import asyncio
 
 from cogniq.config import APP_URL
 from cogniq.slack import CogniqSlack
-from cogniq.openai import CogniqOpenAI
-from cogniq.personalities import TaskManager
+from cogniq.perplexity import CogniqPerplexity
+from cogniq.personalities import Perplexity
 
 
 class Single:
@@ -18,10 +18,10 @@ class Single:
         # Initialize the slack bot
         self.cslack = CogniqSlack()
 
-        self.copenai = CogniqOpenAI()
+        self.perplexity = CogniqPerplexity()
 
         # Setup the personalities
-        self.task_manager = TaskManager(cslack=self.cslack, copenai=self.copenai)
+        self.perplexity = Perplexity(cslack=self.cslack, copenai=self.perplexity)
         # Finally, register the app_mention and message events
         self.register_app_mention()
         self.register_message()
@@ -30,7 +30,7 @@ class Single:
         """
         Starts one Slack bot instance, and multiple personalities.
         """
-        await self.task_manager.async_setup()
+        await self.perplexity.async_setup()
         await self.cslack.start()
 
     async def first_response(self, *, context: Dict[str, Any], original_ts: str) -> Dict[str, str]:
@@ -56,7 +56,7 @@ class Single:
 
         # TODO: setup stream callback
         _dispatch_task = asyncio.create_task(
-            self.task_manager.ask_task(
+            self.perplexity.ask_task(
                 event=event,
                 reply_ts=reply_ts,
                 context=context,

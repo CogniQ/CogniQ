@@ -16,6 +16,10 @@ from .summarizer import Summarizer
 
 
 class CogniqOpenAI:
+    CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
+    COMPLETIONS_URL = "https://api.openai.com/v1/completions"
+    API_KEY = OPENAI_API_KEY
+
     def __init__(self):
         """
         OpenAI model
@@ -30,7 +34,7 @@ class CogniqOpenAI:
         self, *, messages: List[Dict[str, str]], stream_callback: Callable[..., None] | None = None, **kwargs
     ) -> Dict[str, Any]:
         stream_callback_set = stream_callback is not None
-        url = f"https://api.openai.com/v1/chat/completions"
+        url = self.CHAT_COMPLETIONS_URL
         default_payload = {
             "model": OPENAI_CHAT_MODEL,
             "messages": messages,
@@ -45,7 +49,7 @@ class CogniqOpenAI:
             return await self.async_openai(url=url, payload=payload, **kwargs)
 
     async def async_completion_create(self, *, prompt: str, **kwargs) -> Dict[str, Any]:
-        url = f"https://api.openai.com/v1/completions"
+        url = self.COMPLETIONS_URL
         payload = {"prompt": prompt, **kwargs}
 
         return await self.async_openai(url=url, payload=payload, **kwargs)
@@ -53,8 +57,9 @@ class CogniqOpenAI:
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=60))
     async def async_openai(self, *, url: str, payload: Dict[str, Any], **kwargs) -> Dict[str, Any]:
         headers = {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer {self.API_KEY}",
         }
 
         async with aiohttp.ClientSession() as session:
@@ -69,8 +74,9 @@ class CogniqOpenAI:
         self, *, url: str, payload: Dict[str, Any], stream_callback: Callable[..., None], **kwargs
     ) -> Dict[str, Any]:
         headers = {
+            "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer {self.API_KEY}",
         }
 
         async with aiohttp.ClientSession() as session:

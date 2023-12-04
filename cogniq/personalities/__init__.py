@@ -5,3 +5,4 @@ from .chat_gpt4.chat_gpt4 import ChatGPT4
 from .slack_search.slack_search import SlackSearch
 from .evaluator.evaluator import Evaluator
 from .task_manager.task_manager import TaskManager
+from .perplexity.perplexity import Perplexity

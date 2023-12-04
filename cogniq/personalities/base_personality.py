@@ -9,10 +9,11 @@ from abc import ABC, abstractmethod
 
 from cogniq.slack import CogniqSlack
 from cogniq.openai import system_message, user_message, CogniqOpenAI
+from cogniq.perplexity import CogniqPerplexity
 
 
 class BasePersonality(ABC):
-    def __init__(self, cslack: CogniqSlack, copenai: CogniqOpenAI):
+    def __init__(self, cslack: CogniqSlack, copenai: CogniqOpenAI | CogniqPerplexity):
         """
         Initialize the BasePersonality.
         :param cslack: CogniqSlack instance.
