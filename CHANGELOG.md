@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/CogniQ/CogniQ/compare/v0.5.6...v0.6.0) (2023-12-04)
+
+
+### Features
+
+* add perplexity as an api target ([3184890](https://github.com/CogniQ/CogniQ/commit/31848902ab390557a922d7e5d9f6d93d92e414b2))
+
 ## [0.5.6](https://github.com/CogniQ/CogniQ/compare/v0.5.5...v0.5.6) (2023-11-14)
 
 
