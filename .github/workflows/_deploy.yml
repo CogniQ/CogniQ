@@ -63,6 +63,7 @@ jobs:
           OPENAI_API_KEY=secretref:openai-api-key \
           ANTHROPIC_API_KEY=secretref:anthropic-api-key \
           BING_SUBSCRIPTION_KEY=secretref:bing-subscription-key \
+          PERPLEXITY_API_KEY=secretref:perplexity-api-key \
           POSTGRES_HOST=secretref:postgres-host \
           POSTGRES_USER=secretref:postgres-user \
           POSTGRES_PASSWORD=secretref:postgres-password \
