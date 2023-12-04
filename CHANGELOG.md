@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/CogniQ/CogniQ/compare/v0.6.0...v0.6.1) (2023-12-04)
+
+
+### Bug Fixes
+
+* add perplexity api key ([273785d](https://github.com/CogniQ/CogniQ/commit/273785dfd2660c5f7e55e830e40c2ffbf6084d1b))
+
 # [0.6.0](https://github.com/CogniQ/CogniQ/compare/v0.5.6...v0.6.0) (2023-12-04)
 
 
