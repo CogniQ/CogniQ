@@ -1,3 +1,10 @@
+## [0.6.2](https://github.com/CogniQ/CogniQ/compare/v0.6.1...v0.6.2) (2023-12-12)
+
+
+### Bug Fixes
+
+* oauth state_store should be offset-naive, like slack-bolt library ([1826e69](https://github.com/CogniQ/CogniQ/commit/1826e6962579389194d12c6a8ae6a6e4e92c4c1d))
+
 ## [0.6.1](https://github.com/CogniQ/CogniQ/compare/v0.6.0...v0.6.1) (2023-12-04)
 
 
