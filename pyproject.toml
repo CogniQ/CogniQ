@@ -31,7 +31,7 @@ slack-sdk = "~3.21.3"
 databases = {extras = ["postgresql"], version = "^0.7.0"}
 aiosqlite = "~0.19.0"
 ddtrace = "~1.18.4"
-asyncpg = "^0.28.0"
+asyncpg = "^0.31.0"
 
 [tool.poetry.group.localinstall]
 # Only necessary when installing locally.
