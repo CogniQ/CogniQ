@@ -46,7 +46,7 @@ torchvision = [
   { version = "0.15.2+cu118", source = "pytorch", markers = "sys_platform=='linux'" },
   { version = "0.15.2", markers = "sys_platform=='darwin'" }
 ] 
-farm-haystack = { version = "1.20.0", extras = ["preprocessing"] }
+farm-haystack = { version = "1.20.1", extras = ["preprocessing"] }
 setuptools = "^68.2.0"
 
 
