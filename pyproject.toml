@@ -19,7 +19,7 @@ priority = "explicit"
 [tool.poetry.dependencies]
 python = "~3.10"
 slack-bolt = "^1.18.0"
-openai = "^0.28.0"
+openai = "^2.41.1"
 aiohttp = "^3.8.5"
 tiktoken = "~0.4.0"
 multiprocess = "^0.70.15"
